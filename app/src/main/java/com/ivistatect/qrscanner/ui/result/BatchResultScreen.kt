@@ -81,7 +81,7 @@ fun BatchResultScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Batch (${mainVm.batchItems.size})") },
+                title = { Text("Batch") },
                 navigationIcon = {
                     IconButton(onClick = { Logger.d("Click Back @ Batch"); onBack() }) {
                         Icon(painterResource(R.drawable.ic_back), stringResource(R.string.cd_back), Modifier.size(24.dp))
@@ -110,6 +110,7 @@ fun BatchResultScreen(
                     )
                 }
                 items(mainVm.batchItems, key = { it.rawValue }) { code ->
+                    val rowShape = RoundedCornerShape(16.dp)
                     val dismissState = rememberSwipeToDismissBoxState(
                         confirmValueChange = { value ->
                             if (value == SwipeToDismissBoxValue.EndToStart && pendingDelete == null) {
@@ -137,12 +138,16 @@ fun BatchResultScreen(
                             }
                         },
                         enableDismissFromStartToEnd = false,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                        // Clip the whole swipe container as well as the foreground card. Without
+                        // this, the red delete background remained square at the four corners.
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = 6.dp)
+                            .clip(rowShape),
                     ) {
-                        // Keep the foreground itself rounded so the delete layer never leaves square corners.
+                        // Keep the foreground itself rounded while it slides over the delete layer.
                         Box(
                             Modifier.fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(rowShape)
                                 .background(MaterialTheme.colorScheme.surface),
                         ) {
                             BatchRow(
