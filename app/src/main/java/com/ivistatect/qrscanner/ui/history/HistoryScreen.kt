@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -91,50 +92,53 @@ fun HistoryScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding(),
+            .background(MaterialTheme.colorScheme.background),
     ) {
-        // Header: title + search / filter / more.
-        Row(
-            Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                stringResource(R.string.nav_history),
-                Modifier.weight(1f),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-            IconButton(onClick = { Logger.d("Click Search @ History", "open=${!searchOpen}"); searchOpen = !searchOpen }) {
-                Icon(painterResource(R.drawable.ic_search_icon), stringResource(R.string.cd_search), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            IconButton(onClick = {
-                Logger.d("Click Filter @ History")
-                showFilterSheet = true
-            }) { Icon(painterResource(R.drawable.iv_filter), stringResource(R.string.cd_filter), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
-            IconButton(onClick = {
-                Logger.d("Click More @ History")
-                showMoreSheet = true
-            }) { Icon(painterResource(R.drawable.ic_three_dot), stringResource(R.string.cd_more), Modifier.size(24.dp)) }
-        }
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            Column(Modifier.statusBarsPadding()) {
+                // Header: title + search / filter / more.
+                Row(
+                    Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        stringResource(R.string.nav_history),
+                        Modifier.weight(1f),
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    IconButton(onClick = { Logger.d("Click Search @ History", "open=${!searchOpen}"); searchOpen = !searchOpen }) {
+                        Icon(painterResource(R.drawable.ic_search_icon), stringResource(R.string.cd_search), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    IconButton(onClick = {
+                        Logger.d("Click Filter @ History")
+                        showFilterSheet = true
+                    }) { Icon(painterResource(R.drawable.iv_filter), stringResource(R.string.cd_filter), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    IconButton(onClick = {
+                        Logger.d("Click More @ History")
+                        showMoreSheet = true
+                    }) { Icon(painterResource(R.drawable.ic_three_dot), stringResource(R.string.cd_more), Modifier.size(24.dp)) }
+                }
 
-        TabRow(selectedTabIndex = tab) {
-            tabs.forEachIndexed { i, title ->
-                Tab(
-                    selected = tab == i,
-                    onClick = { Logger.d("Click History tab @ History", "tab=$title"); tab = i },
-                    text = { Text(title) },
-                )
-            }
-        }
+                TabRow(selectedTabIndex = tab) {
+                    tabs.forEachIndexed { i, title ->
+                        Tab(
+                            selected = tab == i,
+                            onClick = { Logger.d("Click History tab @ History", "tab=$title"); tab = i },
+                            text = { Text(title) },
+                        )
+                    }
+                }
 
-        if (searchOpen) {
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                label = { Text(stringResource(R.string.history_search_hint)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
-            )
+                if (searchOpen) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text(stringResource(R.string.history_search_hint)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    )
+                }
+            }
         }
 
         if (list.isEmpty()) {
