@@ -176,15 +176,31 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
             // Recreated in the same symbology as the scanned code: EAN/Code 128 stays a barcode.
             previewBitmap?.let {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Image(
-                        it.asImageBitmap(),
-                        contentDescription = null,
-                        modifier = if (previewFormat != null && QrGenerator.isTwoDimensional(previewFormat)) {
-                            Modifier.size(220.dp)
-                        } else {
-                            Modifier.width(300.dp).height(120.dp)
-                        }.background(Color.White).padding(10.dp),
-                    )
+                    if (previewFormat != null && QrGenerator.isTwoDimensional(previewFormat)) {
+                        Image(
+                            it.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier.size(220.dp).background(Color.White).padding(10.dp),
+                        )
+                    } else {
+                        Column(
+                            modifier = Modifier.width(300.dp).background(Color.White).padding(horizontal = 10.dp, vertical = 8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Image(
+                                it.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxWidth().height(100.dp),
+                            )
+                            Text(
+                                text = code.rawValue,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
                 }
             }
         }
