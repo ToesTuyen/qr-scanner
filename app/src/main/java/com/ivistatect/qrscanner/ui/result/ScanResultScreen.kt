@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -148,14 +147,6 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                 }
             }
 
-            resultActions.firstOrNull { it == ResultAction.WEB_SEARCH }?.let { searchAction ->
-                Button(
-                    onClick = { executeAction(searchAction) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(R.string.action_web_search))
-                }
-            }
         }
     }
 
@@ -225,9 +216,8 @@ private fun ActionItem(action: ResultAction, modifier: Modifier = Modifier, onCl
 
 @DrawableRes
 private fun ResultAction.glyph(): Int = when (this) {
-    ResultAction.OPEN -> R.drawable.ic_open
-    ResultAction.WEB_SEARCH -> R.drawable.ic_globe
-    ResultAction.PRODUCT_DETAILS -> R.drawable.ic_globe
+    ResultAction.OPEN, ResultAction.PRODUCT_DETAILS -> R.drawable.ic_result_open
+    ResultAction.WEB_SEARCH -> R.drawable.ic_result_search
     ResultAction.CALL -> R.drawable.ic_dialer
     ResultAction.SMS -> R.drawable.ic_sms
     ResultAction.EMAIL -> R.drawable.ic_email

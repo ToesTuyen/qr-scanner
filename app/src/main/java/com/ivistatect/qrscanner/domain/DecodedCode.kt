@@ -22,7 +22,7 @@ enum class ScanValueType {
 
     /** Actions the reference's result grid offers for this value type. */
     fun actions(showProductDetails: Boolean = false, formatName: String = ""): List<ResultAction> = when (this) {
-        URL -> listOf(ResultAction.OPEN, ResultAction.SHARE, ResultAction.COPY)
+        URL -> listOf(ResultAction.OPEN, ResultAction.WEB_SEARCH, ResultAction.SHARE, ResultAction.COPY)
         PHONE -> listOf(ResultAction.CALL, ResultAction.COPY, ResultAction.SHARE)
         SMS -> listOf(ResultAction.SMS, ResultAction.COPY, ResultAction.SHARE)
         EMAIL -> listOf(ResultAction.EMAIL, ResultAction.COPY, ResultAction.SHARE)
@@ -34,8 +34,8 @@ enum class ScanValueType {
                 add(ResultAction.PRODUCT_DETAILS)
             }
             add(ResultAction.WEB_SEARCH)
-            add(ResultAction.COPY)
             add(ResultAction.SHARE)
+            add(ResultAction.COPY)
         }
     }
 
