@@ -83,6 +83,8 @@ fun ScannerScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) { Logger.d("Enter Scanner") }
+
     fun granted() = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
         PackageManager.PERMISSION_GRANTED
 
@@ -260,6 +262,7 @@ fun ScannerScreen(
                     Slider(
                         value = zoom,
                         onValueChange = { zoom = it },
+                        onValueChangeFinished = { Logger.d("Adjust Zoom @ Scanner", "value=$zoom") },
                         modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
                     )
                     Icon(
@@ -273,7 +276,11 @@ fun ScannerScreen(
 
             if (showGuide) {
                 LaunchedEffect(Unit) { Logger.d("Scan-guide sheet shown") }
-                ModalBottomSheet(onDismissRequest = { guideDismissed = true; mainVm.markScanGuideSeen() }) {
+                ModalBottomSheet(onDismissRequest = {
+                    Logger.d("Dismiss Scan-guide @ Scanner")
+                    guideDismissed = true
+                    mainVm.markScanGuideSeen()
+                }) {
                     Column(
                         Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -309,7 +316,10 @@ fun ScannerScreen(
 
     if (showSettingsDialog) {
         AlertDialog(
-            onDismissRequest = { showSettingsDialog = false },
+            onDismissRequest = {
+                Logger.d("Dismiss Permission dialog @ Scanner")
+                showSettingsDialog = false
+            },
             title = { Text(stringResource(R.string.scan_permission_settings_title)) },
             text = { Text(stringResource(R.string.scan_permission_settings_body)) },
             confirmButton = {
@@ -320,7 +330,10 @@ fun ScannerScreen(
                 }) { Text(stringResource(R.string.scan_permission_open_settings)) }
             },
             dismissButton = {
-                TextButton(onClick = { showSettingsDialog = false }) {
+                TextButton(onClick = {
+                    Logger.d("Click Cancel @ Permission dialog")
+                    showSettingsDialog = false
+                }) {
                     Text(stringResource(R.string.cancel))
                 }
             },

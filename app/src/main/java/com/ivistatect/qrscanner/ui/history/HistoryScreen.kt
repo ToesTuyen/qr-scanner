@@ -183,7 +183,10 @@ fun HistoryScreen(
 
     pendingDelete?.let { item ->
         AlertDialog(
-            onDismissRequest = { pendingDelete = null },
+            onDismissRequest = {
+                Logger.d("Dismiss Delete item dialog @ History")
+                pendingDelete = null
+            },
             title = { Text(stringResource(R.string.history_delete_title)) },
             text = { Text(item.displayContent) },
             confirmButton = {
@@ -194,13 +197,19 @@ fun HistoryScreen(
                 }) { Text(stringResource(R.string.action_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { pendingDelete = null }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    Logger.d("Click Cancel @ Delete item dialog")
+                    pendingDelete = null
+                }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
 
     if (showFilterSheet) {
-        ModalBottomSheet(onDismissRequest = { showFilterSheet = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss Filter sheet @ History")
+            showFilterSheet = false
+        }) {
             Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
                 Text(
                     stringResource(R.string.history_filter_title),
@@ -208,18 +217,22 @@ fun HistoryScreen(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
                 )
                 HistoryFilterOption(stringResource(R.string.history_filter_all), dateFilter == HistoryDateFilter.ALL) {
+                    Logger.d("Select Filter @ History", "value=all")
                     dateFilter = HistoryDateFilter.ALL
                     showFilterSheet = false
                 }
                 HistoryFilterOption(stringResource(R.string.history_filter_today), dateFilter == HistoryDateFilter.TODAY) {
+                    Logger.d("Select Filter @ History", "value=today")
                     dateFilter = HistoryDateFilter.TODAY
                     showFilterSheet = false
                 }
                 HistoryFilterOption(stringResource(R.string.history_filter_last_7_days), dateFilter == HistoryDateFilter.LAST_7_DAYS) {
+                    Logger.d("Select Filter @ History", "value=last_7_days")
                     dateFilter = HistoryDateFilter.LAST_7_DAYS
                     showFilterSheet = false
                 }
                 HistoryFilterOption(stringResource(R.string.history_filter_last_30_days), dateFilter == HistoryDateFilter.LAST_30_DAYS) {
+                    Logger.d("Select Filter @ History", "value=last_30_days")
                     dateFilter = HistoryDateFilter.LAST_30_DAYS
                     showFilterSheet = false
                 }
@@ -228,11 +241,15 @@ fun HistoryScreen(
     }
 
     if (showMoreSheet) {
-        ModalBottomSheet(onDismissRequest = { showMoreSheet = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss More sheet @ History")
+            showMoreSheet = false
+        }) {
             Column(Modifier.fillMaxWidth().padding(24.dp)) {
                 Text(stringResource(R.string.history_more_title), style = MaterialTheme.typography.titleLarge)
                 TextButton(
                     onClick = {
+                        Logger.d("Click Delete visible @ History", "count=${list.size}")
                         showMoreSheet = false
                         if (list.isNotEmpty()) confirmDeleteVisible = true
                     },
@@ -244,7 +261,10 @@ fun HistoryScreen(
 
     if (confirmDeleteVisible) {
         AlertDialog(
-            onDismissRequest = { confirmDeleteVisible = false },
+            onDismissRequest = {
+                Logger.d("Dismiss Delete visible dialog @ History")
+                confirmDeleteVisible = false
+            },
             title = { Text(stringResource(R.string.history_delete_visible)) },
             text = { Text(stringResource(R.string.history_delete_visible_message, list.size)) },
             confirmButton = {
@@ -255,7 +275,10 @@ fun HistoryScreen(
                 }) { Text(stringResource(R.string.action_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmDeleteVisible = false }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    Logger.d("Click Cancel @ Delete visible dialog")
+                    confirmDeleteVisible = false
+                }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }

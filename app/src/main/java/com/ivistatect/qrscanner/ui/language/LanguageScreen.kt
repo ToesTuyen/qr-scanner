@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ivistatect.qrscanner.R
+import com.ivistatect.qrscanner.util.Logger
 
 private data class LanguageOption(val tag: String, val labelRes: Int)
 
@@ -45,12 +47,24 @@ fun LanguageScreen(onBack: () -> Unit, onApplied: (String) -> Unit) {
     val context = LocalContext.current
     var selectedTag by remember { mutableStateOf(AppLanguage.currentTag(context)) }
 
+    LaunchedEffect(Unit) { Logger.d("Enter Language") }
+
+    fun selectLanguage(tag: String) {
+        Logger.d("Click Language option @ Language", "tag=${tag.ifBlank { "system" }}")
+        selectedTag = tag
+        AppLanguage.setTag(context, tag)
+        onApplied(tag)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_app_language)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = {
+                        Logger.d("Click Back @ Language")
+                        onBack()
+                    }) {
                         Icon(painterResource(R.drawable.ic_back), stringResource(R.string.cd_back))
                     }
                 },
@@ -62,20 +76,13 @@ fun LanguageScreen(onBack: () -> Unit, onApplied: (String) -> Unit) {
         ) {
             options.forEach { option ->
                 androidx.compose.foundation.layout.Row(
-                    Modifier.fillMaxWidth().clickable {
-                        selectedTag = option.tag
-                        AppLanguage.setTag(context, option.tag)
-                        onApplied(option.tag)
-                    }.padding(horizontal = 24.dp, vertical = 16.dp),
+                    Modifier.fillMaxWidth().clickable { selectLanguage(option.tag) }
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RadioButton(
                         selected = selectedTag == option.tag,
-                        onClick = {
-                            selectedTag = option.tag
-                            AppLanguage.setTag(context, option.tag)
-                            onApplied(option.tag)
-                        },
+                        onClick = { selectLanguage(option.tag) },
                     )
                     Text(
                         stringResource(option.labelRes),

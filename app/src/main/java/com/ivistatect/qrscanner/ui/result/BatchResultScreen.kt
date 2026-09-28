@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,6 +38,8 @@ fun BatchResultScreen(
     onOpenItem: (DecodedCode) -> Unit,
     onBack: () -> Unit,
 ) {
+    LaunchedEffect(Unit) { Logger.d("Enter Batch", "count=${mainVm.batchItems.size}") }
+
     Scaffold(
         topBar = {
             TopAppBar(

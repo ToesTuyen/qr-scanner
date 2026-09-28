@@ -79,6 +79,10 @@ fun AppRoot() {
     val currentRoute = backStack?.destination?.route
     val showBottomBar = currentRoute in setOf(Routes.SCANNER, Routes.HISTORY, Routes.SETTINGS)
 
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { Logger.d("Enter screen", "route=$it") }
+    }
+
     // Status bar remains visible. Match its icon colour to the surface behind it.
     val lightStatusBar = currentRoute != Routes.SCANNER && MaterialTheme.colorScheme.background.luminance() > 0.5f
     SideEffect { activity.setLightStatusBarAppearance(lightStatusBar) }
@@ -195,7 +199,10 @@ fun AppRoot() {
     }
 
     if (showExitSheet) {
-        ModalBottomSheet(onDismissRequest = { showExitSheet = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss Exit sheet @ Scanner")
+            showExitSheet = false
+        }) {
             Column(
                 Modifier.fillMaxWidth().padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -209,7 +216,10 @@ fun AppRoot() {
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text(stringResource(R.string.exit_confirm)) }
                 OutlinedButton(
-                    onClick = { showExitSheet = false },
+                    onClick = {
+                        Logger.d("Click Cancel @ Exit sheet")
+                        showExitSheet = false
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text(stringResource(R.string.cancel)) }
             }

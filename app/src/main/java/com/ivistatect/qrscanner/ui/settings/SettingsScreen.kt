@@ -131,7 +131,10 @@ fun SettingsScreen(
     }
 
     if (showThemeSheet) {
-        ModalBottomSheet(onDismissRequest = { showThemeSheet = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss Theme sheet @ Settings")
+            showThemeSheet = false
+        }) {
             Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
                 ThemeOption(stringResource(R.string.theme_system), SettingsRepository.THEME_SYSTEM, vm) { showThemeSheet = false }
                 ThemeOption(stringResource(R.string.theme_light), SettingsRepository.THEME_LIGHT, vm) { showThemeSheet = false }
@@ -145,8 +148,15 @@ fun SettingsScreen(
             title = stringResource(R.string.settings_search_engine),
             options = searchEngines,
             selected = searchEngine,
-            onSelect = { vm.setSearchEngine(it); Logger.d("Select Search Engine @ Settings", "index=$it"); showSearchEngine = false },
-            onDismiss = { showSearchEngine = false },
+            onSelect = {
+                Logger.d("Select Search Engine @ Settings", "value=${searchEngines[it]}")
+                vm.setSearchEngine(it)
+                showSearchEngine = false
+            },
+            onDismiss = {
+                Logger.d("Dismiss Search Engine dialog @ Settings")
+                showSearchEngine = false
+            },
         )
     }
     if (showCameraFacing) {
@@ -154,12 +164,22 @@ fun SettingsScreen(
             title = stringResource(R.string.settings_camera),
             options = cameraOptions,
             selected = cameraFacing,
-            onSelect = { vm.setCameraFacing(it); Logger.d("Select Camera @ Settings", "facing=$it"); showCameraFacing = false },
-            onDismiss = { showCameraFacing = false },
+            onSelect = {
+                Logger.d("Select Camera @ Settings", "value=${cameraOptions[it]}")
+                vm.setCameraFacing(it)
+                showCameraFacing = false
+            },
+            onDismiss = {
+                Logger.d("Dismiss Camera dialog @ Settings")
+                showCameraFacing = false
+            },
         )
     }
     if (showRateSheet) {
-        ModalBottomSheet(onDismissRequest = { showRateSheet = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss Rate sheet @ Settings")
+            showRateSheet = false
+        }) {
             RateSheetContent {
                 Logger.d("Click Rate on Google Play @ Rate sheet")
                 context.openStoreListing()
@@ -189,7 +209,10 @@ private fun ChoiceDialog(title: String, options: List<String>, selected: Int, on
         },
         confirmButton = {},
         dismissButton = {
-            androidx.compose.material3.TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+            androidx.compose.material3.TextButton(onClick = {
+                Logger.d("Click Cancel @ Choice dialog", "title=$title")
+                onDismiss()
+            }) { Text(stringResource(R.string.cancel)) }
         },
     )
 }

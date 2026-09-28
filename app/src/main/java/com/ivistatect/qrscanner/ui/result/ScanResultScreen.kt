@@ -183,7 +183,10 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
     }
 
     if (showMore) {
-        ModalBottomSheet(onDismissRequest = { showMore = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss More sheet @ ScanResult")
+            showMore = false
+        }) {
             Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
                 // Reference share/delete sheet: Share · CSV file · Text file · Delete.
                 SheetItem(R.drawable.ic_share, stringResource(R.string.action_share)) {

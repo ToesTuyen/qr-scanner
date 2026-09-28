@@ -107,6 +107,7 @@ private fun ShareInScreen(intent: Intent?, onClose: () -> Unit) {
     var state by remember { mutableStateOf<ShareInState>(ShareInState.Loading) }
 
     LaunchedEffect(Unit) {
+        Logger.d("Enter ShareIn")
         val text = intent?.getStringExtra(Intent.EXTRA_TEXT)
         val uri: Uri? = IntentCompat.getParcelableExtra(intent ?: Intent(), Intent.EXTRA_STREAM, Uri::class.java)
             ?: intent?.data
@@ -126,7 +127,10 @@ private fun ShareInScreen(intent: Intent?, onClose: () -> Unit) {
         ShareInState.Error -> Box(Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(R.string.error_detecting))
-                OutlinedButton(onClick = onClose, modifier = Modifier.padding(top = 16.dp)) {
+                OutlinedButton(onClick = {
+                    Logger.d("Click Close @ ShareIn error")
+                    onClose()
+                }, modifier = Modifier.padding(top = 16.dp)) {
                     Text(stringResource(R.string.cancel))
                 }
             }
@@ -140,6 +144,7 @@ private fun ShareInScreen(intent: Intent?, onClose: () -> Unit) {
 @Composable
 private fun ShareInResult(code: DecodedCode, onClose: () -> Unit) {
     val context = LocalContext.current
+    LaunchedEffect(code.rawValue) { Logger.d("Enter ShareInResult", "type=${code.valueType}") }
     val preview = remember(code.rawValue) { QrGenerator.encode(code.rawValue, BarcodeFormat.QR_CODE, 600) }
     val friendly = if (code.formatName == "QR_CODE") "QR Code" else code.formatName
     val subtitle = remember(code.formatName) {

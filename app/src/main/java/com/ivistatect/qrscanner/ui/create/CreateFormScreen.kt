@@ -159,7 +159,10 @@ fun CreateFormScreen(
                             )
                             if (primary.isNotEmpty()) {
                                 IconButton(
-                                    onClick = { primary = "" },
+                                    onClick = {
+                                        Logger.d("Click Clear input @ CreateForm", "id=$tileId")
+                                        primary = ""
+                                    },
                                     modifier = Modifier.align(Alignment.TopEnd).padding(4.dp),
                                 ) {
                                     Icon(
@@ -188,6 +191,7 @@ fun CreateFormScreen(
                             listOf("https://", "http://", "www.", ".com").forEach { chip ->
                                 SuggestionChip(
                                     onClick = {
+                                        Logger.d("Click URL suggestion @ CreateForm", "value=$chip")
                                         primary = when (chip) {
                                             "https://", "http://" -> chip
                                             else -> (primary + chip).take(MAX_LEN)
