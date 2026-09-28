@@ -17,6 +17,12 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -113,6 +119,15 @@ fun ScannerScreen(
     var torchOn by remember { mutableStateOf(false) }
     var zoom by remember { mutableFloatStateOf(0f) }
     var camera by remember { mutableStateOf<Camera?>(null) }
+    val scanLineProgress by rememberInfiniteTransition(label = "scannerLine").animateFloat(
+        initialValue = 0.12f,
+        targetValue = 0.88f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1_800, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "scannerLineProgress",
+    )
 
     val analyzerHolder = remember { arrayOfNulls<BarcodeAnalyzer>(1) }
     val analyzer = remember {
@@ -225,8 +240,16 @@ fun ScannerScreen(
                     drawLine(c, Offset(0f, size.height), Offset(0f, size.height - len), w, StrokeCap.Round)
                     drawLine(c, Offset(size.width, size.height), Offset(size.width - len, size.height), w, StrokeCap.Round)
                     drawLine(c, Offset(size.width, size.height), Offset(size.width, size.height - len), w, StrokeCap.Round)
-                    // Horizontal scan line.
-                    drawLine(c, Offset(0f, size.height / 2), Offset(size.width, size.height / 2), 3f)
+                    // Animated scan line sweeping between the reticle brackets.
+                    val scanY = size.height * scanLineProgress
+                    drawLine(
+                        c.copy(alpha = 0.28f),
+                        Offset(0f, scanY),
+                        Offset(size.width, scanY),
+                        9f,
+                        StrokeCap.Round,
+                    )
+                    drawLine(c, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
                 }
             }
 
