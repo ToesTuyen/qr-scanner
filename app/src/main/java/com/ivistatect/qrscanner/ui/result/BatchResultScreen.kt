@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -37,6 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +50,8 @@ import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.DecodedCode
 import com.ivistatect.qrscanner.domain.tileGlyph
 import com.ivistatect.qrscanner.ui.ServerSubmissionState
+import com.ivistatect.qrscanner.ui.ServerSessionStopState
+import com.ivistatect.qrscanner.ui.ServerDeliveryState
 import com.ivistatect.qrscanner.ui.MainViewModel
 
 /**
@@ -100,6 +105,8 @@ fun BatchResultScreen(
                         state = mainVm.serverSubmissionState,
                         codeCount = mainVm.batchItems.size,
                         onSend = mainVm::sendBatchToServer,
+                        stopState = mainVm.serverSessionStopState,
+                        onStopSession = mainVm::stopServerSession,
                     )
                 }
                 items(mainVm.batchItems, key = { it.rawValue }) { code ->
@@ -132,10 +139,16 @@ fun BatchResultScreen(
                         enableDismissFromStartToEnd = false,
                         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                     ) {
-                        // The surface wrapper conceals the delete background at the card's rounded corners.
-                        Box(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+                        // Keep the foreground itself rounded so the delete layer never leaves square corners.
+                        Box(
+                            Modifier.fillMaxWidth()
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colorScheme.surface),
+                        ) {
                             BatchRow(
                                 code = code,
+                                deliveryState = mainVm.batchServerDelivery[code.rawValue]
+                                    ?: ServerDeliveryState.PENDING,
                                 onOpen = { Logger.d("Click Batch item @ Batch"); onOpenItem(code) },
                             )
                         }
@@ -152,6 +165,8 @@ private fun BatchServerSubmissionCard(
     state: ServerSubmissionState,
     codeCount: Int,
     onSend: () -> Unit,
+    stopState: ServerSessionStopState,
+    onStopSession: () -> Unit,
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -192,13 +207,45 @@ private fun BatchServerSubmissionCard(
                     modifier = Modifier.padding(top = 10.dp),
                 )
             }
+            OutlinedButton(
+                onClick = onStopSession,
+                enabled = !stopState.isStopping,
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            ) {
+                Text(
+                    if (stopState.isStopping) {
+                        stringResource(R.string.batch_server_stopping)
+                    } else {
+                        stringResource(R.string.batch_stop_server_session)
+                    },
+                )
+            }
+            when (stopState.succeeded) {
+                true -> Text(
+                    stringResource(R.string.batch_server_stop_success, stopState.status ?: 200),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 10.dp),
+                )
+                false -> Text(
+                    stringResource(R.string.batch_server_stop_failed, stopState.status ?: 0),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 10.dp),
+                )
+                null -> Unit
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BatchRow(code: DecodedCode, onOpen: () -> Unit) {
+private fun BatchRow(
+    code: DecodedCode,
+    deliveryState: ServerDeliveryState,
+    onOpen: () -> Unit,
+) {
     val glyph = remember(code.valueType) { code.valueType.tileGlyph() }
     Card(
         onClick = onOpen,
@@ -229,6 +276,25 @@ private fun BatchRow(code: DecodedCode, onOpen: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                val deliveryText = when (deliveryState) {
+                    ServerDeliveryState.PENDING -> stringResource(R.string.batch_delivery_pending)
+                    ServerDeliveryState.SENDING -> stringResource(R.string.batch_delivery_sending)
+                    ServerDeliveryState.SUCCEEDED -> stringResource(R.string.batch_delivery_succeeded)
+                    ServerDeliveryState.FAILED -> stringResource(R.string.batch_delivery_failed)
+                }
+                val deliveryColor = when (deliveryState) {
+                    ServerDeliveryState.SUCCEEDED -> BatchSuccessGreen
+                    ServerDeliveryState.FAILED -> BatchFailureRed
+                    ServerDeliveryState.PENDING,
+                    ServerDeliveryState.SENDING,
+                    -> BatchPendingYellow
+                }
+                Text(
+                    deliveryText,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = deliveryColor,
+                    modifier = Modifier.padding(top = 3.dp),
+                )
             }
             Text(
                 code.formatName.replace('_', ' '),
@@ -240,3 +306,7 @@ private fun BatchRow(code: DecodedCode, onOpen: () -> Unit) {
         }
     }
 }
+
+private val BatchSuccessGreen = Color(0xFF2E7D32)
+private val BatchPendingYellow = Color(0xFFF9A825)
+private val BatchFailureRed = Color(0xFFB3261E)

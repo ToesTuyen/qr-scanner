@@ -3,6 +3,7 @@ package com.ivistatect.qrscanner.ui
 import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -44,6 +45,16 @@ data class ServerSubmissionState(
     val completed: Int get() = succeeded + failed
 }
 
+/** Result of a manual request to end the active server-side scanner session. */
+data class ServerSessionStopState(
+    val isStopping: Boolean = false,
+    val succeeded: Boolean? = null,
+    val status: Int? = null,
+)
+
+/** Per-code server delivery status displayed directly on each Batch row. */
+enum class ServerDeliveryState { PENDING, SENDING, SUCCEEDED, FAILED }
+
 /**
  * Activity-scoped shared state for the single-activity host: the transient nav payloads
  * (current scan result, current created result, batch accumulation) plus decode/create/persist.
@@ -78,13 +89,17 @@ class MainViewModel @Inject constructor(
 
     var batchMode by mutableStateOf(false); private set
     val batchItems = mutableStateListOf<DecodedCode>()
+    val batchServerDelivery = mutableStateMapOf<String, ServerDeliveryState>()
     var serverSubmissionState by mutableStateOf(ServerSubmissionState()); private set
+    var serverSessionStopState by mutableStateOf(ServerSessionStopState()); private set
 
     fun updateBatchMode(enabled: Boolean) {
         batchMode = enabled
         if (!enabled) {
             batchItems.clear()
+            batchServerDelivery.clear()
             serverSubmissionState = ServerSubmissionState()
+            serverSessionStopState = ServerSessionStopState()
         }
         Logger.d("Scanner: batch mode ${if (enabled) "on" else "off"}")
     }
@@ -102,6 +117,7 @@ class MainViewModel @Inject constructor(
 
     fun removeBatchItem(code: DecodedCode) {
         if (batchItems.remove(code)) {
+            batchServerDelivery.remove(code.rawValue)
             Logger.d("Delete Batch item", "remaining=${batchItems.size}")
         }
     }
@@ -113,14 +129,32 @@ class MainViewModel @Inject constructor(
 
         Logger.d("Send Batch to server", "count=${codes.size}")
         serverSubmissionState = ServerSubmissionState(total = codes.size, isSending = true)
+        codes.forEach { batchServerDelivery[it.rawValue] = ServerDeliveryState.SENDING }
         viewModelScope.launch {
             codes.forEach { code ->
-                recordServerSubmission(scanUploadRepository.submitScan(code.rawValue))
+                recordServerSubmission(code.rawValue, scanUploadRepository.submitScan(code.rawValue))
             }
             Logger.d(
                 "Batch server send finished",
                 "success=${serverSubmissionState.succeeded} failed=${serverSubmissionState.failed}",
             )
+        }
+    }
+
+    /** Temporary manual control for ending the server session during testing. */
+    fun stopServerSession() {
+        if (serverSessionStopState.isStopping) return
+        serverSessionStopState = ServerSessionStopState(isStopping = true)
+        Logger.d("Dừng phiên server", "requested=true")
+        viewModelScope.launch {
+            val result = scanUploadRepository.endSession()
+            serverSessionStopState = ServerSessionStopState(
+                succeeded = result.succeeded,
+                status = result.status,
+            )
+            val detail = "success=${result.succeeded} status=${result.status}"
+            if (result.succeeded) Logger.d("Dừng phiên server hoàn tất", detail)
+            else Logger.e("Dừng phiên server thất bại", detail)
         }
     }
 
@@ -134,7 +168,8 @@ class MainViewModel @Inject constructor(
         if (batchMode) {
             if (batchItems.none { it.rawValue == code.rawValue }) {
                 batchItems.add(code)
-                if (settings.value.autoSubmitServer) submitScannedBarcode(code.rawValue)
+                batchServerDelivery[code.rawValue] = ServerDeliveryState.PENDING
+                if (settings.value.autoSubmitServer) submitScannedBarcode(code)
                 Logger.d("Scanner: batch add", "count=${batchItems.size}")
             }
         } else {
@@ -150,18 +185,24 @@ class MainViewModel @Inject constructor(
     }
 
     /** Sends one scan immediately when the explicit automatic server setting is enabled. */
-    private fun submitScannedBarcode(barcode: String) {
+    private fun submitScannedBarcode(code: DecodedCode) {
+        batchServerDelivery[code.rawValue] = ServerDeliveryState.SENDING
         serverSubmissionState = serverSubmissionState.copy(
             total = serverSubmissionState.total + 1,
             isSending = true,
         )
         Logger.d("Auto send scan to server", "queued=${serverSubmissionState.total}")
         viewModelScope.launch {
-            recordServerSubmission(scanUploadRepository.submitScan(barcode))
+            recordServerSubmission(code.rawValue, scanUploadRepository.submitScan(code.rawValue))
         }
     }
 
-    private fun recordServerSubmission(succeeded: Boolean) {
+    private fun recordServerSubmission(rawValue: String, succeeded: Boolean) {
+        batchServerDelivery[rawValue] = if (succeeded) {
+            ServerDeliveryState.SUCCEEDED
+        } else {
+            ServerDeliveryState.FAILED
+        }
         val updated = serverSubmissionState.copy(
             succeeded = serverSubmissionState.succeeded + if (succeeded) 1 else 0,
             failed = serverSubmissionState.failed + if (succeeded) 0 else 1,

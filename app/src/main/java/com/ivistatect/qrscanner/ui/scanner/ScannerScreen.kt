@@ -87,6 +87,7 @@ import com.ivistatect.qrscanner.data.SettingsRepository
 import com.ivistatect.qrscanner.scan.BarcodeAnalyzer
 import com.ivistatect.qrscanner.scan.ImageQrDecoder
 import com.ivistatect.qrscanner.ui.MainViewModel
+import com.ivistatect.qrscanner.ui.ServerDeliveryState
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
 import com.ivistatect.qrscanner.ui.common.fireResultAction
 import com.ivistatect.qrscanner.ui.common.findActivity
@@ -432,14 +433,40 @@ fun ScannerScreen(
                 }
 
                 if (mainVm.batchMode && mainVm.batchItems.isNotEmpty()) {
+                    val sentCount = mainVm.batchItems.count {
+                        mainVm.batchServerDelivery[it.rawValue] == ServerDeliveryState.SUCCEEDED
+                    }
+                    val failedCount = mainVm.batchItems.count {
+                        mainVm.batchServerDelivery[it.rawValue] == ServerDeliveryState.FAILED
+                    }
+                    val pendingCount = mainVm.batchItems.size - sentCount - failedCount
                     Card(onClick = {
                         Logger.d("Click Batch card @ Scanner", "count=${mainVm.batchItems.size}")
                         onOpenBatch()
                     }, modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            stringResource(R.string.scanner_batch_count, mainVm.batchItems.size),
-                            Modifier.padding(16.dp),
-                        )
+                        Column(Modifier.padding(16.dp)) {
+                            Text(stringResource(R.string.scanner_batch_count, mainVm.batchItems.size))
+                            Row(
+                                Modifier.padding(top = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                Text(
+                                    stringResource(R.string.scanner_batch_sent, sentCount),
+                                    color = BatchSuccessGreen,
+                                    style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                                )
+                                Text(
+                                    stringResource(R.string.scanner_batch_pending, pendingCount),
+                                    color = BatchPendingYellow,
+                                    style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                                )
+                                Text(
+                                    stringResource(R.string.scanner_batch_failed, failedCount),
+                                    color = BatchFailureRed,
+                                    style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -511,6 +538,10 @@ fun ScannerScreen(
         )
     }
 }
+
+private val BatchSuccessGreen = Color(0xFF2E7D32)
+private val BatchPendingYellow = Color(0xFFF9A825)
+private val BatchFailureRed = Color(0xFFB3261E)
 
 /** One numbered scan-guide step: a small circled index + the step text. */
 @Composable

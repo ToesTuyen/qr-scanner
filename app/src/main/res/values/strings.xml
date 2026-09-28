@@ -38,6 +38,9 @@
     <string name="scanner_flash_on">Turn on flash</string>
     <string name="scanner_flash_off">Turn off flash</string>
     <string name="scanner_batch_count">Batch: %1$d codes</string>
+    <string name="scanner_batch_sent">Sent: %1$d</string>
+    <string name="scanner_batch_pending">Pending: %1$d</string>
+    <string name="scanner_batch_failed">Failed: %1$d</string>
 
     <!-- Result -->
     <string name="result_title">Result</string>
@@ -161,6 +164,14 @@
     <string name="batch_auto_submit_server_active">Automatically sending scanned codes to server</string>
     <string name="batch_server_send_progress">Sending %1$d/%2$d</string>
     <string name="batch_server_send_summary">Sent: %1$d · Succeeded: %2$d · Failed: %3$d</string>
+    <string name="batch_stop_server_session">Stop server session</string>
+    <string name="batch_server_stopping">Stopping server session…</string>
+    <string name="batch_server_stop_success">Server session stopped: HTTP %1$d</string>
+    <string name="batch_server_stop_failed">Could not stop server session: HTTP %1$d</string>
+    <string name="batch_delivery_pending">Waiting to send</string>
+    <string name="batch_delivery_sending">Sending to server</string>
+    <string name="batch_delivery_succeeded">Sent successfully</string>
+    <string name="batch_delivery_failed">Sending failed</string>
 
     <!-- App-owned language selection -->
     <string name="language_system">System default</string>
