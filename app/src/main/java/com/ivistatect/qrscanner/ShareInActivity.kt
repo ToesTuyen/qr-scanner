@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentCompat
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
-import com.google.zxing.BarcodeFormat
 import com.ivistatect.qrscanner.domain.DecodedCode
 import com.ivistatect.qrscanner.domain.ResultAction
 import com.ivistatect.qrscanner.domain.ScanValueType
@@ -145,7 +144,10 @@ private fun ShareInScreen(intent: Intent?, onClose: () -> Unit) {
 private fun ShareInResult(code: DecodedCode, onClose: () -> Unit) {
     val context = LocalContext.current
     LaunchedEffect(code.rawValue) { Logger.d("Enter ShareInResult", "type=${code.valueType}") }
-    val preview = remember(code.rawValue) { QrGenerator.encode(code.rawValue, BarcodeFormat.QR_CODE, 600) }
+    val previewFormat = remember(code.formatName) { QrGenerator.formatFromName(code.formatName) }
+    val preview = remember(code.rawValue, previewFormat) {
+        previewFormat?.let { QrGenerator.encode(code.rawValue, it, 600) }
+    }
     val friendly = if (code.formatName == "QR_CODE") "QR Code" else code.formatName
     val subtitle = remember(code.formatName) {
         SimpleDateFormat("MMM d, yyyy hh:mm a", Locale.getDefault()).format(Date()) + ", $friendly"

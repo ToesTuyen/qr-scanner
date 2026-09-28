@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.google.zxing.BarcodeFormat
 import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.ResultAction
@@ -76,7 +77,10 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
 
     LaunchedEffect(Unit) { Logger.d("Enter ScanResult", "type=${code.valueType}") }
 
-    val previewBitmap = remember(code.rawValue) { QrGenerator.encode(code.rawValue, BarcodeFormat.QR_CODE, 600) }
+    val previewFormat = remember(code.formatName) { QrGenerator.formatFromName(code.formatName) }
+    val previewBitmap = remember(code.rawValue, previewFormat) {
+        previewFormat?.let { QrGenerator.encode(code.rawValue, it, 600) }
+    }
 
     Scaffold(
         topBar = {
@@ -169,13 +173,17 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                 }
             }
 
-            // Generated QR preview.
+            // Recreated in the same symbology as the scanned code: EAN/Code 128 stays a barcode.
             previewBitmap?.let {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Image(
                         it.asImageBitmap(),
-                        contentDescription = stringResource(R.string.cd_qr_preview),
-                        modifier = Modifier.size(220.dp).background(Color.White).padding(10.dp),
+                        contentDescription = null,
+                        modifier = if (previewFormat != null && QrGenerator.isTwoDimensional(previewFormat)) {
+                            Modifier.size(220.dp)
+                        } else {
+                            Modifier.width(300.dp).height(120.dp)
+                        }.background(Color.White).padding(10.dp),
                     )
                 }
             }

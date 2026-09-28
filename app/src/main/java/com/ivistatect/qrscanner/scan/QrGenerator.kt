@@ -13,6 +13,12 @@ object QrGenerator {
         BarcodeFormat.QR_CODE, BarcodeFormat.AZTEC, BarcodeFormat.DATA_MATRIX, BarcodeFormat.PDF_417,
     )
 
+    /** Converts ML Kit's persisted format name into ZXing's matching display format. */
+    fun formatFromName(formatName: String): BarcodeFormat? =
+        runCatching { BarcodeFormat.valueOf(formatName) }.getOrNull()
+
+    fun isTwoDimensional(format: BarcodeFormat): Boolean = format in TWO_D
+
     /** Encode [content] as [format]; returns null when the content is invalid for that symbology. */
     fun encode(content: String, format: BarcodeFormat, size: Int = 800): Bitmap? = runCatching {
         val height = if (format in TWO_D) size else (size / 3).coerceAtLeast(160)
