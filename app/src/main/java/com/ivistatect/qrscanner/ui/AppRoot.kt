@@ -2,48 +2,59 @@ package com.ivistatect.qrscanner.ui
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.vnnami.appkit.api.LanguageRoute
-import com.vnnami.appkit.api.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.ui.common.findActivity
+import com.ivistatect.qrscanner.ui.common.setLightStatusBarAppearance
 import com.ivistatect.qrscanner.ui.history.HistoryScreen
+import com.ivistatect.qrscanner.ui.language.LanguageScreen
 import com.ivistatect.qrscanner.ui.result.BatchResultScreen
 import com.ivistatect.qrscanner.ui.result.ScanResultScreen
 import com.ivistatect.qrscanner.ui.scanner.ScannerScreen
 import com.ivistatect.qrscanner.ui.settings.SettingsScreen
+import com.ivistatect.qrscanner.util.Logger
 
 object Routes {
     const val SCANNER = "scanner"
@@ -56,11 +67,9 @@ object Routes {
 
 private data class TabItem(val route: String, val labelRes: Int, @DrawableRes val icon: Int)
 
-// Real reference bottom-nav glyphs (ic_fig_nav_*). White-stroke vectors — tinted by the
-// NavigationBar's selected/unselected content colour.
 private val TABS = listOf(
-    TabItem(Routes.SCANNER, R.string.nav_scanner, R.drawable.ic_fig_nav_scanner),
     TabItem(Routes.HISTORY, R.string.nav_history, R.drawable.ic_fig_nav_history),
+    TabItem(Routes.SCANNER, R.string.nav_scanner, R.drawable.ic_fig_nav_scanner),
     TabItem(Routes.SETTINGS, R.string.nav_settings, R.drawable.ic_fig_nav_settings),
 )
 
@@ -75,6 +84,14 @@ fun AppRoot() {
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
     val showBottomBar = currentRoute in setOf(Routes.SCANNER, Routes.HISTORY, Routes.SETTINGS)
+
+    LaunchedEffect(currentRoute) {
+        currentRoute?.let { Logger.d("Enter screen", "route=$it") }
+    }
+
+    // Status bar remains visible. Match its icon colour to the surface behind it.
+    val lightStatusBar = currentRoute != Routes.SCANNER && MaterialTheme.colorScheme.background.luminance() > 0.5f
+    SideEffect { activity.setLightStatusBarAppearance(lightStatusBar) }
 
     var showExitSheet by remember { mutableStateOf(false) }
 
@@ -100,46 +117,11 @@ fun AppRoot() {
         goHome()
     }
 
-    Scaffold(
-        bottomBar = {
-            Column(Modifier.fillMaxWidth()) {
-                if (showBottomBar) {
-                    NavigationBar(
-                        windowInsets = NavigationBarDefaults.windowInsets,
-                    ) {
-                        TABS.forEach { tab ->
-                            NavigationBarItem(
-                                selected = currentRoute == tab.route,
-                                onClick = {
-                                    Logger.d("Click Tab @ ${tab.route}")
-                                    val navToTab = {
-                                        navController.navigate(tab.route) {
-                                            popUpTo(Routes.SCANNER) { saveState = true }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                    }
-                                    navToTab()
-                                },
-                                icon = {
-                                    Icon(
-                                        painterResource(tab.icon),
-                                        contentDescription = stringResource(tab.labelRes),
-                                        modifier = Modifier.size(24.dp),
-                                    )
-                                },
-                                label = { Text(stringResource(tab.labelRes)) },
-                            )
-                        }
-                    }
-                }
-            }
-        },
-    ) { padding ->
+    Box(Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
             startDestination = Routes.SCANNER,
-            modifier = Modifier.padding(padding),
+            modifier = Modifier.fillMaxSize(),
         ) {
             composable(Routes.SCANNER) {
                 ScannerScreen(
@@ -175,7 +157,7 @@ fun AppRoot() {
                 )
             }
             composable(Routes.LANGUAGE) {
-                LanguageRoute(
+                LanguageScreen(
                     onBack = { navController.popBackStack() },
                     onApplied = { tag ->
                         Logger.d("Language applied", "tag=$tag")
@@ -185,26 +167,111 @@ fun AppRoot() {
                 )
             }
         }
+
+        if (showBottomBar) {
+            Box(
+                Modifier.align(Alignment.BottomCenter).fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+            ) {
+                Row(
+                    Modifier.fillMaxWidth().height(68.dp)
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(28.dp)),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TABS.forEach { tab ->
+                        val selected = currentRoute == tab.route
+                        IconButton(
+                            onClick = {
+                                Logger.d("Click Tab @ ${tab.route}")
+                                navController.navigate(tab.route) {
+                                    popUpTo(Routes.SCANNER) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            modifier = Modifier.size(48.dp).background(
+                                if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                RoundedCornerShape(16.dp),
+                            ),
+                        ) {
+                            Icon(
+                                painterResource(tab.icon),
+                                contentDescription = stringResource(tab.labelRes),
+                                modifier = Modifier.size(22.dp),
+                                tint = if (selected) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     if (showExitSheet) {
-        ModalBottomSheet(onDismissRequest = { showExitSheet = false }) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                Logger.d("Dismiss Exit sheet @ Scanner")
+                showExitSheet = false
+            },
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp,
+            dragHandle = {
+                Box(
+                    Modifier.padding(top = 12.dp)
+                        .width(38.dp)
+                        .height(4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.28f),
+                            RoundedCornerShape(4.dp),
+                        ),
+                )
+            },
+        ) {
             Column(
-                Modifier.fillMaxWidth().padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text(stringResource(R.string.exit_title))
-                Button(
-                    onClick = {
-                        Logger.d("Click Exit @ Exit sheet")
-                        activity.finish()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.exit_confirm)) }
-                OutlinedButton(
-                    onClick = { showExitSheet = false },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.cancel)) }
+                Text(
+                    stringResource(R.string.exit_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    stringResource(R.string.exit_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            Logger.d("Click Cancel @ Exit sheet")
+                            showExitSheet = false
+                        },
+                        modifier = Modifier.weight(1f).height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                    ) { Text(stringResource(R.string.cancel)) }
+                    Button(
+                        onClick = {
+                            Logger.d("Click Exit @ Exit sheet")
+                            activity.finish()
+                        },
+                        modifier = Modifier.weight(1f).height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
+                    ) { Text(stringResource(R.string.exit_confirm)) }
+                }
             }
         }
     }

@@ -38,11 +38,15 @@
     <string name="scanner_flash_on">Turn on flash</string>
     <string name="scanner_flash_off">Turn off flash</string>
     <string name="scanner_batch_count">Batch: %1$d codes</string>
+    <string name="scanner_batch_sent">Sent: %1$d</string>
+    <string name="scanner_batch_pending">Pending: %1$d</string>
+    <string name="scanner_batch_failed">Failed: %1$d</string>
 
     <!-- Result -->
     <string name="result_title">Result</string>
     <string name="action_open">Open</string>
     <string name="action_web_search">Web Search</string>
+    <string name="action_product_details">Product details</string>
     <string name="action_call">Call</string>
     <string name="action_email">Send Email</string>
     <string name="action_sms">Send SMS</string>
@@ -135,14 +139,40 @@
     <string name="settings_application">Application</string>
     <string name="settings_search_engine">Search Engine</string>
     <string name="settings_camera">Camera</string>
+    <string name="settings_device_id">Device ID</string>
     <string name="settings_image_format">Image Format</string>
     <string name="settings_batch">Batch Scanning</string>
+    <string name="settings_auto_submit_server">Automatically send to server</string>
     <string name="settings_vibration">Vibration</string>
     <string name="settings_sound">Sound</string>
     <string name="settings_auto_copy">Auto Copy to Clipboard</string>
     <string name="settings_web_search">Auto Web Search</string>
     <string name="settings_save_history">Save History</string>
     <string name="settings_product_details">Show Product Details</string>
+    <string name="settings_check_update">Check for updates</string>
+    <string name="settings_update_current_version">Version %1$s</string>
+    <string name="settings_update_checking">Checking…</string>
+    <string name="settings_update_downloading">Downloading update…</string>
+    <string name="settings_update_install_prompt_opened">Installer opened</string>
+    <string name="settings_update_latest">Up to date</string>
+    <string name="settings_update_no_release">No release available</string>
+    <string name="settings_update_failed">Check failed</string>
+    <string name="settings_update_available_title">Update available</string>
+    <string name="settings_update_available_message">Version %1$s is available. Current version: %2$s.</string>
+    <string name="settings_update_download">Download and install</string>
+    <string name="settings_update_permission_title">Allow app updates</string>
+    <string name="settings_update_permission_message">Allow QR Scanner to install apps from this source, then check for updates again.</string>
+    <string name="settings_update_open_settings">Open Settings</string>
+    <string name="settings_update_latest_title">You are up to date</string>
+    <string name="settings_update_latest_message">Version %1$s is the latest release.</string>
+    <string name="settings_update_no_release_title">No update published</string>
+    <string name="settings_update_no_release_message">There is no GitHub release APK yet.</string>
+    <string name="settings_update_failed_title">Could not check for updates</string>
+    <string name="startup_update_checking">Checking version…</string>
+    <string name="startup_update_required_title">Update required</string>
+    <string name="startup_update_required_message">Version %1$s is required to continue using QR Scanner.</string>
+    <string name="startup_update_check_failed_title">Could not verify the version</string>
+    <string name="startup_update_retry">Try again</string>
     <string name="settings_about">About</string>
     <string name="settings_rate">Rate Us</string>
     <string name="rate_thanks">Thanks for your support!</string>
@@ -154,6 +184,27 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="feature_deferred">Coming soon</string>
+    <string name="batch_send_to_server">Send %1$d codes to server</string>
+    <string name="batch_auto_submit_server_active">Automatically sending scanned codes to server</string>
+    <string name="batch_server_send_progress">Sending %1$d/%2$d</string>
+    <string name="batch_server_send_summary">Sent: %1$d · Succeeded: %2$d · Failed: %3$d</string>
+    <string name="batch_stop_server_session">Stop server session</string>
+    <string name="batch_server_stopping">Stopping server session…</string>
+    <string name="batch_server_stop_success">Server session stopped: HTTP %1$d</string>
+    <string name="batch_server_stop_failed">Could not stop server session: HTTP %1$d</string>
+    <string name="batch_delivery_pending">Waiting to send</string>
+    <string name="batch_delivery_sending">Sending to server</string>
+    <string name="batch_delivery_succeeded">Sent successfully</string>
+    <string name="batch_delivery_failed">Sending failed</string>
+    <string name="batch_retry_failed">Retry</string>
+
+    <!-- App-owned language selection -->
+    <string name="language_system">System default</string>
+    <string name="language_english">English</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
+    <string name="language_korean">한국어</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_chinese_simplified">简体中文</string>
 
     <!-- Prox paywall -->
     <string name="prox_title">Scan Without Limits</string>
@@ -168,6 +219,7 @@
 
     <!-- Exit -->
     <string name="exit_title">Exit app?</string>
+    <string name="exit_message">Are you sure you want to exit QR Scanner?</string>
     <string name="exit_confirm">Exit</string>
 
     <!-- Share App text -->

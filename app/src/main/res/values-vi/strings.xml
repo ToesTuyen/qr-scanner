@@ -35,11 +35,15 @@
     <string name="scanner_flash_on">Bật đèn flash</string>
     <string name="scanner_flash_off">Tắt đèn flash</string>
     <string name="scanner_batch_count">Hàng loạt: %1$d mã</string>
+    <string name="scanner_batch_sent">Đã gửi: %1$d</string>
+    <string name="scanner_batch_pending">Chưa gửi: %1$d</string>
+    <string name="scanner_batch_failed">Lỗi: %1$d</string>
 
     <!-- Result -->
     <string name="result_title">Kết quả</string>
     <string name="action_open">Mở</string>
     <string name="action_web_search">Tìm kiếm web</string>
+    <string name="action_product_details">Thông tin sản phẩm</string>
     <string name="action_call">Gọi điện</string>
     <string name="action_email">Gửi email</string>
     <string name="action_sms">Gửi SMS</string>
@@ -131,14 +135,40 @@
     <string name="settings_application">Ứng dụng</string>
     <string name="settings_search_engine">Công cụ tìm kiếm</string>
     <string name="settings_camera">Máy ảnh</string>
+    <string name="settings_device_id">Mã thiết bị</string>
     <string name="settings_image_format">Định dạng hình ảnh</string>
     <string name="settings_batch">Quét hàng loạt</string>
+    <string name="settings_auto_submit_server">Tự động gửi đến server</string>
     <string name="settings_vibration">Rung</string>
     <string name="settings_sound">Âm thanh</string>
     <string name="settings_auto_copy">Tự động sao chép vào clipboard</string>
     <string name="settings_web_search">Tự động tìm kiếm trên web</string>
     <string name="settings_save_history">Lưu lịch sử</string>
     <string name="settings_product_details">Hiển thị chi tiết sản phẩm</string>
+    <string name="settings_check_update">Cập nhật phiên bản</string>
+    <string name="settings_update_current_version">Phiên bản %1$s</string>
+    <string name="settings_update_checking">Đang kiểm tra…</string>
+    <string name="settings_update_downloading">Đang tải bản cập nhật…</string>
+    <string name="settings_update_install_prompt_opened">Đã mở trình cài đặt</string>
+    <string name="settings_update_latest">Đã là bản mới nhất</string>
+    <string name="settings_update_no_release">Chưa có bản phát hành</string>
+    <string name="settings_update_failed">Kiểm tra thất bại</string>
+    <string name="settings_update_available_title">Có phiên bản mới</string>
+    <string name="settings_update_available_message">Có phiên bản %1$s. Phiên bản hiện tại: %2$s.</string>
+    <string name="settings_update_download">Tải và cài đặt</string>
+    <string name="settings_update_permission_title">Cho phép cập nhật ứng dụng</string>
+    <string name="settings_update_permission_message">Cho phép QR Scanner cài ứng dụng từ nguồn này, sau đó kiểm tra cập nhật lại.</string>
+    <string name="settings_update_open_settings">Mở cài đặt</string>
+    <string name="settings_update_latest_title">Bạn đang dùng bản mới nhất</string>
+    <string name="settings_update_latest_message">Phiên bản %1$s là bản phát hành mới nhất.</string>
+    <string name="settings_update_no_release_title">Chưa có bản cập nhật</string>
+    <string name="settings_update_no_release_message">GitHub chưa có APK bản phát hành.</string>
+    <string name="settings_update_failed_title">Không thể kiểm tra cập nhật</string>
+    <string name="startup_update_checking">Đang kiểm tra phiên bản…</string>
+    <string name="startup_update_required_title">Cần cập nhật ứng dụng</string>
+    <string name="startup_update_required_message">Cần cài phiên bản %1$s để tiếp tục dùng QR Scanner.</string>
+    <string name="startup_update_check_failed_title">Không thể xác minh phiên bản</string>
+    <string name="startup_update_retry">Thử lại</string>
     <string name="settings_about">Giới thiệu</string>
     <string name="settings_rate">Đánh giá chúng tôi</string>
     <string name="rate_thanks">Cảm ơn bạn đã ủng hộ!</string>
@@ -150,6 +180,27 @@
     <string name="theme_light">Ánh sáng</string>
     <string name="theme_dark">Tối</string>
     <string name="feature_deferred">Tính năng đang phát triển</string>
+    <string name="batch_send_to_server">Gửi %1$d mã đến server</string>
+    <string name="batch_auto_submit_server_active">Tự động gửi mã đã quét đến server</string>
+    <string name="batch_server_send_progress">Đang gửi %1$d/%2$d</string>
+    <string name="batch_server_send_summary">Đã gửi: %1$d · Thành công: %2$d · Không thành công: %3$d</string>
+    <string name="batch_stop_server_session">Dừng phiên server</string>
+    <string name="batch_server_stopping">Đang dừng phiên server…</string>
+    <string name="batch_server_stop_success">Đã dừng phiên server: HTTP %1$d</string>
+    <string name="batch_server_stop_failed">Không thể dừng phiên server: HTTP %1$d</string>
+    <string name="batch_delivery_pending">Chờ gửi</string>
+    <string name="batch_delivery_sending">Đang gửi đến server</string>
+    <string name="batch_delivery_succeeded">Gửi thành công</string>
+    <string name="batch_delivery_failed">Gửi thất bại</string>
+    <string name="batch_retry_failed">Gửi lại</string>
+
+    <!-- App-owned language selection -->
+    <string name="language_system">Mặc định hệ thống</string>
+    <string name="language_english">English</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
+    <string name="language_korean">한국어</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_chinese_simplified">简体中文</string>
 
     <!-- Prox paywall -->
     <string name="prox_title">Quét không giới hạn</string>
@@ -164,7 +215,8 @@
 
     <!-- Exit -->
     <string name="exit_title">Thoát ứng dụng?</string>
-    <string name="exit_confirm">Exit</string>
+    <string name="exit_message">Bạn có muốn thoát QR Scanner không?</string>
+    <string name="exit_confirm">Thoát</string>
 
     <!-- Share App text -->
     <string name="share_app_text">Hãy xem ứng dụng QR Scanner này!</string>

@@ -47,7 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.CreateCatalog
 import com.ivistatect.qrscanner.domain.FormKind
@@ -159,7 +159,10 @@ fun CreateFormScreen(
                             )
                             if (primary.isNotEmpty()) {
                                 IconButton(
-                                    onClick = { primary = "" },
+                                    onClick = {
+                                        Logger.d("Click Clear input @ CreateForm", "id=$tileId")
+                                        primary = ""
+                                    },
                                     modifier = Modifier.align(Alignment.TopEnd).padding(4.dp),
                                 ) {
                                     Icon(
@@ -188,6 +191,7 @@ fun CreateFormScreen(
                             listOf("https://", "http://", "www.", ".com").forEach { chip ->
                                 SuggestionChip(
                                     onClick = {
+                                        Logger.d("Click URL suggestion @ CreateForm", "value=$chip")
                                         primary = when (chip) {
                                             "https://", "http://" -> chip
                                             else -> (primary + chip).take(MAX_LEN)

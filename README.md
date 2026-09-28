@@ -1,6 +1,7 @@
 # QR Scanner
 
 Ứng dụng quét QR và mã vạch cho Android, xây dựng bằng Kotlin và Jetpack Compose.
+Đây là dự án Gradle độc lập; không phụ thuộc `base-application-wrapper`.
 
 ## Chức năng
 

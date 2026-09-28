@@ -49,10 +49,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentCompat
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
-import com.google.zxing.BarcodeFormat
-import com.vnnami.appkit.api.AppKit
-import com.vnnami.appkit.api.Logger
 import com.ivistatect.qrscanner.domain.DecodedCode
 import com.ivistatect.qrscanner.domain.ResultAction
 import com.ivistatect.qrscanner.domain.ScanValueType
@@ -62,7 +60,10 @@ import com.ivistatect.qrscanner.scan.QrGenerator
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
 import com.ivistatect.qrscanner.ui.common.fireResultAction
 import com.ivistatect.qrscanner.ui.common.shareText
+import com.ivistatect.qrscanner.ui.common.hideSystemNavigationBar
+import com.ivistatect.qrscanner.ui.language.AppLanguage
 import com.ivistatect.qrscanner.ui.theme.QrScannerTheme
+import com.ivistatect.qrscanner.util.Logger
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -75,14 +76,20 @@ import java.util.Locale
 class ShareInActivity : FragmentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        val language = AppKit.language
-        super.attachBaseContext(language.wrapContext(newBase, language.currentTag(newBase)))
+        super.attachBaseContext(AppLanguage.wrapContext(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        hideSystemNavigationBar()
         Logger.d("Enter ShareInActivity", "action=${intent?.action}")
         setContent { QrScannerTheme { ShareInScreen(intent) { finish() } } }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemNavigationBar()
     }
 }
 
@@ -99,6 +106,7 @@ private fun ShareInScreen(intent: Intent?, onClose: () -> Unit) {
     var state by remember { mutableStateOf<ShareInState>(ShareInState.Loading) }
 
     LaunchedEffect(Unit) {
+        Logger.d("Enter ShareIn")
         val text = intent?.getStringExtra(Intent.EXTRA_TEXT)
         val uri: Uri? = IntentCompat.getParcelableExtra(intent ?: Intent(), Intent.EXTRA_STREAM, Uri::class.java)
             ?: intent?.data
@@ -118,7 +126,10 @@ private fun ShareInScreen(intent: Intent?, onClose: () -> Unit) {
         ShareInState.Error -> Box(Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(stringResource(R.string.error_detecting))
-                OutlinedButton(onClick = onClose, modifier = Modifier.padding(top = 16.dp)) {
+                OutlinedButton(onClick = {
+                    Logger.d("Click Close @ ShareIn error")
+                    onClose()
+                }, modifier = Modifier.padding(top = 16.dp)) {
                     Text(stringResource(R.string.cancel))
                 }
             }
@@ -132,7 +143,13 @@ private fun ShareInScreen(intent: Intent?, onClose: () -> Unit) {
 @Composable
 private fun ShareInResult(code: DecodedCode, onClose: () -> Unit) {
     val context = LocalContext.current
-    val preview = remember(code.rawValue) { QrGenerator.encode(code.rawValue, BarcodeFormat.QR_CODE, 600) }
+    LaunchedEffect(code.rawValue) { Logger.d("Enter ShareInResult", "type=${code.valueType}") }
+    val previewFormat = remember(code.formatName) { QrGenerator.formatFromName(code.formatName) }
+    val preview = remember(code.rawValue, previewFormat) {
+        previewFormat
+            ?.takeIf(QrGenerator::isTwoDimensional)
+            ?.let { QrGenerator.encode(code.rawValue, it, 600) }
+    }
     val friendly = if (code.formatName == "QR_CODE") "QR Code" else code.formatName
     val subtitle = remember(code.formatName) {
         SimpleDateFormat("MMM d, yyyy hh:mm a", Locale.getDefault()).format(Date()) + ", $friendly"
@@ -214,8 +231,8 @@ private fun ShareInResult(code: DecodedCode, onClose: () -> Unit) {
 }
 
 private fun ResultAction.shareInGlyph(): Int = when (this) {
-    ResultAction.OPEN -> R.drawable.ic_open
-    ResultAction.WEB_SEARCH -> R.drawable.ic_globe
+    ResultAction.OPEN, ResultAction.PRODUCT_DETAILS -> R.drawable.ic_result_open
+    ResultAction.WEB_SEARCH -> R.drawable.ic_result_search
     ResultAction.CALL -> R.drawable.ic_dialer
     ResultAction.SMS -> R.drawable.ic_sms
     ResultAction.EMAIL -> R.drawable.ic_email
@@ -229,6 +246,7 @@ private fun ResultAction.shareInGlyph(): Int = when (this) {
 private fun ResultAction.shareInLabel(): Int = when (this) {
     ResultAction.OPEN -> R.string.action_open
     ResultAction.WEB_SEARCH -> R.string.action_web_search
+    ResultAction.PRODUCT_DETAILS -> R.string.action_product_details
     ResultAction.CALL -> R.string.action_call
     ResultAction.SMS -> R.string.action_sms
     ResultAction.EMAIL -> R.string.action_email

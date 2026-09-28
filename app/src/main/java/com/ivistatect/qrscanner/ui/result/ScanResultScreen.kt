@@ -7,8 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,12 +43,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.google.zxing.BarcodeFormat
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.ResultAction
-import com.ivistatect.qrscanner.domain.ScanValueType
-import com.ivistatect.qrscanner.domain.tileGlyph
 import com.ivistatect.qrscanner.scan.QrGenerator
 import com.ivistatect.qrscanner.ui.MainViewModel
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
@@ -59,12 +54,11 @@ import com.ivistatect.qrscanner.ui.common.printBitmap
 import com.ivistatect.qrscanner.ui.common.shareText
 import com.ivistatect.qrscanner.ui.common.shareTextAs
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
     val context = LocalContext.current
     val code = mainVm.currentScan
-    val favorite = mainVm.currentScanFavorite
     val settings by mainVm.settings.collectAsState()
     var showMore by remember { mutableStateOf(false) }
 
@@ -76,23 +70,42 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
 
     LaunchedEffect(Unit) { Logger.d("Enter ScanResult", "type=${code.valueType}") }
 
-    val previewBitmap = remember(code.rawValue) { QrGenerator.encode(code.rawValue, BarcodeFormat.QR_CODE, 600) }
+    val previewFormat = remember(code.formatName) { QrGenerator.formatFromName(code.formatName) }
+    val previewBitmap = remember(code.rawValue, previewFormat) {
+        previewFormat
+            ?.takeIf(QrGenerator::isTwoDimensional)
+            ?.let { QrGenerator.encode(code.rawValue, it, 600) }
+    }
+    val resultActions = code.valueType.actions(settings.showProduct, code.formatName)
+    val executeAction: (ResultAction) -> Unit = { action ->
+        Logger.d("Click ${action.name} @ ScanResult", "raw=${code.rawValue.take(64)}")
+        when (action) {
+            ResultAction.COPY -> {
+                context.copyToClipboard(code.rawValue)
+                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+            }
+            ResultAction.SHARE -> context.shareText(code.rawValue)
+            else -> context.fireResultAction(action, code.rawValue, settings.searchEngine)
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("${friendlyFormat(code.formatName)} (${code.valueType.name})") },
+                title = { Text(stringResource(R.string.result_title)) },
                 navigationIcon = {
                     IconButton(onClick = { Logger.d("Click Back @ ScanResult"); onBack() }) {
                         Icon(painterResource(R.drawable.ic_back), stringResource(R.string.cd_back), Modifier.size(24.dp))
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        // Print → Android system print spooler (reference parity, external boundary).
-                        Logger.d("Click Print @ ScanResult")
-                        previewBitmap?.let { context.printBitmap(context.getString(R.string.print_job), it) }
-                    }) { Icon(painterResource(R.drawable.ic_printer), stringResource(R.string.cd_print), Modifier.size(24.dp)) }
+                    previewBitmap?.let { bitmap ->
+                        IconButton(onClick = {
+                            // Print → Android system print spooler (reference parity, external boundary).
+                            Logger.d("Click Print @ ScanResult")
+                            context.printBitmap(context.getString(R.string.print_job), bitmap)
+                        }) { Icon(painterResource(R.drawable.ic_printer), stringResource(R.string.cd_print), Modifier.size(24.dp)) }
+                    }
                     IconButton(onClick = { Logger.d("Click More @ ScanResult"); showMore = true }) {
                         Icon(painterResource(R.drawable.ic_three_dot), stringResource(R.string.cd_more), Modifier.size(24.dp))
                     }
@@ -104,72 +117,20 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
             Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Header row (flat, no card — matches the reference scan result): glyph + type + favorite.
-            Row(
-                Modifier.fillMaxWidth().padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            Text(stringResource(R.string.created_content), style = MaterialTheme.typography.titleSmall)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
             ) {
-                Box(
-                    Modifier.size(48.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Image(
-                        painterResource(code.valueType.tileGlyph()),
-                        contentDescription = null,
-                        modifier = Modifier.size(26.dp),
-                    )
-                }
-                Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                    Text(code.valueType.name, style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        resultSubtitle(code.formatName),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                IconButton(onClick = {
-                    Logger.d("Click Favorite @ ScanResult", "next=${!favorite}")
-                    mainVm.toggleCurrentScanFavorite()
-                }) {
-                    Image(
-                        painterResource(if (favorite) R.drawable.ic_fav else R.drawable.ic_un_fav),
-                        contentDescription = stringResource(R.string.action_favorite),
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            }
-            androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
-
-            // Decoded content (blue hyperlink styling for URLs).
-            Text(
-                code.display,
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (code.valueType == ScanValueType.URL) Color(0xFF1877F2) else MaterialTheme.colorScheme.onSurface,
-            )
-
-            // Type-specific action grid (rvQrOption) — icon + label, real reference glyphs.
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                code.valueType.actions().forEach { action ->
-                    ActionItem(action) {
-                        Logger.d("Click ${action.name} @ ScanResult", "raw=${code.rawValue.take(64)}")
-                        when (action) {
-                            ResultAction.COPY -> {
-                                context.copyToClipboard(code.rawValue)
-                                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
-                            }
-                            ResultAction.SHARE -> context.shareText(code.rawValue)
-                            else -> context.fireResultAction(action, code.rawValue, settings.searchEngine)
-                        }
-                    }
-                }
+                Text(
+                    code.display,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color(0xFF1877F2),
+                    modifier = Modifier.padding(16.dp),
+                )
             }
 
-            // Generated QR preview.
+            // QR-family previews are recreated locally. Linear barcodes retain their decoded text only.
             previewBitmap?.let {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Image(
@@ -179,11 +140,21 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                     )
                 }
             }
+
+            Row(Modifier.fillMaxWidth()) {
+                resultActions.forEach { action ->
+                    ActionItem(action, Modifier.weight(1f)) { executeAction(action) }
+                }
+            }
+
         }
     }
 
     if (showMore) {
-        ModalBottomSheet(onDismissRequest = { showMore = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss More sheet @ ScanResult")
+            showMore = false
+        }) {
             Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
                 // Reference share/delete sheet: Share · CSV file · Text file · Delete.
                 SheetItem(R.drawable.ic_share, stringResource(R.string.action_share)) {
@@ -218,17 +189,22 @@ private fun SheetItem(@DrawableRes icon: Int, label: String, onClick: () -> Unit
 }
 
 @Composable
-private fun ActionItem(action: ResultAction, onClick: () -> Unit) {
+private fun ActionItem(action: ResultAction, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(
-        Modifier.clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 8.dp),
+        modifier.clickable(onClick = onClick).padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Icon(
-            painterResource(action.glyph()),
-            contentDescription = null,
-            modifier = Modifier.size(26.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Box(
+            Modifier.size(48.dp).background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(24.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painterResource(action.glyph()),
+                contentDescription = null,
+                modifier = Modifier.size(26.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Text(
             stringResource(action.labelRes()),
             style = MaterialTheme.typography.labelMedium,
@@ -240,8 +216,8 @@ private fun ActionItem(action: ResultAction, onClick: () -> Unit) {
 
 @DrawableRes
 private fun ResultAction.glyph(): Int = when (this) {
-    ResultAction.OPEN -> R.drawable.ic_open
-    ResultAction.WEB_SEARCH -> R.drawable.ic_globe
+    ResultAction.OPEN, ResultAction.PRODUCT_DETAILS -> R.drawable.ic_result_open
+    ResultAction.WEB_SEARCH -> R.drawable.ic_result_search
     ResultAction.CALL -> R.drawable.ic_dialer
     ResultAction.SMS -> R.drawable.ic_sms
     ResultAction.EMAIL -> R.drawable.ic_email
@@ -252,21 +228,11 @@ private fun ResultAction.glyph(): Int = when (this) {
     ResultAction.SHARE -> R.drawable.ic_share
 }
 
-/** Friendly format name: QR_CODE → "QR Code", CODE_128 → "Code 128". */
-private fun friendlyFormat(formatName: String): String =
-    if (formatName == "QR_CODE") "QR Code"
-    else formatName.split("_").joinToString(" ") { it.lowercase().replaceFirstChar { c -> c.uppercase() } }
-
-/** "MMM d, yyyy hh:mm a, <friendly format>" — matches the reference result subtitle shape. */
-private fun resultSubtitle(formatName: String): String {
-    val date = java.text.SimpleDateFormat("MMM d, yyyy hh:mm a", java.util.Locale.getDefault()).format(java.util.Date())
-    return "$date, ${friendlyFormat(formatName)}"
-}
-
 @StringRes
 private fun ResultAction.labelRes(): Int = when (this) {
     ResultAction.OPEN -> R.string.action_open
     ResultAction.WEB_SEARCH -> R.string.action_web_search
+    ResultAction.PRODUCT_DETAILS -> R.string.action_product_details
     ResultAction.CALL -> R.string.action_call
     ResultAction.SMS -> R.string.action_sms
     ResultAction.EMAIL -> R.string.action_email

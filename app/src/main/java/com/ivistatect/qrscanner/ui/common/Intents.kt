@@ -109,6 +109,9 @@ fun Context.fireResultAction(action: ResultAction, raw: String, searchEngine: In
                 openUrl(url)
             }
         }
+        ResultAction.PRODUCT_DETAILS -> {
+            openUrl("https://www.google.com/search?tbm=shop&q=" + Uri.encode(raw))
+        }
         ResultAction.CALL -> safeStart(Intent(Intent.ACTION_DIAL, "tel:$stripped".toUri()))
         ResultAction.SMS -> safeStart(Intent(Intent.ACTION_SENDTO, "smsto:$stripped".toUri()))
         ResultAction.EMAIL -> safeStart(Intent(Intent.ACTION_SENDTO, "mailto:$stripped".toUri()))

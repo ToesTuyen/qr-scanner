@@ -9,11 +9,13 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -26,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -45,7 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.data.HistoryEntity
 import com.ivistatect.qrscanner.domain.ScanValueType
@@ -87,48 +90,56 @@ fun HistoryScreen(
         .filter { query.isBlank() || it.displayContent.contains(query, ignoreCase = true) }
         .filter { it.matches(dateFilter) }
 
-    Column(Modifier.fillMaxSize()) {
-        // Header: title + search / filter / more.
-        Row(
-            Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 12.dp, bottom = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                stringResource(R.string.nav_history),
-                Modifier.weight(1f),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-            IconButton(onClick = { Logger.d("Click Search @ History", "open=${!searchOpen}"); searchOpen = !searchOpen }) {
-                Icon(painterResource(R.drawable.ic_search_icon), stringResource(R.string.cd_search), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            IconButton(onClick = {
-                Logger.d("Click Filter @ History")
-                showFilterSheet = true
-            }) { Icon(painterResource(R.drawable.iv_filter), stringResource(R.string.cd_filter), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
-            IconButton(onClick = {
-                Logger.d("Click More @ History")
-                showMoreSheet = true
-            }) { Icon(painterResource(R.drawable.ic_three_dot), stringResource(R.string.cd_more), Modifier.size(24.dp)) }
-        }
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+    ) {
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            Column(Modifier.statusBarsPadding()) {
+                // Header: title + search / filter / more.
+                Row(
+                    Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        stringResource(R.string.nav_history),
+                        Modifier.weight(1f),
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    IconButton(onClick = { Logger.d("Click Search @ History", "open=${!searchOpen}"); searchOpen = !searchOpen }) {
+                        Icon(painterResource(R.drawable.ic_search_icon), stringResource(R.string.cd_search), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    IconButton(onClick = {
+                        Logger.d("Click Filter @ History")
+                        showFilterSheet = true
+                    }) { Icon(painterResource(R.drawable.iv_filter), stringResource(R.string.cd_filter), Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    IconButton(onClick = {
+                        Logger.d("Click More @ History")
+                        showMoreSheet = true
+                    }) { Icon(painterResource(R.drawable.ic_three_dot), stringResource(R.string.cd_more), Modifier.size(24.dp)) }
+                }
 
-        TabRow(selectedTabIndex = tab) {
-            tabs.forEachIndexed { i, title ->
-                Tab(
-                    selected = tab == i,
-                    onClick = { Logger.d("Click History tab @ History", "tab=$title"); tab = i },
-                    text = { Text(title) },
-                )
-            }
-        }
+                TabRow(selectedTabIndex = tab) {
+                    tabs.forEachIndexed { i, title ->
+                        Tab(
+                            selected = tab == i,
+                            onClick = { Logger.d("Click History tab @ History", "tab=$title"); tab = i },
+                            text = { Text(title) },
+                        )
+                    }
+                }
 
-        if (searchOpen) {
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                label = { Text(stringResource(R.string.history_search_hint)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
-            )
+                if (searchOpen) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text(stringResource(R.string.history_search_hint)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    )
+                }
+            }
         }
 
         if (list.isEmpty()) {
@@ -153,7 +164,10 @@ fun HistoryScreen(
                 }
             }
         } else {
-            LazyColumn(Modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                contentPadding = PaddingValues(bottom = 104.dp),
+            ) {
                 item(key = "today_header") {
                     Text(
                         stringResource(R.string.history_group_today),
@@ -177,7 +191,10 @@ fun HistoryScreen(
 
     pendingDelete?.let { item ->
         AlertDialog(
-            onDismissRequest = { pendingDelete = null },
+            onDismissRequest = {
+                Logger.d("Dismiss Delete item dialog @ History")
+                pendingDelete = null
+            },
             title = { Text(stringResource(R.string.history_delete_title)) },
             text = { Text(item.displayContent) },
             confirmButton = {
@@ -188,13 +205,19 @@ fun HistoryScreen(
                 }) { Text(stringResource(R.string.action_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { pendingDelete = null }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    Logger.d("Click Cancel @ Delete item dialog")
+                    pendingDelete = null
+                }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
 
     if (showFilterSheet) {
-        ModalBottomSheet(onDismissRequest = { showFilterSheet = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss Filter sheet @ History")
+            showFilterSheet = false
+        }) {
             Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
                 Text(
                     stringResource(R.string.history_filter_title),
@@ -202,18 +225,22 @@ fun HistoryScreen(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
                 )
                 HistoryFilterOption(stringResource(R.string.history_filter_all), dateFilter == HistoryDateFilter.ALL) {
+                    Logger.d("Select Filter @ History", "value=all")
                     dateFilter = HistoryDateFilter.ALL
                     showFilterSheet = false
                 }
                 HistoryFilterOption(stringResource(R.string.history_filter_today), dateFilter == HistoryDateFilter.TODAY) {
+                    Logger.d("Select Filter @ History", "value=today")
                     dateFilter = HistoryDateFilter.TODAY
                     showFilterSheet = false
                 }
                 HistoryFilterOption(stringResource(R.string.history_filter_last_7_days), dateFilter == HistoryDateFilter.LAST_7_DAYS) {
+                    Logger.d("Select Filter @ History", "value=last_7_days")
                     dateFilter = HistoryDateFilter.LAST_7_DAYS
                     showFilterSheet = false
                 }
                 HistoryFilterOption(stringResource(R.string.history_filter_last_30_days), dateFilter == HistoryDateFilter.LAST_30_DAYS) {
+                    Logger.d("Select Filter @ History", "value=last_30_days")
                     dateFilter = HistoryDateFilter.LAST_30_DAYS
                     showFilterSheet = false
                 }
@@ -222,11 +249,15 @@ fun HistoryScreen(
     }
 
     if (showMoreSheet) {
-        ModalBottomSheet(onDismissRequest = { showMoreSheet = false }) {
+        ModalBottomSheet(onDismissRequest = {
+            Logger.d("Dismiss More sheet @ History")
+            showMoreSheet = false
+        }) {
             Column(Modifier.fillMaxWidth().padding(24.dp)) {
                 Text(stringResource(R.string.history_more_title), style = MaterialTheme.typography.titleLarge)
                 TextButton(
                     onClick = {
+                        Logger.d("Click Delete visible @ History", "count=${list.size}")
                         showMoreSheet = false
                         if (list.isNotEmpty()) confirmDeleteVisible = true
                     },
@@ -238,7 +269,10 @@ fun HistoryScreen(
 
     if (confirmDeleteVisible) {
         AlertDialog(
-            onDismissRequest = { confirmDeleteVisible = false },
+            onDismissRequest = {
+                Logger.d("Dismiss Delete visible dialog @ History")
+                confirmDeleteVisible = false
+            },
             title = { Text(stringResource(R.string.history_delete_visible)) },
             text = { Text(stringResource(R.string.history_delete_visible_message, list.size)) },
             confirmButton = {
@@ -249,7 +283,10 @@ fun HistoryScreen(
                 }) { Text(stringResource(R.string.action_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmDeleteVisible = false }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    Logger.d("Click Cancel @ Delete visible dialog")
+                    confirmDeleteVisible = false
+                }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
@@ -275,6 +312,7 @@ private fun HistoryEntity.matches(filter: HistoryDateFilter): Boolean {
     return createdAt >= start
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HistoryFilterOption(label: String, selected: Boolean, onClick: () -> Unit) {
     Row(
