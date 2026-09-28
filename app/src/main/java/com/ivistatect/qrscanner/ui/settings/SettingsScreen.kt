@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,8 +40,6 @@ import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.data.ScanDeviceId
 import com.ivistatect.qrscanner.data.SettingsRepository
 import com.ivistatect.qrscanner.ui.common.openUrl
-import com.ivistatect.qrscanner.ui.common.openStoreListing
-import com.ivistatect.qrscanner.ui.common.shareText
 import com.ivistatect.qrscanner.ui.theme.applyThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +55,6 @@ fun SettingsScreen(
     var showThemeSheet by remember { mutableStateOf(false) }
     var showSearchEngine by remember { mutableStateOf(false) }
     var showCameraFacing by remember { mutableStateOf(false) }
-    var showRateSheet by remember { mutableStateOf(false) }
     val searchEngines = listOf(stringResource(R.string.settings_value_default), "Google", "Bing", "Yahoo", "Yandex", "DuckDuckGo", "Qwant")
     val searchEngine = s.searchEngine.coerceIn(searchEngines.indices)
     val cameraOptions = listOf(
@@ -116,13 +110,6 @@ fun SettingsScreen(
         ToggleRow(R.drawable.ic_set_product, stringResource(R.string.settings_product_details), s.showProduct) { vm.toggleLogged(SettingsRepository.Key.SHOW_PRODUCT, it, "ShowProduct") }
 
         SectionLabel(stringResource(R.string.settings_about))
-        NavRow(R.drawable.ic_set_rate, stringResource(R.string.settings_rate)) {
-            Logger.d("Click Rate Us @ Settings"); showRateSheet = true
-        }
-        NavRow(R.drawable.ic_set_share, stringResource(R.string.settings_share_app)) {
-            Logger.d("Click Share App @ Settings")
-            context.shareText(context.getString(R.string.share_app_text))
-        }
         NavRow(R.drawable.ic_set_privacy, stringResource(R.string.settings_privacy)) {
             Logger.d("Click Privacy @ Settings")
             context.openUrl(context.getString(R.string.url_privacy))
@@ -179,18 +166,6 @@ fun SettingsScreen(
             },
         )
     }
-    if (showRateSheet) {
-        ModalBottomSheet(onDismissRequest = {
-            Logger.d("Dismiss Rate sheet @ Settings")
-            showRateSheet = false
-        }) {
-            RateSheetContent {
-                Logger.d("Click Rate on Google Play @ Rate sheet")
-                context.openStoreListing()
-                showRateSheet = false
-            }
-        }
-    }
 }
 
 @Composable
@@ -219,30 +194,6 @@ private fun ChoiceDialog(title: String, options: List<String>, selected: Int, on
             }) { Text(stringResource(R.string.cancel)) }
         },
     )
-}
-
-@Composable
-private fun RateSheetContent(onRate: () -> Unit) {
-    Column(
-        Modifier.fillMaxWidth().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(stringResource(R.string.rate_thanks), style = MaterialTheme.typography.titleLarge)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            repeat(5) {
-                Icon(
-                    Icons.Filled.Star,
-                    contentDescription = null,
-                    tint = Color(0xFFFFC107),
-                    modifier = Modifier.size(40.dp),
-                )
-            }
-        }
-        Button(onClick = onRate, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.rate_cta))
-        }
-    }
 }
 
 private fun SettingsViewModel.toggleLogged(key: SettingsRepository.Key, value: Boolean, name: String) {

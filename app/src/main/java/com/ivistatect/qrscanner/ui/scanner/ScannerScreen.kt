@@ -64,6 +64,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -129,7 +130,7 @@ fun ScannerScreen(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 3_000, easing = LinearEasing),
+            animation = tween(durationMillis = 1_500, easing = LinearEasing),
             repeatMode = RepeatMode.Restart,
         ),
         label = "scannerSweepPhase",
@@ -270,15 +271,33 @@ fun ScannerScreen(
                     val c = Color.White
                     val len = size.minDimension * 0.16f
                     val w = 6f
+                    val cornerRadius = size.minDimension * 0.035f
+                    val borderStroke = Stroke(width = w, cap = StrokeCap.Round)
                     // Four white corner brackets preserve the camera image inside the recognition area.
-                    drawLine(c, Offset(0f, 0f), Offset(len, 0f), w, StrokeCap.Round)
-                    drawLine(c, Offset(0f, 0f), Offset(0f, len), w, StrokeCap.Round)
-                    drawLine(c, Offset(size.width, 0f), Offset(size.width - len, 0f), w, StrokeCap.Round)
-                    drawLine(c, Offset(size.width, 0f), Offset(size.width, len), w, StrokeCap.Round)
-                    drawLine(c, Offset(0f, size.height), Offset(len, size.height), w, StrokeCap.Round)
-                    drawLine(c, Offset(0f, size.height), Offset(0f, size.height - len), w, StrokeCap.Round)
-                    drawLine(c, Offset(size.width, size.height), Offset(size.width - len, size.height), w, StrokeCap.Round)
-                    drawLine(c, Offset(size.width, size.height), Offset(size.width, size.height - len), w, StrokeCap.Round)
+                    drawLine(c, Offset(cornerRadius, 0f), Offset(len, 0f), w, StrokeCap.Round)
+                    drawLine(c, Offset(0f, cornerRadius), Offset(0f, len), w, StrokeCap.Round)
+                    drawArc(
+                        c, 180f, 90f, false, Offset.Zero,
+                        Size(cornerRadius * 2f, cornerRadius * 2f), style = borderStroke,
+                    )
+                    drawLine(c, Offset(size.width - len, 0f), Offset(size.width - cornerRadius, 0f), w, StrokeCap.Round)
+                    drawLine(c, Offset(size.width, cornerRadius), Offset(size.width, len), w, StrokeCap.Round)
+                    drawArc(
+                        c, 270f, 90f, false, Offset(size.width - cornerRadius * 2f, 0f),
+                        Size(cornerRadius * 2f, cornerRadius * 2f), style = borderStroke,
+                    )
+                    drawLine(c, Offset(cornerRadius, size.height), Offset(len, size.height), w, StrokeCap.Round)
+                    drawLine(c, Offset(0f, size.height - cornerRadius), Offset(0f, size.height - len), w, StrokeCap.Round)
+                    drawArc(
+                        c, 90f, 90f, false, Offset(0f, size.height - cornerRadius * 2f),
+                        Size(cornerRadius * 2f, cornerRadius * 2f), style = borderStroke,
+                    )
+                    drawLine(c, Offset(size.width - len, size.height), Offset(size.width - cornerRadius, size.height), w, StrokeCap.Round)
+                    drawLine(c, Offset(size.width, size.height - cornerRadius), Offset(size.width, size.height - len), w, StrokeCap.Round)
+                    drawArc(
+                        c, 0f, 90f, false, Offset(size.width - cornerRadius * 2f, size.height - cornerRadius * 2f),
+                        Size(cornerRadius * 2f, cornerRadius * 2f), style = borderStroke,
+                    )
                     val scanY = size.height * scanLineProgress
                     val scanBlue = Color(0xFF2879FA)
                     // The blue sweep carries a translucent gradient through the recognition area.
@@ -304,7 +323,7 @@ fun ScannerScreen(
                     )
                     drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
                     // A fixed grid appears only after the upward sweep has passed each dot.
-                    val sweepSpeed = size.height * 0.76f / 1.5f
+                    val sweepSpeed = size.height * 0.76f / 0.75f
                     repeat(6) { row ->
                         val y = size.height * ((row + 1f) / 7f)
                         repeat(7) { column ->
@@ -317,10 +336,21 @@ fun ScannerScreen(
                                 }
                                 if (visibility > 0f) {
                                     val dotAge = (secondsSincePass / 1f).coerceIn(0f, 1f)
+                                    val dotRadius = 5.25f - dotAge * 2.5f
+                                    val dotCenter = Offset(x, y)
+                                    val dotAlpha = 0.68f * visibility
                                     drawCircle(
-                                        color = Color.White.copy(alpha = 0.58f * visibility),
-                                        radius = 5.25f - dotAge * 2.5f,
-                                        center = Offset(x, y),
+                                        brush = Brush.radialGradient(
+                                            colors = listOf(
+                                                Color.White.copy(alpha = dotAlpha),
+                                                Color.White.copy(alpha = dotAlpha * 0.35f),
+                                                Color.Transparent,
+                                            ),
+                                            center = dotCenter,
+                                            radius = dotRadius,
+                                        ),
+                                        radius = dotRadius,
+                                        center = dotCenter,
                                     )
                                 }
                             }
