@@ -87,7 +87,11 @@ fun HistoryScreen(
         .filter { query.isBlank() || it.displayContent.contains(query, ignoreCase = true) }
         .filter { it.matches(dateFilter) }
 
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+    ) {
         // Header: title + search / filter / more.
         Row(
             Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 12.dp, bottom = 4.dp),
