@@ -59,8 +59,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -116,6 +120,7 @@ fun ScannerScreen(
     var torchOn by remember { mutableStateOf(false) }
     var zoomStepIndex by remember { mutableIntStateOf(0) }
     var camera by remember { mutableStateOf<Camera?>(null) }
+    var scanFrameBounds by remember { mutableStateOf<Rect?>(null) }
     val zoomSteps = remember { listOf(1f, 2f, 3f, 5f) }
     val zoomRatio = zoomSteps[zoomStepIndex]
     val scanLineProgress by rememberInfiniteTransition(label = "scannerLine").animateFloat(
@@ -229,6 +234,21 @@ fun ScannerScreen(
                 camera?.cameraControl?.setZoomRatio(supportedRatio)
             }
 
+            // Darken the complete camera preview except the measured viewfinder rectangle.
+            scanFrameBounds?.let { frame ->
+                Canvas(Modifier.fillMaxSize()) {
+                    val left = frame.left.coerceIn(0f, size.width)
+                    val top = frame.top.coerceIn(0f, size.height)
+                    val right = frame.right.coerceIn(left, size.width)
+                    val bottom = frame.bottom.coerceIn(top, size.height)
+                    val shade = Color.Black.copy(alpha = 0.58f)
+                    drawRect(shade, Offset.Zero, Size(size.width, top))
+                    drawRect(shade, Offset.Zero.copy(y = top), Size(left, bottom - top))
+                    drawRect(shade, Offset(right, top), Size(size.width - right, bottom - top))
+                    drawRect(shade, Offset(0f, bottom), Size(size.width, size.height - bottom))
+                }
+            }
+
             TextButton(
                 onClick = {
                     zoomStepIndex = (zoomStepIndex + 1) % zoomSteps.size
@@ -246,7 +266,11 @@ fun ScannerScreen(
                 Modifier.fillMaxWidth().safeDrawingPadding().padding(top = 168.dp, start = 32.dp, end = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                Canvas(Modifier.fillMaxWidth().aspectRatio(1.15f)) {
+                Canvas(
+                    Modifier.fillMaxWidth().aspectRatio(1.15f).onGloballyPositioned { coordinates ->
+                        scanFrameBounds = coordinates.boundsInRoot()
+                    },
+                ) {
                     val c = Color.White
                     val len = size.minDimension * 0.16f
                     val w = 6f
