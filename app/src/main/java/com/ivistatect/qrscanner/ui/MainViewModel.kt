@@ -118,6 +118,7 @@ class MainViewModel @Inject constructor(
     fun removeBatchItem(code: DecodedCode) {
         if (batchItems.remove(code)) {
             batchServerDelivery.remove(code.rawValue)
+            refreshServerSubmissionState()
             Logger.d("Delete Batch item", "remaining=${batchItems.size}")
         }
     }
@@ -128,8 +129,8 @@ class MainViewModel @Inject constructor(
         if (codes.isEmpty() || serverSubmissionState.isSending) return
 
         Logger.d("Send Batch to server", "count=${codes.size}")
-        serverSubmissionState = ServerSubmissionState(total = codes.size, isSending = true)
         codes.forEach { batchServerDelivery[it.rawValue] = ServerDeliveryState.SENDING }
+        refreshServerSubmissionState()
         viewModelScope.launch {
             codes.forEach { code ->
                 recordServerSubmission(code.rawValue, scanUploadRepository.submitScan(code.rawValue))
@@ -138,6 +139,17 @@ class MainViewModel @Inject constructor(
                 "Batch server send finished",
                 "success=${serverSubmissionState.succeeded} failed=${serverSubmissionState.failed}",
             )
+        }
+    }
+
+    /** Retries only one failed code without changing the status of the other Batch rows. */
+    fun retryBatchItem(code: DecodedCode) {
+        if (batchServerDelivery[code.rawValue] != ServerDeliveryState.FAILED) return
+        Logger.d("Retry Batch item", "format=${code.formatName} raw=${code.rawValue.take(64)}")
+        batchServerDelivery[code.rawValue] = ServerDeliveryState.SENDING
+        refreshServerSubmissionState()
+        viewModelScope.launch {
+            recordServerSubmission(code.rawValue, scanUploadRepository.submitScan(code.rawValue))
         }
     }
 
@@ -187,10 +199,7 @@ class MainViewModel @Inject constructor(
     /** Sends one scan immediately when the explicit automatic server setting is enabled. */
     private fun submitScannedBarcode(code: DecodedCode) {
         batchServerDelivery[code.rawValue] = ServerDeliveryState.SENDING
-        serverSubmissionState = serverSubmissionState.copy(
-            total = serverSubmissionState.total + 1,
-            isSending = true,
-        )
+        refreshServerSubmissionState()
         Logger.d("Auto send scan to server", "queued=${serverSubmissionState.total}")
         viewModelScope.launch {
             recordServerSubmission(code.rawValue, scanUploadRepository.submitScan(code.rawValue))
@@ -203,11 +212,18 @@ class MainViewModel @Inject constructor(
         } else {
             ServerDeliveryState.FAILED
         }
-        val updated = serverSubmissionState.copy(
-            succeeded = serverSubmissionState.succeeded + if (succeeded) 1 else 0,
-            failed = serverSubmissionState.failed + if (succeeded) 0 else 1,
+        refreshServerSubmissionState()
+    }
+
+    /** Keeps the Batch summary tied to the visible codes, including a successful retry. */
+    private fun refreshServerSubmissionState() {
+        val states = batchItems.map { batchServerDelivery[it.rawValue] ?: ServerDeliveryState.PENDING }
+        serverSubmissionState = ServerSubmissionState(
+            total = states.size,
+            succeeded = states.count { it == ServerDeliveryState.SUCCEEDED },
+            failed = states.count { it == ServerDeliveryState.FAILED },
+            isSending = states.any { it == ServerDeliveryState.SENDING },
         )
-        serverSubmissionState = updated.copy(isSending = updated.completed < updated.total)
     }
 
     fun openFromHistory(item: HistoryEntity) {

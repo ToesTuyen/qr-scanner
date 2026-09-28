@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -155,6 +156,10 @@ fun BatchResultScreen(
                                 deliveryState = mainVm.batchServerDelivery[code.rawValue]
                                     ?: ServerDeliveryState.PENDING,
                                 onOpen = { Logger.d("Click Batch item @ Batch"); onOpenItem(code) },
+                                onRetry = {
+                                    Logger.d("Click Retry @ Batch", "format=${code.formatName}")
+                                    mainVm.retryBatchItem(code)
+                                },
                             )
                         }
                     }
@@ -250,6 +255,7 @@ private fun BatchRow(
     code: DecodedCode,
     deliveryState: ServerDeliveryState,
     onOpen: () -> Unit,
+    onRetry: () -> Unit,
 ) {
     val glyph = remember(code.valueType) { code.valueType.tileGlyph() }
     Card(
@@ -300,6 +306,15 @@ private fun BatchRow(
                     color = deliveryColor,
                     modifier = Modifier.padding(top = 3.dp),
                 )
+                if (deliveryState == ServerDeliveryState.FAILED) {
+                    TextButton(
+                        onClick = onRetry,
+                        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+                        modifier = Modifier.padding(top = 2.dp),
+                    ) {
+                        Text(stringResource(R.string.batch_retry_failed))
+                    }
+                }
             }
             Text(
                 code.formatName.replace('_', ' '),

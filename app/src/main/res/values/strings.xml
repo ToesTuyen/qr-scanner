@@ -196,6 +196,7 @@
     <string name="batch_delivery_sending">Sending to server</string>
     <string name="batch_delivery_succeeded">Sent successfully</string>
     <string name="batch_delivery_failed">Sending failed</string>
+    <string name="batch_retry_failed">Retry</string>
 
     <!-- App-owned language selection -->
     <string name="language_system">System default</string>

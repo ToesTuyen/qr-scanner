@@ -192,6 +192,7 @@
     <string name="batch_delivery_sending">Đang gửi đến server</string>
     <string name="batch_delivery_succeeded">Gửi thành công</string>
     <string name="batch_delivery_failed">Gửi thất bại</string>
+    <string name="batch_retry_failed">Gửi lại</string>
 
     <!-- App-owned language selection -->
     <string name="language_system">Mặc định hệ thống</string>
