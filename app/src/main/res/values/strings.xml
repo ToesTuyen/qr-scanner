@@ -136,6 +136,7 @@
     <string name="settings_application">Application</string>
     <string name="settings_search_engine">Search Engine</string>
     <string name="settings_camera">Camera</string>
+    <string name="settings_device_id">Device ID</string>
     <string name="settings_image_format">Image Format</string>
     <string name="settings_batch">Batch Scanning</string>
     <string name="settings_vibration">Vibration</string>

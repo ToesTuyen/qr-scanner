@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.data.HistoryEntity
 import com.ivistatect.qrscanner.data.HistoryRepository
+import com.ivistatect.qrscanner.data.ScanUploadRepository
 import com.ivistatect.qrscanner.data.SettingsRepository
 import com.ivistatect.qrscanner.domain.CreateCategory
 import com.ivistatect.qrscanner.domain.CreateTile
@@ -42,6 +43,7 @@ data class CreatedResult(
 class MainViewModel @Inject constructor(
     private val historyRepo: HistoryRepository,
     private val settingsRepo: SettingsRepository,
+    private val scanUploadRepository: ScanUploadRepository,
 ) : ViewModel() {
 
     val settings: StateFlow<SettingsRepository.Settings> =
@@ -92,18 +94,26 @@ class MainViewModel @Inject constructor(
     /** Camera / gallery / share-in decode entry point. */
     fun onDecoded(code: DecodedCode) {
         if (batchMode) {
-            if (batchItems.none { it.rawValue == code.rawValue }) batchItems.add(code)
-            Logger.d("Scanner: batch add", "count=${batchItems.size}")
+            if (batchItems.none { it.rawValue == code.rawValue }) {
+                batchItems.add(code)
+                submitScannedBarcode(code.rawValue)
+                Logger.d("Scanner: batch add", "count=${batchItems.size}")
+            }
         } else {
             currentScan = code
             currentScanFavorite = false
             currentScanHistoryId = null
+            submitScannedBarcode(code.rawValue)
             viewModelScope.launch {
                 if (settingsRepo.settings.first().saveHistory) {
                     currentScanHistoryId = historyRepo.add(code.toEntity(HistoryEntity.ORIGIN_SCANNED))
                 }
             }
         }
+    }
+
+    private fun submitScannedBarcode(barcode: String) {
+        viewModelScope.launch { scanUploadRepository.submitScan(barcode) }
     }
 
     fun openFromHistory(item: HistoryEntity) {

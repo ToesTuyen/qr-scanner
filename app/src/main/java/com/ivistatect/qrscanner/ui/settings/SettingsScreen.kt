@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
+import com.ivistatect.qrscanner.data.ScanDeviceId
 import com.ivistatect.qrscanner.data.SettingsRepository
 import com.ivistatect.qrscanner.ui.common.openUrl
 import com.ivistatect.qrscanner.ui.common.openStoreListing
@@ -53,6 +54,7 @@ fun SettingsScreen(
     vm: SettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val deviceId = remember(context) { ScanDeviceId.from(context) }
     LaunchedEffect(Unit) { Logger.d("Enter Settings") }
     val s by vm.settings.collectAsState()
     var showThemeSheet by remember { mutableStateOf(false) }
@@ -103,6 +105,7 @@ fun SettingsScreen(
         NavRow(R.drawable.ic_set_camera, stringResource(R.string.settings_camera), value = cameraOptions[cameraFacing]) {
             Logger.d("Click Camera @ Settings"); showCameraFacing = true
         }
+        InfoRow(stringResource(R.string.settings_device_id), deviceId)
         ToggleRow(R.drawable.ic_set_batch, stringResource(R.string.settings_batch), s.batchScanning) { vm.toggleLogged(SettingsRepository.Key.BATCH, it, "Batch") }
         ToggleRow(R.drawable.ic_set_vibration, stringResource(R.string.settings_vibration), s.vibration) { vm.toggleLogged(SettingsRepository.Key.VIBRATION, it, "Vibration") }
         ToggleRow(R.drawable.ic_set_sound, stringResource(R.string.settings_sound), s.sound) { vm.toggleLogged(SettingsRepository.Key.SOUND, it, "Sound") }
@@ -283,6 +286,18 @@ private fun NavRow(@DrawableRes iconRes: Int, title: String, value: String? = nu
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp).padding(start = 8.dp),
         )
+    }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+}
+
+@Composable
+private fun InfoRow(title: String, value: String) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(title, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 }

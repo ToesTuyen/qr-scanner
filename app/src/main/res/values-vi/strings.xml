@@ -132,6 +132,7 @@
     <string name="settings_application">Ứng dụng</string>
     <string name="settings_search_engine">Công cụ tìm kiếm</string>
     <string name="settings_camera">Máy ảnh</string>
+    <string name="settings_device_id">Mã thiết bị</string>
     <string name="settings_image_format">Định dạng hình ảnh</string>
     <string name="settings_batch">Quét hàng loạt</string>
     <string name="settings_vibration">Rung</string>
