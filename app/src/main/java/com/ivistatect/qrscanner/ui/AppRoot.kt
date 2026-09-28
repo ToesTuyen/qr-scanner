@@ -121,10 +121,10 @@ fun AppRoot() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {
-                Box(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp)) {
+                Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp)) {
                     Row(
                         Modifier.fillMaxWidth().height(68.dp)
-                            .background(Color.White, RoundedCornerShape(28.dp)),
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(28.dp)),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -140,7 +140,7 @@ fun AppRoot() {
                                     }
                                 },
                                 modifier = Modifier.size(48.dp).background(
-                                    if (selected) Color(0xFF00AE88) else Color.Transparent,
+                                    if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
                                     RoundedCornerShape(16.dp),
                                 ),
                             ) {
@@ -148,7 +148,11 @@ fun AppRoot() {
                                     painterResource(tab.icon),
                                     contentDescription = stringResource(tab.labelRes),
                                     modifier = Modifier.size(22.dp),
-                                    tint = if (selected) Color.White else Color(0xFF58657A),
+                                    tint = if (selected) {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    },
                                 )
                             }
                         }
