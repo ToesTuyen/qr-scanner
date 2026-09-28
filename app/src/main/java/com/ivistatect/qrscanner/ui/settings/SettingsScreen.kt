@@ -90,6 +90,8 @@ fun SettingsScreen(
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
+        InfoRow(stringResource(R.string.settings_device_id), deviceId)
+
         SectionLabel(stringResource(R.string.settings_overview))
         NavRow(R.drawable.ic_set_language, stringResource(R.string.settings_app_language)) {
             Logger.d("Click App Language @ Settings"); onOpenLanguage()
@@ -105,7 +107,6 @@ fun SettingsScreen(
         NavRow(R.drawable.ic_set_camera, stringResource(R.string.settings_camera), value = cameraOptions[cameraFacing]) {
             Logger.d("Click Camera @ Settings"); showCameraFacing = true
         }
-        InfoRow(stringResource(R.string.settings_device_id), deviceId)
         ToggleRow(R.drawable.ic_set_batch, stringResource(R.string.settings_batch), s.batchScanning) { vm.toggleLogged(SettingsRepository.Key.BATCH, it, "Batch") }
         ToggleRow(R.drawable.ic_set_vibration, stringResource(R.string.settings_vibration), s.vibration) { vm.toggleLogged(SettingsRepository.Key.VIBRATION, it, "Vibration") }
         ToggleRow(R.drawable.ic_set_sound, stringResource(R.string.settings_sound), s.sound) { vm.toggleLogged(SettingsRepository.Key.SOUND, it, "Sound") }
