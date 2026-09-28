@@ -297,17 +297,16 @@ fun ScannerScreen(
                         StrokeCap.Round,
                     )
                     drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
-                    // Keep the dots fixed in the viewfinder and reveal each row as the sweep crosses it.
+                    // Keep dots fixed in the blue recognition overlay, including while the sweep reverses.
                     repeat(6) { row ->
                         val y = size.height * ((row + 1f) / 7f)
-                        val distanceFromSweep = kotlin.math.abs(scanY - y)
-                        val visibility = (1f - distanceFromSweep / 96f).coerceIn(0f, 1f)
-                        if (visibility > 0f) {
+                        if (y >= scanY) {
+                            val depthInOverlay = (y - scanY) / size.height
                             repeat(7) { column ->
                                 val x = size.width * ((column + 1f) / 8f)
                                 drawCircle(
-                                    color = Color.White.copy(alpha = 0.68f * visibility),
-                                    radius = 2.5f,
+                                    color = Color.White.copy(alpha = 0.58f - depthInOverlay * 0.18f),
+                                    radius = 2.75f,
                                     center = Offset(x, y),
                                 )
                             }
