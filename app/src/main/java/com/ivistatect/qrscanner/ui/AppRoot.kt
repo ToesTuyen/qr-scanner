@@ -166,16 +166,13 @@ fun AppRoot() {
         }
 
         if (showBottomBar) {
-            val scannerTab = currentRoute == Routes.SCANNER
-            val containerColor = if (scannerTab) Color(0xFF15171D) else MaterialTheme.colorScheme.surface
-            val unselectedTint = if (scannerTab) Color(0xFFC3C7D0) else MaterialTheme.colorScheme.onSurfaceVariant
             Box(
                 Modifier.align(Alignment.BottomCenter).fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 12.dp),
             ) {
                 Row(
                     Modifier.fillMaxWidth().height(68.dp)
-                        .background(containerColor, RoundedCornerShape(28.dp)),
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(28.dp)),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -202,7 +199,7 @@ fun AppRoot() {
                                 tint = if (selected) {
                                     MaterialTheme.colorScheme.onPrimary
                                 } else {
-                                    unselectedTint
+                                    MaterialTheme.colorScheme.onSurfaceVariant
                                 },
                             )
                         }
