@@ -123,7 +123,8 @@ fun ScannerScreen(
     var scanFrameBounds by remember { mutableStateOf<Rect?>(null) }
     val zoomSteps = remember { listOf(1f, 2f, 3f, 5f) }
     val zoomRatio = zoomSteps[zoomStepIndex]
-    val scanLineProgress by rememberInfiniteTransition(label = "scannerLine").animateFloat(
+    val scannerMotion = rememberInfiniteTransition(label = "scannerMotion")
+    val scanLineProgress by scannerMotion.animateFloat(
         initialValue = 0.12f,
         targetValue = 0.88f,
         animationSpec = infiniteRepeatable(
@@ -131,6 +132,15 @@ fun ScannerScreen(
             repeatMode = RepeatMode.Reverse,
         ),
         label = "scannerLineProgress",
+    )
+    val scanParticleProgress by scannerMotion.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 900, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "scannerParticleProgress",
     )
 
     val analyzerHolder = remember { arrayOfNulls<BarcodeAnalyzer>(1) }
@@ -286,12 +296,13 @@ fun ScannerScreen(
                         StrokeCap.Round,
                     )
                     drawLine(c, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
-                    floatArrayOf(0.09f, 0.21f, 0.36f, 0.51f, 0.64f, 0.78f, 0.91f).forEachIndexed { index, x ->
+                    repeat(7) { index ->
                         val offsetY = when (index % 3) {
                             0 -> -26f
                             1 -> 18f
                             else -> 42f
                         }
+                        val x = (scanParticleProgress + index * 0.17f) % 1f
                         drawCircle(
                             c.copy(alpha = if (index % 2 == 0) 0.7f else 0.4f),
                             radius = if (index % 2 == 0) 2.5f else 1.75f,
