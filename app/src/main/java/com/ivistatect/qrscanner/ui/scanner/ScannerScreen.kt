@@ -249,18 +249,6 @@ fun ScannerScreen(
                 }
             }
 
-            TextButton(
-                onClick = {
-                    zoomStepIndex = (zoomStepIndex + 1) % zoomSteps.size
-                    Logger.d("Adjust Zoom @ Scanner", "ratio=${zoomSteps[zoomStepIndex]}x")
-                },
-                modifier = Modifier.align(Alignment.TopEnd).safeDrawingPadding()
-                    .padding(top = 20.dp, end = 20.dp)
-                    .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(22.dp)),
-            ) {
-                Text("${zoomRatio.toInt()}x", color = Color.White)
-            }
-
             // Centred product-style viewfinder, with the scan line confined to its rounded brackets.
             Column(
                 Modifier.fillMaxWidth().safeDrawingPadding().padding(top = 168.dp, start = 32.dp, end = 32.dp),
@@ -322,6 +310,10 @@ fun ScannerScreen(
                         ) {
                             torchOn = !torchOn
                             Logger.d("Click Flash @ Scanner", "on=$torchOn")
+                        }
+                        ScannerZoomControl(zoomRatio) {
+                            zoomStepIndex = (zoomStepIndex + 1) % zoomSteps.size
+                            Logger.d("Adjust Zoom @ Scanner", "ratio=${zoomSteps[zoomStepIndex]}x")
                         }
                     }
                 }
@@ -458,6 +450,13 @@ private fun ScannerControl(
             Modifier.size(22.dp),
             tint = Color.White,
         )
+    }
+}
+
+@Composable
+private fun ScannerZoomControl(zoomRatio: Float, onClick: () -> Unit) {
+    androidx.compose.material3.IconButton(onClick = onClick, modifier = Modifier.size(52.dp)) {
+        Text("${zoomRatio.toInt()}x", color = Color.White)
     }
 }
 
