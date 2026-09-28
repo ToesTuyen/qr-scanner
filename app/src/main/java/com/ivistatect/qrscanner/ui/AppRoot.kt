@@ -100,9 +100,9 @@ fun AppRoot() {
     }
 
     Scaffold(
-        // Only the camera surface is full-bleed. Other routes keep the status inset so their
-        // headings and controls stay clear of the transparent system status bar.
-        contentWindowInsets = if (currentRoute == Routes.SCANNER) {
+        // Tab surfaces paint behind the transparent status bar themselves. Their headers apply
+        // the status inset, avoiding an extra gap above the toolbar.
+        contentWindowInsets = if (currentRoute in setOf(Routes.SCANNER, Routes.HISTORY, Routes.SETTINGS)) {
             WindowInsets(0, 0, 0, 0)
         } else {
             ScaffoldDefaults.contentWindowInsets
