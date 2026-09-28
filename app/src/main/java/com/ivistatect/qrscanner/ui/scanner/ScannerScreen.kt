@@ -134,15 +134,6 @@ fun ScannerScreen(
         ),
         label = "scannerLineProgress",
     )
-    val scanParticleProgress by scannerMotion.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 900, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "scannerParticleProgress",
-    )
 
     val analyzerHolder = remember { arrayOfNulls<BarcodeAnalyzer>(1) }
     val analyzer = remember {
@@ -306,31 +297,18 @@ fun ScannerScreen(
                         StrokeCap.Round,
                     )
                     drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
-                    repeat(7) { index ->
-                        val offsetY = when (index % 3) {
-                            0 -> -26f
-                            1 -> 18f
-                            else -> 42f
-                        }
-                        val x = (scanParticleProgress + index * 0.17f) % 1f
-                        drawCircle(
-                            scanBlue.copy(alpha = if (index % 2 == 0) 0.7f else 0.4f),
-                            radius = if (index % 2 == 0) 2.5f else 1.75f,
-                            center = Offset(x * size.width, (scanY + offsetY).coerceIn(10f, size.height - 10f)),
-                        )
-                    }
-                    // A dotted trail makes the blue recognition overlay visible while it follows the scan line.
-                    repeat(4) { row ->
-                        val y = scanY + 20f + row * 42f
-                        if (y < size.height - 10f) {
+                    // Keep the dots fixed in the viewfinder and reveal each row as the sweep crosses it.
+                    repeat(6) { row ->
+                        val y = size.height * ((row + 1f) / 7f)
+                        val distanceFromSweep = kotlin.math.abs(scanY - y)
+                        val visibility = (1f - distanceFromSweep / 96f).coerceIn(0f, 1f)
+                        if (visibility > 0f) {
                             repeat(7) { column ->
-                                val x = (
-                                    scanParticleProgress + column * 0.15f + row * 0.06f
-                                ) % 1f
+                                val x = size.width * ((column + 1f) / 8f)
                                 drawCircle(
-                                    color = Color.White.copy(alpha = 0.42f - row * 0.05f),
-                                    radius = 1.6f,
-                                    center = Offset(x * size.width, y),
+                                    color = Color.White.copy(alpha = 0.68f * visibility),
+                                    radius = 2.5f,
+                                    center = Offset(x, y),
                                 )
                             }
                         }
