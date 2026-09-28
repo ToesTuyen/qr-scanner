@@ -36,7 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.data.SettingsRepository
 import com.ivistatect.qrscanner.ui.common.openUrl

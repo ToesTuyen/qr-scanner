@@ -61,7 +61,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.data.SettingsRepository
 import com.ivistatect.qrscanner.scan.BarcodeAnalyzer

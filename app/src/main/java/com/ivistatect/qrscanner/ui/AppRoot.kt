@@ -35,15 +35,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.vnnami.appkit.api.LanguageRoute
-import com.vnnami.appkit.api.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.ui.common.findActivity
 import com.ivistatect.qrscanner.ui.history.HistoryScreen
+import com.ivistatect.qrscanner.ui.language.LanguageScreen
 import com.ivistatect.qrscanner.ui.result.BatchResultScreen
 import com.ivistatect.qrscanner.ui.result.ScanResultScreen
 import com.ivistatect.qrscanner.ui.scanner.ScannerScreen
 import com.ivistatect.qrscanner.ui.settings.SettingsScreen
+import com.ivistatect.qrscanner.util.Logger
 
 object Routes {
     const val SCANNER = "scanner"
@@ -175,7 +175,7 @@ fun AppRoot() {
                 )
             }
             composable(Routes.LANGUAGE) {
-                LanguageRoute(
+                LanguageScreen(
                     onBack = { navController.popBackStack() },
                     onApplied = { tag ->
                         Logger.d("Language applied", "tag=$tag")

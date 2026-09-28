@@ -155,6 +155,14 @@
     <string name="theme_dark">Dark</string>
     <string name="feature_deferred">Coming soon</string>
 
+    <!-- App-owned language selection -->
+    <string name="language_system">System default</string>
+    <string name="language_english">English</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
+    <string name="language_korean">한국어</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_chinese_simplified">简体中文</string>
+
     <!-- Prox paywall -->
     <string name="prox_title">Scan Without Limits</string>
     <string name="prox_feature_1">Remove all ads</string>

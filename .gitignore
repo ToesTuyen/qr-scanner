@@ -10,9 +10,6 @@
 .cxx
 local.properties
 .kotlin
-# module build dirs (also covered by per-module .gitignore)
-/base-application-wrapper/build
-
 # Build logs / built outputs (clutter, not source)
 *.log
 assemble_log.txt
@@ -24,8 +21,7 @@ compile_log.txt
 # ── Theo yêu cầu: không push docs hay markdown ──
 /docs/
 *.md
-# ...trừ hai file hướng dẫn của chính template
+# ...trừ README dự án
 !README.md
-!CLAUDE.md
 /Readme
 __pycache__/

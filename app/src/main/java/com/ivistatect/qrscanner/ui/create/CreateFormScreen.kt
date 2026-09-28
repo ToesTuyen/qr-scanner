@@ -47,7 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.CreateCatalog
 import com.ivistatect.qrscanner.domain.FormKind

@@ -45,7 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.data.HistoryEntity
 import com.ivistatect.qrscanner.domain.ScanValueType
@@ -275,6 +275,7 @@ private fun HistoryEntity.matches(filter: HistoryDateFilter): Boolean {
     return createdAt >= start
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HistoryFilterOption(label: String, selected: Boolean, onClick: () -> Unit) {
     Row(

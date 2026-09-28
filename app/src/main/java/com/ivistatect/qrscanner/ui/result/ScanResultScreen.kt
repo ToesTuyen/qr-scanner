@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.google.zxing.BarcodeFormat
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.ResultAction
 import com.ivistatect.qrscanner.domain.ScanValueType

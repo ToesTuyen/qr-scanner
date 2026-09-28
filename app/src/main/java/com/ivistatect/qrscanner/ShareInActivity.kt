@@ -51,8 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.zxing.BarcodeFormat
-import com.vnnami.appkit.api.AppKit
-import com.vnnami.appkit.api.Logger
 import com.ivistatect.qrscanner.domain.DecodedCode
 import com.ivistatect.qrscanner.domain.ResultAction
 import com.ivistatect.qrscanner.domain.ScanValueType
@@ -62,7 +60,9 @@ import com.ivistatect.qrscanner.scan.QrGenerator
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
 import com.ivistatect.qrscanner.ui.common.fireResultAction
 import com.ivistatect.qrscanner.ui.common.shareText
+import com.ivistatect.qrscanner.ui.language.AppLanguage
 import com.ivistatect.qrscanner.ui.theme.QrScannerTheme
+import com.ivistatect.qrscanner.util.Logger
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -75,8 +75,7 @@ import java.util.Locale
 class ShareInActivity : FragmentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        val language = AppKit.language
-        super.attachBaseContext(language.wrapContext(newBase, language.currentTag(newBase)))
+        super.attachBaseContext(AppLanguage.wrapContext(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -20,22 +20,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.vnnami.appkit.api.AppKit
-import com.vnnami.appkit.api.Logger
+import com.ivistatect.qrscanner.ui.language.AppLanguage
 import com.ivistatect.qrscanner.ui.theme.QrScannerTheme
+import com.ivistatect.qrscanner.util.Logger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * Launcher = branded routing splash (n_start / n_route_gate). Clone baseline is premium/no-ads, so
- * the route gate takes the Splash/Main branch (matching the Step-2 baseline runtime evidence). The
- * ProX paywall remains available as a standalone Activity for legacy deep links.
+ * Launcher = branded splash before the standalone main activity.
  */
 class StartActivity : FragmentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        val language = AppKit.language
-        super.attachBaseContext(language.wrapContext(newBase, language.currentTag(newBase)))
+        super.attachBaseContext(AppLanguage.wrapContext(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +41,7 @@ class StartActivity : FragmentActivity() {
         setContent { QrScannerTheme { SplashContent() } }
         lifecycleScope.launch {
             delay(700)
-            Logger.d("StartActivity route → MainActivity", "premium=${AppKit.premium.isPremium(this@StartActivity)}")
+            Logger.d("StartActivity route → MainActivity")
             startActivity(Intent(this@StartActivity, MainActivity::class.java))
             finish()
         }

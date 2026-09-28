@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Clone-owned QR logo used by the branded splash (AppHost.splashIconRes). Authored for this app. -->
+<!-- QR logo used by the branded splash. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="96dp"
     android:height="96dp"
