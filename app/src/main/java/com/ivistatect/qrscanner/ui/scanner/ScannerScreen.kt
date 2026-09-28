@@ -130,7 +130,7 @@ fun ScannerScreen(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1_500, easing = LinearEasing),
+            animation = tween(durationMillis = 3_000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart,
         ),
         label = "scannerSweepPhase",
@@ -323,7 +323,7 @@ fun ScannerScreen(
                     )
                     drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
                     // A fixed grid appears only after the upward sweep has passed each dot.
-                    val sweepSpeed = size.height * 0.76f / 0.75f
+                    val sweepSpeed = size.height * 0.76f / 1.5f
                     repeat(6) { row ->
                         val y = size.height * ((row + 1f) / 7f)
                         repeat(7) { column ->
@@ -336,7 +336,7 @@ fun ScannerScreen(
                                 }
                                 if (visibility > 0f) {
                                     val dotAge = (secondsSincePass / 1f).coerceIn(0f, 1f)
-                                    val dotRadius = 5.25f - dotAge * 2.5f
+                                    val dotRadius = 7.5f - dotAge * 4f
                                     val dotCenter = Offset(x, y)
                                     val dotAlpha = 0.68f * visibility
                                     drawCircle(
