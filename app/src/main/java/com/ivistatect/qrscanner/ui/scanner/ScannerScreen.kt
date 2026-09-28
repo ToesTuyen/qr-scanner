@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.boundsInRoot
@@ -282,20 +283,29 @@ fun ScannerScreen(
                     drawLine(c, Offset(size.width, size.height), Offset(size.width - len, size.height), w, StrokeCap.Round)
                     drawLine(c, Offset(size.width, size.height), Offset(size.width, size.height - len), w, StrokeCap.Round)
                     val scanY = size.height * scanLineProgress
-                    // A glowing scan sweep and moving detection points make the active recognition state visible.
+                    val scanBlue = Color(0xFF2879FA)
+                    // The blue sweep carries a translucent gradient through the recognition area.
                     drawRect(
-                        c.copy(alpha = 0.12f),
-                        Offset(0f, scanY - 16f),
-                        Size(size.width, 32f),
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                scanBlue.copy(alpha = 0.42f),
+                                scanBlue.copy(alpha = 0.16f),
+                                Color.Transparent,
+                            ),
+                            startY = scanY,
+                            endY = size.height,
+                        ),
+                        topLeft = Offset(0f, scanY),
+                        size = Size(size.width, size.height - scanY),
                     )
                     drawLine(
-                        c.copy(alpha = 0.32f),
+                        scanBlue.copy(alpha = 0.5f),
                         Offset(0f, scanY),
                         Offset(size.width, scanY),
-                        9f,
+                        12f,
                         StrokeCap.Round,
                     )
-                    drawLine(c, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
+                    drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
                     repeat(7) { index ->
                         val offsetY = when (index % 3) {
                             0 -> -26f
@@ -304,7 +314,7 @@ fun ScannerScreen(
                         }
                         val x = (scanParticleProgress + index * 0.17f) % 1f
                         drawCircle(
-                            c.copy(alpha = if (index % 2 == 0) 0.7f else 0.4f),
+                            scanBlue.copy(alpha = if (index % 2 == 0) 0.7f else 0.4f),
                             radius = if (index % 2 == 0) 2.5f else 1.75f,
                             center = Offset(x * size.width, (scanY + offsetY).coerceIn(10f, size.height - 10f)),
                         )
