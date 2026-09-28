@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.Image
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ivistatect.qrscanner.ui.language.AppLanguage
+import com.ivistatect.qrscanner.ui.common.hideSystemNavigationBar
 import com.ivistatect.qrscanner.ui.theme.QrScannerTheme
 import com.ivistatect.qrscanner.util.Logger
 import kotlinx.coroutines.delay
@@ -37,6 +39,8 @@ class StartActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        hideSystemNavigationBar()
         Logger.d("Enter StartActivity", "route gate")
         setContent { QrScannerTheme { SplashContent() } }
         lifecycleScope.launch {
@@ -45,6 +49,11 @@ class StartActivity : FragmentActivity() {
             startActivity(Intent(this@StartActivity, MainActivity::class.java))
             finish()
         }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemNavigationBar()
     }
 }
 

@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentCompat
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.zxing.BarcodeFormat
 import com.ivistatect.qrscanner.domain.DecodedCode
@@ -60,6 +61,7 @@ import com.ivistatect.qrscanner.scan.QrGenerator
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
 import com.ivistatect.qrscanner.ui.common.fireResultAction
 import com.ivistatect.qrscanner.ui.common.shareText
+import com.ivistatect.qrscanner.ui.common.hideSystemNavigationBar
 import com.ivistatect.qrscanner.ui.language.AppLanguage
 import com.ivistatect.qrscanner.ui.theme.QrScannerTheme
 import com.ivistatect.qrscanner.util.Logger
@@ -80,8 +82,15 @@ class ShareInActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        hideSystemNavigationBar()
         Logger.d("Enter ShareInActivity", "action=${intent?.action}")
         setContent { QrScannerTheme { ShareInScreen(intent) { finish() } } }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemNavigationBar()
     }
 }
 

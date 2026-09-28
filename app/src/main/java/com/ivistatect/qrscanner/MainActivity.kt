@@ -7,6 +7,7 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 import com.ivistatect.qrscanner.ui.AppRoot
+import com.ivistatect.qrscanner.ui.common.hideSystemNavigationBar
 import com.ivistatect.qrscanner.ui.language.AppLanguage
 import com.ivistatect.qrscanner.ui.theme.QrScannerTheme
 import com.ivistatect.qrscanner.util.Logger
@@ -26,7 +27,13 @@ class MainActivity : FragmentActivity() {
         // Deliberate edge-to-edge: content draws behind the transparent status/navigation bars
         // (theme sets both transparent); Compose applies WindowInsets on every screen with a CTA.
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        hideSystemNavigationBar()
         setContent { QrScannerTheme { AppRoot() } }
         Logger.d("Enter MainActivity")
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemNavigationBar()
     }
 }
