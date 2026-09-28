@@ -223,7 +223,7 @@ fun ScannerScreen(
 
             // Centred product-style viewfinder, with the scan line confined to its rounded brackets.
             Column(
-                Modifier.fillMaxWidth().safeDrawingPadding().padding(top = 88.dp, start = 32.dp, end = 32.dp),
+                Modifier.fillMaxWidth().safeDrawingPadding().padding(top = 168.dp, start = 32.dp, end = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 Canvas(Modifier.fillMaxWidth().aspectRatio(1.15f)) {
