@@ -35,14 +35,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -223,15 +221,16 @@ fun ScannerScreen(
             LaunchedEffect(camera, torchOn) { camera?.cameraControl?.enableTorch(torchOn) }
             LaunchedEffect(camera, zoom) { camera?.cameraControl?.setLinearZoom(zoom) }
 
-            // Blue scan reticle (viewfinder) — a camera framing guide, upper-centre.
-            Box(
-                Modifier.fillMaxWidth().safeDrawingPadding().padding(top = 96.dp, start = 32.dp, end = 32.dp),
+            // Centred product-style viewfinder, with the scan line confined to its rounded brackets.
+            Column(
+                Modifier.fillMaxWidth().safeDrawingPadding().padding(top = 88.dp, start = 32.dp, end = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 Canvas(Modifier.fillMaxWidth().aspectRatio(1.15f)) {
-                    val c = Color(0xFF2879FA)
+                    val c = Color.White
                     val len = size.minDimension * 0.16f
                     val w = 6f
-                    // 4 L-shaped corner brackets.
+                    // Four white corner brackets preserve the camera image inside the recognition area.
                     drawLine(c, Offset(0f, 0f), Offset(len, 0f), w, StrokeCap.Round)
                     drawLine(c, Offset(0f, 0f), Offset(0f, len), w, StrokeCap.Round)
                     drawLine(c, Offset(size.width, 0f), Offset(size.width - len, 0f), w, StrokeCap.Round)
@@ -240,10 +239,9 @@ fun ScannerScreen(
                     drawLine(c, Offset(0f, size.height), Offset(0f, size.height - len), w, StrokeCap.Round)
                     drawLine(c, Offset(size.width, size.height), Offset(size.width - len, size.height), w, StrokeCap.Round)
                     drawLine(c, Offset(size.width, size.height), Offset(size.width, size.height - len), w, StrokeCap.Round)
-                    // Animated scan line sweeping between the reticle brackets.
                     val scanY = size.height * scanLineProgress
                     drawLine(
-                        c.copy(alpha = 0.28f),
+                        c.copy(alpha = 0.32f),
                         Offset(0f, scanY),
                         Offset(size.width, scanY),
                         9f,
@@ -251,13 +249,38 @@ fun ScannerScreen(
                     )
                     drawLine(c, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
                 }
-            }
 
-            // Bottom controls: Gallery / Batch / Flash row, then the zoom slider.
-            Column(
-                Modifier.align(Alignment.BottomCenter).fillMaxWidth().safeDrawingPadding().padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+                // The three scanner actions become a compact floating control strip.
+                Box(Modifier.fillMaxWidth()) {
+                    Row(
+                        Modifier.align(Alignment.Center)
+                            .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(28.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                    ) {
+                        ScannerControl(R.drawable.ic_fig_gallery, stringResource(R.string.cd_gallery)) {
+                            Logger.d("Click Gallery @ Scanner")
+                            galleryLauncher.launch("image/*")
+                        }
+                        ScannerControl(R.drawable.ic_fig_batch, stringResource(R.string.cd_batch)) {
+                            val next = !mainVm.batchMode
+                            Logger.d("Click Batch toggle @ Scanner", "enabled=$next")
+                            mainVm.setBatchScanning(next)
+                            Toast.makeText(
+                                context,
+                                if (next) R.string.batch_on else R.string.batch_off,
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                        ScannerControl(
+                            R.drawable.ic_fig_flash,
+                            stringResource(if (torchOn) R.string.scanner_flash_off else R.string.scanner_flash_on),
+                        ) {
+                            torchOn = !torchOn
+                            Logger.d("Click Flash @ Scanner", "on=$torchOn")
+                        }
+                    }
+                }
+
                 if (mainVm.batchMode && mainVm.batchItems.isNotEmpty()) {
                     Card(onClick = {
                         Logger.d("Click Batch card @ Scanner", "count=${mainVm.batchItems.size}")
@@ -270,45 +293,13 @@ fun ScannerScreen(
                     }
                 }
 
+                // Keep zoom available without competing with the floating action strip.
                 Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    Modifier.fillMaxWidth()
+                        .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(24.dp))
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    // Plain white icons (no circular button background) — matches the reference.
-                    ControlItem(
-                        label = stringResource(R.string.scanner_gallery),
-                        icon = R.drawable.ic_fig_gallery,
-                        contentDescription = stringResource(R.string.cd_gallery),
-                    ) {
-                        Logger.d("Click Gallery @ Scanner")
-                        galleryLauncher.launch("image/*")
-                    }
-                    ControlItem(
-                        label = stringResource(R.string.scanner_batch),
-                        icon = R.drawable.ic_fig_batch,
-                        contentDescription = stringResource(R.string.cd_batch),
-                    ) {
-                        val next = !mainVm.batchMode
-                        Logger.d("Click Batch toggle @ Scanner", "enabled=$next")
-                        mainVm.setBatchScanning(next)
-                        Toast.makeText(
-                            context,
-                            if (next) R.string.batch_on else R.string.batch_off,
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    }
-                    ControlItem(
-                        label = stringResource(if (torchOn) R.string.scanner_flash_off else R.string.scanner_flash_on),
-                        icon = R.drawable.ic_fig_flash,
-                        contentDescription = stringResource(R.string.cd_flash),
-                    ) {
-                        torchOn = !torchOn
-                        Logger.d("Click Flash @ Scanner", "on=$torchOn")
-                    }
-                }
-
-                // Zoom slider: [-]  ====O====  [+]
-                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painterResource(R.drawable.ic_fig_zoom_minus),
                         stringResource(R.string.cd_zoom_out),
@@ -434,28 +425,19 @@ private fun Context.vibrateOnScan(): Boolean = runCatching {
     true
 }.getOrDefault(false)
 
-/** A scanner control = plain white icon (no button background) with a white caption below it. */
+/** One compact action inside the floating scanner control strip. */
 @Composable
-private fun ControlItem(
-    label: String,
+private fun ScannerControl(
     @androidx.annotation.DrawableRes icon: Int,
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        androidx.compose.material3.IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) {
-            Icon(
-                painterResource(icon),
-                contentDescription,
-                Modifier.size(28.dp),
-                tint = Color.White,
-            )
-        }
-        Text(
-            label,
-            color = Color.White,
-            style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(top = 4.dp),
+    androidx.compose.material3.IconButton(onClick = onClick, modifier = Modifier.size(52.dp)) {
+        Icon(
+            painterResource(icon),
+            contentDescription,
+            Modifier.size(28.dp),
+            tint = Color.White,
         )
     }
 }
