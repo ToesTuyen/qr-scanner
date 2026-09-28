@@ -42,7 +42,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,7 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -115,8 +114,10 @@ fun ScannerScreen(
     var guideDismissed by remember { mutableStateOf(false) }
     val showGuide = !guideSeen && !guideDismissed
     var torchOn by remember { mutableStateOf(false) }
-    var zoom by remember { mutableFloatStateOf(0f) }
+    var zoomStepIndex by remember { mutableIntStateOf(0) }
     var camera by remember { mutableStateOf<Camera?>(null) }
+    val zoomSteps = remember { listOf(1f, 2f, 3f, 5f) }
+    val zoomRatio = zoomSteps[zoomStepIndex]
     val scanLineProgress by rememberInfiniteTransition(label = "scannerLine").animateFloat(
         initialValue = 0.12f,
         targetValue = 0.88f,
@@ -219,7 +220,26 @@ fun ScannerScreen(
                 )
             }
             LaunchedEffect(camera, torchOn) { camera?.cameraControl?.enableTorch(torchOn) }
-            LaunchedEffect(camera, zoom) { camera?.cameraControl?.setLinearZoom(zoom) }
+            LaunchedEffect(camera, zoomRatio) {
+                val zoomState = camera?.cameraInfo?.zoomState?.value
+                val supportedRatio = zoomRatio.coerceIn(
+                    zoomState?.minZoomRatio ?: 1f,
+                    zoomState?.maxZoomRatio ?: 1f,
+                )
+                camera?.cameraControl?.setZoomRatio(supportedRatio)
+            }
+
+            TextButton(
+                onClick = {
+                    zoomStepIndex = (zoomStepIndex + 1) % zoomSteps.size
+                    Logger.d("Adjust Zoom @ Scanner", "ratio=${zoomSteps[zoomStepIndex]}x")
+                },
+                modifier = Modifier.align(Alignment.TopEnd).safeDrawingPadding()
+                    .padding(top = 20.dp, end = 20.dp)
+                    .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(22.dp)),
+            ) {
+                Text("${zoomRatio.toInt()}x", color = Color.White)
+            }
 
             // Centred product-style viewfinder, with the scan line confined to its rounded brackets.
             Column(
@@ -293,32 +313,6 @@ fun ScannerScreen(
                     }
                 }
 
-                // Keep zoom available without competing with the floating action strip.
-                Row(
-                    Modifier.fillMaxWidth()
-                        .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(24.dp))
-                        .padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        painterResource(R.drawable.ic_fig_zoom_minus),
-                        stringResource(R.string.cd_zoom_out),
-                        Modifier.size(24.dp),
-                        tint = Color.White,
-                    )
-                    Slider(
-                        value = zoom,
-                        onValueChange = { zoom = it },
-                        onValueChangeFinished = { Logger.d("Adjust Zoom @ Scanner", "value=$zoom") },
-                        modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
-                    )
-                    Icon(
-                        painterResource(R.drawable.ic_fig_zoom_plus),
-                        stringResource(R.string.cd_zoom_in),
-                        Modifier.size(24.dp),
-                        tint = Color.White,
-                    )
-                }
             }
 
             if (showGuide) {
