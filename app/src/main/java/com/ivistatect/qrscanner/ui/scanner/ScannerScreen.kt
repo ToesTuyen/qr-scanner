@@ -294,7 +294,15 @@ fun ScannerScreen(
                             Logger.d("Click Gallery @ Scanner")
                             galleryLauncher.launch("image/*")
                         }
-                        ScannerControl(R.drawable.ic_fig_batch, stringResource(R.string.cd_batch)) {
+                        ScannerControl(
+                            R.drawable.ic_fig_batch,
+                            stringResource(R.string.cd_batch),
+                            tint = if (mainVm.batchMode) {
+                                androidx.compose.material3.MaterialTheme.colorScheme.primary
+                            } else {
+                                Color.White
+                            },
+                        ) {
                             val next = !mainVm.batchMode
                             Logger.d("Click Batch toggle @ Scanner", "enabled=$next")
                             mainVm.setBatchScanning(next)
@@ -307,6 +315,11 @@ fun ScannerScreen(
                         ScannerControl(
                             R.drawable.ic_fig_flash,
                             stringResource(if (torchOn) R.string.scanner_flash_off else R.string.scanner_flash_on),
+                            tint = if (torchOn) {
+                                androidx.compose.material3.MaterialTheme.colorScheme.primary
+                            } else {
+                                Color.White
+                            },
                         ) {
                             torchOn = !torchOn
                             Logger.d("Click Flash @ Scanner", "on=$torchOn")
@@ -441,6 +454,7 @@ private fun Context.vibrateOnScan(): Boolean = runCatching {
 private fun ScannerControl(
     @androidx.annotation.DrawableRes icon: Int,
     contentDescription: String,
+    tint: Color = Color.White,
     onClick: () -> Unit,
 ) {
     androidx.compose.material3.IconButton(onClick = onClick, modifier = Modifier.size(52.dp)) {
@@ -448,7 +462,7 @@ private fun ScannerControl(
             painterResource(icon),
             contentDescription,
             Modifier.size(22.dp),
-            tint = Color.White,
+            tint = tint,
         )
     }
 }
