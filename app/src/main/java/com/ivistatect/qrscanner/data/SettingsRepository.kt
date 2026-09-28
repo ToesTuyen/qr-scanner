@@ -21,6 +21,8 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
 
     data class Settings(
         val batchScanning: Boolean = false,
+        /** Off by default: scanned batch items wait for the user to submit them together. */
+        val autoSubmitServer: Boolean = false,
         val vibration: Boolean = true,
         val sound: Boolean = true,
         val autoCopy: Boolean = false,
@@ -38,6 +40,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
     val settings: Flow<Settings> = context.settingsDataStore.data.map { p ->
         Settings(
             batchScanning = p[KEY_BATCH] ?: false,
+            autoSubmitServer = p[KEY_AUTO_SUBMIT_SERVER] ?: false,
             vibration = p[KEY_VIBRATION] ?: true,
             sound = p[KEY_SOUND] ?: true,
             autoCopy = p[KEY_AUTO_COPY] ?: false,
@@ -77,7 +80,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
     }
 
     enum class Key(val pref: Preferences.Key<Boolean>) {
-        BATCH(KEY_BATCH), VIBRATION(KEY_VIBRATION), SOUND(KEY_SOUND),
+        BATCH(KEY_BATCH), AUTO_SUBMIT_SERVER(KEY_AUTO_SUBMIT_SERVER), VIBRATION(KEY_VIBRATION), SOUND(KEY_SOUND),
         AUTO_COPY(KEY_AUTO_COPY), WEB_SEARCH(KEY_WEB_SEARCH),
         SAVE_HISTORY(KEY_SAVE_HISTORY), SHOW_PRODUCT(KEY_SHOW_PRODUCT),
     }
@@ -90,6 +93,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         const val CAMERA_FRONT = 1
 
         private val KEY_BATCH = booleanPreferencesKey("batch_scanning")
+        private val KEY_AUTO_SUBMIT_SERVER = booleanPreferencesKey("auto_submit_server")
         private val KEY_VIBRATION = booleanPreferencesKey("vibration")
         private val KEY_SOUND = booleanPreferencesKey("sound")
         private val KEY_AUTO_COPY = booleanPreferencesKey("auto_copy")

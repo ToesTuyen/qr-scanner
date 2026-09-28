@@ -3,11 +3,8 @@ package com.ivistatect.qrscanner.ui.scanner
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioManager
-import android.media.ToneGenerator
+import android.media.MediaPlayer
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
@@ -201,6 +198,10 @@ fun ScannerScreen(
             scope.launch {
                 val decoded = ImageQrDecoder.decode(context, uri)
                 if (decoded != null) {
+                    val scanSettings = currentSettings.value
+                    val hapticPlayed = if (scanSettings.vibration) context.vibrateOnScan() else false
+                    val soundPlayed = if (scanSettings.sound) context.playScanTone() else false
+                    Logger.d("Scan feedback", "vibration=$hapticPlayed sound=$soundPlayed source=gallery")
                     mainVm.onDecoded(decoded)
                     if (!mainVm.batchMode) onResult()
                 } else {
@@ -548,16 +549,13 @@ private fun Context.vibrateOnScan(): Boolean = runCatching {
     true
 }.getOrDefault(false)
 
-/** Plays beyond the Scanner composition so navigation to the result cannot cut off the scan beep. */
+/** Plays one short barcode-scanner beep beyond the Scanner composition. */
 private fun Context.playScanTone(): Boolean = runCatching {
-    val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-    if (tone.startTone(ToneGenerator.TONE_PROP_BEEP2, 220)) {
-        Handler(Looper.getMainLooper()).postDelayed(tone::release, 260L)
-        true
-    } else {
-        tone.release()
-        false
-    }
+    val player = MediaPlayer.create(this, R.raw.scan_success) ?: return@runCatching false
+    player.setVolume(1f, 1f)
+    player.setOnCompletionListener { completedPlayer -> completedPlayer.release() }
+    player.start()
+    true
 }.getOrDefault(false)
 
 /** One compact action inside the floating scanner control strip. */

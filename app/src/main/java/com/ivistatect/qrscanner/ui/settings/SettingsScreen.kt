@@ -102,6 +102,7 @@ fun SettingsScreen(
             Logger.d("Click Camera @ Settings"); showCameraFacing = true
         }
         ToggleRow(R.drawable.ic_set_batch, stringResource(R.string.settings_batch), s.batchScanning) { vm.toggleLogged(SettingsRepository.Key.BATCH, it, "Batch") }
+        ToggleRow(R.drawable.ic_connect, stringResource(R.string.settings_auto_submit_server), s.autoSubmitServer) { vm.toggleLogged(SettingsRepository.Key.AUTO_SUBMIT_SERVER, it, "Auto server submit") }
         ToggleRow(R.drawable.ic_set_vibration, stringResource(R.string.settings_vibration), s.vibration) { vm.toggleLogged(SettingsRepository.Key.VIBRATION, it, "Vibration") }
         ToggleRow(R.drawable.ic_set_sound, stringResource(R.string.settings_sound), s.sound) { vm.toggleLogged(SettingsRepository.Key.SOUND, it, "Sound") }
         ToggleRow(R.drawable.ic_set_auto_copy, stringResource(R.string.settings_auto_copy), s.autoCopy) { vm.toggleLogged(SettingsRepository.Key.AUTO_COPY, it, "AutoCopy") }

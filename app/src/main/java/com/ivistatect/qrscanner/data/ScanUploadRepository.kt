@@ -30,20 +30,20 @@ class ScanUploadRepository @Inject constructor(
             connection.connectTimeout = 10_000
             connection.readTimeout = 10_000
             connection.doOutput = true
-            connection.setRequestProperty("X-API-Key", API_KEY)
+            connection.setRequestProperty("X-API-Key", SERVER_ACCESS_KEY)
             connection.setRequestProperty("Content-Type", "application/json")
             connection.outputStream.bufferedWriter(Charsets.UTF_8).use { it.write(body) }
 
             val status = connection.responseCode
             if (status in 200..299) {
-                Logger.d("Scanner API scan submitted", "status=$status")
+                Logger.d("Scanner server scan submitted", "status=$status")
                 true
             } else {
-                Logger.e("Scanner API rejected scan", "status=$status")
+                Logger.e("Scanner server rejected scan", "status=$status")
                 false
             }
         } catch (error: Exception) {
-            Logger.e("Scanner API request failed", "reason=${error.javaClass.simpleName}", error)
+            Logger.e("Scanner server request failed", "reason=${error.javaClass.simpleName}", error)
             false
         } finally {
             connection.disconnect()
@@ -52,7 +52,7 @@ class ScanUploadRepository @Inject constructor(
 
     private companion object {
         const val SCAN_URL = "https://vtpautopackage.ivistatech.vn/api/v1/scanner/scan"
-        const val API_KEY = "919f9e2da39a153bb150343e551d73b3d4867f407e8e315bb26b89170a1928fc"
+        const val SERVER_ACCESS_KEY = "919f9e2da39a153bb150343e551d73b3d4867f407e8e315bb26b89170a1928fc"
         const val TABLE_ID = "1061baeb-8ea7-4e11-9b0d-181ee4218c2a"
         const val OPERATOR_ID = "DEV_TEST"
     }

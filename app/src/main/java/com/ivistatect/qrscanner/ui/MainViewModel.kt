@@ -34,6 +34,16 @@ data class CreatedResult(
     val bitmap: Bitmap,
 )
 
+/** Progress and outcome of the current server submission run shown in the Batch screen. */
+data class ServerSubmissionState(
+    val total: Int = 0,
+    val succeeded: Int = 0,
+    val failed: Int = 0,
+    val isSending: Boolean = false,
+) {
+    val completed: Int get() = succeeded + failed
+}
+
 /**
  * Activity-scoped shared state for the single-activity host: the transient nav payloads
  * (current scan result, current created result, batch accumulation) plus decode/create/persist.
@@ -68,10 +78,14 @@ class MainViewModel @Inject constructor(
 
     var batchMode by mutableStateOf(false); private set
     val batchItems = mutableStateListOf<DecodedCode>()
+    var serverSubmissionState by mutableStateOf(ServerSubmissionState()); private set
 
     fun updateBatchMode(enabled: Boolean) {
         batchMode = enabled
-        if (!enabled) batchItems.clear()
+        if (!enabled) {
+            batchItems.clear()
+            serverSubmissionState = ServerSubmissionState()
+        }
         Logger.d("Scanner: batch mode ${if (enabled) "on" else "off"}")
     }
 
@@ -92,6 +106,24 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    /** Sends the currently accumulated codes once, reporting both accepted and failed requests. */
+    fun sendBatchToServer() {
+        val codes = batchItems.toList()
+        if (codes.isEmpty() || serverSubmissionState.isSending) return
+
+        Logger.d("Send Batch to server", "count=${codes.size}")
+        serverSubmissionState = ServerSubmissionState(total = codes.size, isSending = true)
+        viewModelScope.launch {
+            codes.forEach { code ->
+                recordServerSubmission(scanUploadRepository.submitScan(code.rawValue))
+            }
+            Logger.d(
+                "Batch server send finished",
+                "success=${serverSubmissionState.succeeded} failed=${serverSubmissionState.failed}",
+            )
+        }
+    }
+
     /** Persist that the scanner tutorial sheet has been seen (shown once, like the reference). */
     fun markScanGuideSeen() {
         viewModelScope.launch { settingsRepo.setScanGuideSeen(true) }
@@ -102,14 +134,13 @@ class MainViewModel @Inject constructor(
         if (batchMode) {
             if (batchItems.none { it.rawValue == code.rawValue }) {
                 batchItems.add(code)
-                submitScannedBarcode(code.rawValue)
+                if (settings.value.autoSubmitServer) submitScannedBarcode(code.rawValue)
                 Logger.d("Scanner: batch add", "count=${batchItems.size}")
             }
         } else {
             currentScan = code
             currentScanFavorite = false
             currentScanHistoryId = null
-            submitScannedBarcode(code.rawValue)
             viewModelScope.launch {
                 if (settingsRepo.settings.first().saveHistory) {
                     currentScanHistoryId = historyRepo.add(code.toEntity(HistoryEntity.ORIGIN_SCANNED))
@@ -118,8 +149,24 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    /** Sends one scan immediately when the explicit automatic server setting is enabled. */
     private fun submitScannedBarcode(barcode: String) {
-        viewModelScope.launch { scanUploadRepository.submitScan(barcode) }
+        serverSubmissionState = serverSubmissionState.copy(
+            total = serverSubmissionState.total + 1,
+            isSending = true,
+        )
+        Logger.d("Auto send scan to server", "queued=${serverSubmissionState.total}")
+        viewModelScope.launch {
+            recordServerSubmission(scanUploadRepository.submitScan(barcode))
+        }
+    }
+
+    private fun recordServerSubmission(succeeded: Boolean) {
+        val updated = serverSubmissionState.copy(
+            succeeded = serverSubmissionState.succeeded + if (succeeded) 1 else 0,
+            failed = serverSubmissionState.failed + if (succeeded) 0 else 1,
+        )
+        serverSubmissionState = updated.copy(isSending = updated.completed < updated.total)
     }
 
     fun openFromHistory(item: HistoryEntity) {
