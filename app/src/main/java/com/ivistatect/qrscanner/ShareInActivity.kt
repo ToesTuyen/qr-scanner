@@ -146,7 +146,9 @@ private fun ShareInResult(code: DecodedCode, onClose: () -> Unit) {
     LaunchedEffect(code.rawValue) { Logger.d("Enter ShareInResult", "type=${code.valueType}") }
     val previewFormat = remember(code.formatName) { QrGenerator.formatFromName(code.formatName) }
     val preview = remember(code.rawValue, previewFormat) {
-        previewFormat?.let { QrGenerator.encode(code.rawValue, it, 600) }
+        previewFormat
+            ?.takeIf(QrGenerator::isTwoDimensional)
+            ?.let { QrGenerator.encode(code.rawValue, it, 600) }
     }
     val friendly = if (code.formatName == "QR_CODE") "QR Code" else code.formatName
     val subtitle = remember(code.formatName) {

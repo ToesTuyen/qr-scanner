@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -43,11 +41,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.ivistatect.qrscanner.util.Logger
@@ -82,7 +77,9 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
 
     val previewFormat = remember(code.formatName) { QrGenerator.formatFromName(code.formatName) }
     val previewBitmap = remember(code.rawValue, previewFormat) {
-        previewFormat?.let { QrGenerator.encode(code.rawValue, it, 600) }
+        previewFormat
+            ?.takeIf(QrGenerator::isTwoDimensional)
+            ?.let { QrGenerator.encode(code.rawValue, it, 600) }
     }
 
     Scaffold(
@@ -95,11 +92,13 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        // Print → Android system print spooler (reference parity, external boundary).
-                        Logger.d("Click Print @ ScanResult")
-                        previewBitmap?.let { context.printBitmap(context.getString(R.string.print_job), it) }
-                    }) { Icon(painterResource(R.drawable.ic_printer), stringResource(R.string.cd_print), Modifier.size(24.dp)) }
+                    previewBitmap?.let { bitmap ->
+                        IconButton(onClick = {
+                            // Print → Android system print spooler (reference parity, external boundary).
+                            Logger.d("Click Print @ ScanResult")
+                            context.printBitmap(context.getString(R.string.print_job), bitmap)
+                        }) { Icon(painterResource(R.drawable.ic_printer), stringResource(R.string.cd_print), Modifier.size(24.dp)) }
+                    }
                     IconButton(onClick = { Logger.d("Click More @ ScanResult"); showMore = true }) {
                         Icon(painterResource(R.drawable.ic_three_dot), stringResource(R.string.cd_more), Modifier.size(24.dp))
                     }
@@ -176,37 +175,14 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                 }
             }
 
-            // Recreated in the same symbology as the scanned code: EAN/Code 128 stays a barcode.
+            // QR-family previews are recreated locally. Linear barcodes retain their decoded text only.
             previewBitmap?.let {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    if (previewFormat != null && QrGenerator.isTwoDimensional(previewFormat)) {
-                        Image(
-                            it.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier.size(220.dp).background(Color.White).padding(10.dp),
-                        )
-                    } else {
-                        Column(
-                            modifier = Modifier.width(300.dp).background(Color.White).padding(horizontal = 10.dp, vertical = 8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Image(
-                                it.asImageBitmap(),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxWidth().height(100.dp),
-                            )
-                            Text(
-                                text = formatBarcodeValue(code.rawValue, code.formatName),
-                                fontSize = 14.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Medium,
-                                letterSpacing = 0.7.sp,
-                                color = Color.Black,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        }
-                    }
+                    Image(
+                        it.asImageBitmap(),
+                        contentDescription = stringResource(R.string.cd_qr_preview),
+                        modifier = Modifier.size(220.dp).background(Color.White).padding(10.dp),
+                    )
                 }
             }
         }
@@ -295,19 +271,6 @@ private fun friendlyFormat(formatName: String): String =
 private fun resultSubtitle(formatName: String): String {
     val date = java.text.SimpleDateFormat("MMM d, yyyy hh:mm a", java.util.Locale.getDefault()).format(java.util.Date())
     return "$date, ${friendlyFormat(formatName)}"
-}
-
-/** Formats linear-code digits using the groups printed under their standard bar layouts. */
-private fun formatBarcodeValue(rawValue: String, formatName: String): String = when {
-    formatName == "EAN_13" && rawValue.length == 13 ->
-        "${rawValue.take(1)}  ${rawValue.substring(1, 7)}  ${rawValue.substring(7)}"
-    formatName == "EAN_8" && rawValue.length == 8 ->
-        "${rawValue.take(4)}  ${rawValue.substring(4)}"
-    formatName == "UPC_A" && rawValue.length == 12 ->
-        "${rawValue.take(1)}  ${rawValue.substring(1, 6)}  ${rawValue.substring(6, 11)}  ${rawValue.takeLast(1)}"
-    formatName == "UPC_E" && rawValue.length == 8 ->
-        "${rawValue.take(1)}  ${rawValue.substring(1, 7)}  ${rawValue.takeLast(1)}"
-    else -> rawValue
 }
 
 @StringRes
