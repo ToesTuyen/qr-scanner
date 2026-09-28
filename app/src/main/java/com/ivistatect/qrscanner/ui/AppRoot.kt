@@ -6,7 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -115,56 +114,11 @@ fun AppRoot() {
         goHome()
     }
 
-    Scaffold(
-        // Destination screens own their window insets. This avoids applying the status-bar inset
-        // twice when a destination has its own Scaffold and TopAppBar.
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        bottomBar = {
-            if (showBottomBar) {
-                Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp)) {
-                    Row(
-                        Modifier.fillMaxWidth().height(68.dp)
-                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(28.dp)),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        TABS.forEach { tab ->
-                            val selected = currentRoute == tab.route
-                            IconButton(
-                                onClick = {
-                                    Logger.d("Click Tab @ ${tab.route}")
-                                    navController.navigate(tab.route) {
-                                        popUpTo(Routes.SCANNER) { saveState = true }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                },
-                                modifier = Modifier.size(48.dp).background(
-                                    if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                    RoundedCornerShape(16.dp),
-                                ),
-                            ) {
-                                Icon(
-                                    painterResource(tab.icon),
-                                    contentDescription = stringResource(tab.labelRes),
-                                    modifier = Modifier.size(22.dp),
-                                    tint = if (selected) {
-                                        MaterialTheme.colorScheme.onPrimary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        },
-    ) { padding ->
+    Box(Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
             startDestination = Routes.SCANNER,
-            modifier = Modifier.padding(padding),
+            modifier = Modifier.fillMaxSize(),
         ) {
             composable(Routes.SCANNER) {
                 ScannerScreen(
@@ -208,6 +162,52 @@ fun AppRoot() {
                         activity.recreate()
                     },
                 )
+            }
+        }
+
+        if (showBottomBar) {
+            val scannerTab = currentRoute == Routes.SCANNER
+            val containerColor = if (scannerTab) Color(0xFF15171D) else MaterialTheme.colorScheme.surface
+            val unselectedTint = if (scannerTab) Color(0xFFC3C7D0) else MaterialTheme.colorScheme.onSurfaceVariant
+            Box(
+                Modifier.align(Alignment.BottomCenter).fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
+            ) {
+                Row(
+                    Modifier.fillMaxWidth().height(68.dp)
+                        .background(containerColor, RoundedCornerShape(28.dp)),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TABS.forEach { tab ->
+                        val selected = currentRoute == tab.route
+                        IconButton(
+                            onClick = {
+                                Logger.d("Click Tab @ ${tab.route}")
+                                navController.navigate(tab.route) {
+                                    popUpTo(Routes.SCANNER) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            modifier = Modifier.size(48.dp).background(
+                                if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                RoundedCornerShape(16.dp),
+                            ),
+                        ) {
+                            Icon(
+                                painterResource(tab.icon),
+                                contentDescription = stringResource(tab.labelRes),
+                                modifier = Modifier.size(22.dp),
+                                tint = if (selected) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    unselectedTint
+                                },
+                            )
+                        }
+                    }
+                }
             }
         }
     }

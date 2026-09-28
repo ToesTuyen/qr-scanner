@@ -9,6 +9,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -163,7 +164,10 @@ fun HistoryScreen(
                 }
             }
         } else {
-            LazyColumn(Modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                contentPadding = PaddingValues(bottom = 104.dp),
+            ) {
                 item(key = "today_header") {
                     Text(
                         stringResource(R.string.history_group_today),

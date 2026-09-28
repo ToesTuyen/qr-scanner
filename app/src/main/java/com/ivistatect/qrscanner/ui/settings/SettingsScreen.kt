@@ -79,7 +79,7 @@ fun SettingsScreen(
             .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
+            .padding(start = 16.dp, end = 16.dp, bottom = 104.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(
