@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Launcher label. Do NOT translate. -->
-    <string name="app_name" translatable="false">QR Scanner</string>
+    <string name="app_name" translatable="false">Barcode Scanner</string>
 
     <!-- Seed copy kept from the template (translated in values-*/). -->
     <string name="cd_back">Back</string>
@@ -15,13 +15,13 @@
 
     <!-- Scanner -->
     <string name="scan_permission_title">Allow camera access</string>
-    <string name="scan_permission_body">QR Scanner needs the camera to scan QR codes and barcodes.</string>
+    <string name="scan_permission_body">Barcode Scanner needs the camera to scan barcodes.</string>
     <string name="scan_permission_allow">Allow</string>
     <string name="scan_permission_settings_title">Camera permission required</string>
     <string name="scan_permission_settings_body">Camera access is turned off. Enable it in Settings to scan.</string>
     <string name="scan_permission_open_settings">Open Settings</string>
     <string name="cancel">Cancel</string>
-    <string name="scan_guide_title">Point your camera at a QR code to scan it automatically.</string>
+    <string name="scan_guide_title">Point your camera at a barcode to scan it automatically.</string>
     <string name="scan_guide_step1">1. Center the code inside the frame.</string>
     <string name="scan_guide_step2">2. Hold steady until it is detected.</string>
     <string name="got_it">Got It</string>
@@ -32,7 +32,7 @@
     <string name="cd_zoom_out">Zoom out</string>
     <string name="batch_on">Batch mode on</string>
     <string name="batch_off">Batch mode off</string>
-    <string name="error_detecting">Error detecting QR or Barcode!</string>
+    <string name="error_detecting">Error detecting Barcode!</string>
     <string name="scanner_gallery">Gallery</string>
     <string name="scanner_batch">Batch</string>
     <string name="scanner_flash_on">Turn on flash</string>
@@ -64,7 +64,7 @@
     <string name="cd_generated_code">Generated code</string>
     <string name="share_sheet_csv">CSV File</string>
     <string name="share_sheet_text">Text File</string>
-    <string name="print_job">QR Scanner</string>
+    <string name="print_job">Barcode Scanner</string>
 
     <!-- Create -->
     <string name="create_header">Create QR Code</string>
@@ -161,7 +161,7 @@
     <string name="settings_update_available_message">Version %1$s is available. Current version: %2$s.</string>
     <string name="settings_update_download">Download and install</string>
     <string name="settings_update_permission_title">Allow app updates</string>
-    <string name="settings_update_permission_message">Allow QR Scanner to install apps from this source, then check for updates again.</string>
+    <string name="settings_update_permission_message">Allow Barcode Scanner to install apps from this source, then check for updates again.</string>
     <string name="settings_update_open_settings">Open Settings</string>
     <string name="settings_update_latest_title">You are up to date</string>
     <string name="settings_update_latest_message">Version %1$s is the latest release.</string>
@@ -170,7 +170,7 @@
     <string name="settings_update_failed_title">Could not check for updates</string>
     <string name="startup_update_checking">Checking version…</string>
     <string name="startup_update_required_title">Update required</string>
-    <string name="startup_update_required_message">Version %1$s is required to continue using QR Scanner.</string>
+    <string name="startup_update_required_message">Version %1$s is required to continue using Barcode Scanner.</string>
     <string name="startup_update_check_failed_title">Could not verify the version</string>
     <string name="startup_update_retry">Try again</string>
     <string name="settings_about">About</string>
@@ -219,11 +219,11 @@
 
     <!-- Exit -->
     <string name="exit_title">Exit app?</string>
-    <string name="exit_message">Are you sure you want to exit QR Scanner?</string>
+    <string name="exit_message">Are you sure you want to exit Barcode Scanner?</string>
     <string name="exit_confirm">Exit</string>
 
     <!-- Share App text -->
-    <string name="share_app_text">Hey check out this QR Scanner app!</string>
+    <string name="share_app_text">Hey, check out this Barcode Scanner app!</string>
 
     <!-- External links (reference's own public policy pages) -->
     <string name="url_privacy" translatable="false">https://sites.google.com/view/qrscannerma/home</string>

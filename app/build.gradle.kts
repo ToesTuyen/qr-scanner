@@ -10,10 +10,10 @@ plugins {
 val releaseVersionCode = providers.gradleProperty("releaseVersionCode")
     .orNull
     ?.toIntOrNull()
-    ?: 1_000_001
+    ?: 1_000_002
 val releaseVersionName = providers.gradleProperty("releaseVersionName")
     .orNull
-    ?: "1.0.1"
+    ?: "1.0.2"
 val githubKeystorePath = providers.environmentVariable("ANDROID_KEYSTORE_PATH").orNull
 val githubKeystorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
 val githubKeyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS").orNull

@@ -43,7 +43,7 @@ class GithubAppUpdateRepository @Inject constructor(
                 connectTimeout = CONNECT_TIMEOUT_MS
                 readTimeout = READ_TIMEOUT_MS
                 setRequestProperty("Accept", "application/vnd.github+json")
-                setRequestProperty("User-Agent", "QRScanner-Android")
+                setRequestProperty("User-Agent", "BarcodeScanner-Android")
             }
             try {
                 val status = connection.responseCode
@@ -78,9 +78,9 @@ class GithubAppUpdateRepository @Inject constructor(
     suspend fun downloadAndOpenInstaller(release: GithubRelease): DownloadResult = withContext(Dispatchers.IO) {
         runCatching {
             val downloadManager = context.getSystemService(DownloadManager::class.java)
-            val destinationName = "QRScanner-${release.versionName}.apk"
+            val destinationName = "IVISTA-Barcode-Scanner-v${release.versionName}.apk"
             val request = DownloadManager.Request(Uri.parse(release.downloadUrl)).apply {
-                setTitle("QR Scanner ${release.tagName}")
+                setTitle("Barcode Scanner ${release.tagName}")
                 setDescription("Đang tải bản cập nhật")
                 setMimeType(APK_MIME_TYPE)
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -169,7 +169,7 @@ class GithubAppUpdateRepository @Inject constructor(
 
     private companion object {
         const val LATEST_RELEASE_URL = "https://api.github.com/repos/ToesTuyen/qr-scanner/releases/latest"
-        const val PROFESSIONAL_APK_PREFIX = "IVISTA-QR-Scanner-v"
+        const val PROFESSIONAL_APK_PREFIX = "IVISTA-Barcode-Scanner-v"
         const val LEGACY_APK_ASSET_NAME = "QRScanner.apk"
         const val APK_MIME_TYPE = "application/vnd.android.package-archive"
         const val CONNECT_TIMEOUT_MS = 15_000

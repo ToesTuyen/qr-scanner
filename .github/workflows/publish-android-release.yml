@@ -41,11 +41,11 @@ jobs:
             echo "Missing ANDROID_KEYSTORE_BASE64 repository secret." >&2
             exit 1
           }
-          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/qr-scanner-update.jks"
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/barcode-scanner-update.jks"
 
       - name: Build release APK
         env:
-          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/qr-scanner-update.jks
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/barcode-scanner-update.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -58,9 +58,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          APK_NAME="IVISTA-QR-Scanner-v${{ steps.version.outputs.name }}.apk"
+          APK_NAME="IVISTA-Barcode-Scanner-v${{ steps.version.outputs.name }}.apk"
           cp app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/$APK_NAME"
           gh release create "${GITHUB_REF_NAME}" \
             "app/build/outputs/apk/release/$APK_NAME" \
-            --title "QR Scanner ${{ steps.version.outputs.name }}" \
+            --title "Barcode Scanner ${{ steps.version.outputs.name }}" \
             --generate-notes
