@@ -6,9 +6,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.annotation.DrawableRes
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +53,14 @@ object Routes {
     const val LANGUAGE = "language"
 }
 
+private data class TabItem(val route: String, val labelRes: Int, @DrawableRes val icon: Int)
+
+private val TABS = listOf(
+    TabItem(Routes.SCANNER, R.string.nav_scanner, R.drawable.ic_fig_nav_scanner),
+    TabItem(Routes.HISTORY, R.string.nav_history, R.drawable.ic_fig_nav_history),
+    TabItem(Routes.SETTINGS, R.string.nav_settings, R.drawable.ic_fig_nav_settings),
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppRoot() {
@@ -56,6 +71,7 @@ fun AppRoot() {
 
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
+    val showBottomBar = currentRoute in setOf(Routes.SCANNER, Routes.HISTORY, Routes.SETTINGS)
 
     var showExitSheet by remember { mutableStateOf(false) }
 
@@ -81,7 +97,35 @@ fun AppRoot() {
         goHome()
     }
 
-    Scaffold { padding ->
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+                    TABS.forEach { tab ->
+                        NavigationBarItem(
+                            selected = currentRoute == tab.route,
+                            onClick = {
+                                Logger.d("Click Tab @ ${tab.route}")
+                                navController.navigate(tab.route) {
+                                    popUpTo(Routes.SCANNER) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    painterResource(tab.icon),
+                                    contentDescription = stringResource(tab.labelRes),
+                                    modifier = Modifier.size(24.dp),
+                                )
+                            },
+                            label = { Text(stringResource(tab.labelRes)) },
+                        )
+                    }
+                }
+            }
+        },
+    ) { padding ->
         NavHost(
             navController = navController,
             startDestination = Routes.SCANNER,
