@@ -21,7 +21,7 @@ enum class ScanValueType {
     URL, TEXT, PHONE, SMS, EMAIL, WIFI, GEO, CONTACT;
 
     /** Actions the reference's result grid offers for this value type. */
-    fun actions(): List<ResultAction> = when (this) {
+    fun actions(showProductDetails: Boolean = false, formatName: String = ""): List<ResultAction> = when (this) {
         URL -> listOf(ResultAction.OPEN, ResultAction.SHARE, ResultAction.COPY)
         PHONE -> listOf(ResultAction.CALL, ResultAction.COPY, ResultAction.SHARE)
         SMS -> listOf(ResultAction.SMS, ResultAction.COPY, ResultAction.SHARE)
@@ -29,7 +29,14 @@ enum class ScanValueType {
         WIFI -> listOf(ResultAction.WIFI, ResultAction.COPY, ResultAction.SHARE)
         GEO -> listOf(ResultAction.MAP, ResultAction.COPY, ResultAction.SHARE)
         CONTACT -> listOf(ResultAction.CONTACT, ResultAction.COPY, ResultAction.SHARE)
-        TEXT -> listOf(ResultAction.WEB_SEARCH, ResultAction.COPY, ResultAction.SHARE)
+        TEXT -> buildList {
+            if (showProductDetails && formatName.isProductBarcodeFormat()) {
+                add(ResultAction.PRODUCT_DETAILS)
+            }
+            add(ResultAction.WEB_SEARCH)
+            add(ResultAction.COPY)
+            add(ResultAction.SHARE)
+        }
     }
 
     companion object {
@@ -50,7 +57,11 @@ enum class ScanValueType {
     }
 }
 
-enum class ResultAction { OPEN, WEB_SEARCH, CALL, SMS, EMAIL, WIFI, MAP, CONTACT, COPY, SHARE }
+enum class ResultAction { OPEN, WEB_SEARCH, PRODUCT_DETAILS, CALL, SMS, EMAIL, WIFI, MAP, CONTACT, COPY, SHARE }
+
+private fun String.isProductBarcodeFormat(): Boolean = this in setOf(
+    "EAN_13", "EAN_8", "UPC_A", "UPC_E", "CODE_128", "CODE_93", "CODE_39", "ITF", "CODABAR",
+)
 
 /** Real reference tile glyph for a value type (reused by the result / created / history screens). */
 @DrawableRes

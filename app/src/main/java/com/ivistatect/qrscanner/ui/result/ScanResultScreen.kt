@@ -154,7 +154,7 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                code.valueType.actions().forEach { action ->
+                code.valueType.actions(settings.showProduct, code.formatName).forEach { action ->
                     ActionItem(action) {
                         Logger.d("Click ${action.name} @ ScanResult", "raw=${code.rawValue.take(64)}")
                         when (action) {
@@ -245,6 +245,7 @@ private fun ActionItem(action: ResultAction, onClick: () -> Unit) {
 private fun ResultAction.glyph(): Int = when (this) {
     ResultAction.OPEN -> R.drawable.ic_open
     ResultAction.WEB_SEARCH -> R.drawable.ic_globe
+    ResultAction.PRODUCT_DETAILS -> R.drawable.ic_globe
     ResultAction.CALL -> R.drawable.ic_dialer
     ResultAction.SMS -> R.drawable.ic_sms
     ResultAction.EMAIL -> R.drawable.ic_email
@@ -270,6 +271,7 @@ private fun resultSubtitle(formatName: String): String {
 private fun ResultAction.labelRes(): Int = when (this) {
     ResultAction.OPEN -> R.string.action_open
     ResultAction.WEB_SEARCH -> R.string.action_web_search
+    ResultAction.PRODUCT_DETAILS -> R.string.action_product_details
     ResultAction.CALL -> R.string.action_call
     ResultAction.SMS -> R.string.action_sms
     ResultAction.EMAIL -> R.string.action_email

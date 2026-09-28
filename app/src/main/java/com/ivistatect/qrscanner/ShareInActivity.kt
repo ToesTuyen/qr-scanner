@@ -229,6 +229,7 @@ private fun ShareInResult(code: DecodedCode, onClose: () -> Unit) {
 private fun ResultAction.shareInGlyph(): Int = when (this) {
     ResultAction.OPEN -> R.drawable.ic_open
     ResultAction.WEB_SEARCH -> R.drawable.ic_globe
+    ResultAction.PRODUCT_DETAILS -> R.drawable.ic_globe
     ResultAction.CALL -> R.drawable.ic_dialer
     ResultAction.SMS -> R.drawable.ic_sms
     ResultAction.EMAIL -> R.drawable.ic_email
@@ -242,6 +243,7 @@ private fun ResultAction.shareInGlyph(): Int = when (this) {
 private fun ResultAction.shareInLabel(): Int = when (this) {
     ResultAction.OPEN -> R.string.action_open
     ResultAction.WEB_SEARCH -> R.string.action_web_search
+    ResultAction.PRODUCT_DETAILS -> R.string.action_product_details
     ResultAction.CALL -> R.string.action_call
     ResultAction.SMS -> R.string.action_sms
     ResultAction.EMAIL -> R.string.action_email

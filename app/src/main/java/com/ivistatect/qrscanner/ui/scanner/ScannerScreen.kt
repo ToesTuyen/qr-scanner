@@ -2,6 +2,9 @@ package com.ivistatect.qrscanner.ui.scanner
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.view.HapticFeedbackConstants
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,6 +48,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -67,6 +72,8 @@ import com.ivistatect.qrscanner.data.SettingsRepository
 import com.ivistatect.qrscanner.scan.BarcodeAnalyzer
 import com.ivistatect.qrscanner.scan.ImageQrDecoder
 import com.ivistatect.qrscanner.ui.MainViewModel
+import com.ivistatect.qrscanner.ui.common.copyToClipboard
+import com.ivistatect.qrscanner.ui.common.fireResultAction
 import com.ivistatect.qrscanner.ui.common.findActivity
 import com.ivistatect.qrscanner.ui.common.openAppSettings
 import kotlinx.coroutines.launch
@@ -81,6 +88,7 @@ fun ScannerScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val hapticView = LocalView.current
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) { Logger.d("Enter Scanner") }
@@ -95,6 +103,10 @@ fun ScannerScreen(
     // `scanGuideSeen` defaults to true until DataStore loads, so it never flashes on a cold launch.
     val guideSeen by mainVm.scanGuideSeen.collectAsState()
     val settings by mainVm.settings.collectAsState()
+    val currentSettings = rememberUpdatedState(settings)
+    val scanTone = remember { ToneGenerator(AudioManager.STREAM_MUSIC, 65) }
+    DisposableEffect(scanTone) { onDispose { scanTone.release() } }
+    LaunchedEffect(settings.batchScanning) { mainVm.syncBatchMode(settings.batchScanning) }
     var guideDismissed by remember { mutableStateOf(false) }
     val showGuide = !guideSeen && !guideDismissed
     var torchOn by remember { mutableStateOf(false) }
@@ -104,12 +116,32 @@ fun ScannerScreen(
     val analyzerHolder = remember { arrayOfNulls<BarcodeAnalyzer>(1) }
     val analyzer = remember {
         BarcodeAnalyzer { code ->
+            val scanSettings = currentSettings.value
+            val hapticPlayed = if (scanSettings.vibration) {
+                hapticView.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+            } else {
+                false
+            }
+            if (scanSettings.sound) scanTone.startTone(ToneGenerator.TONE_PROP_BEEP2, 120)
+            Logger.d("Scan feedback", "vibration=$hapticPlayed sound=${scanSettings.sound}")
             Logger.d("Scanner: decoded", "type=${code.valueType} format=${code.formatName}")
             mainVm.onDecoded(code)
+            if (scanSettings.autoCopy) {
+                context.copyToClipboard(code.rawValue)
+                Logger.d("Scanner: auto copied result")
+            }
             if (mainVm.batchMode) {
                 scope.launch { kotlinx.coroutines.delay(1200); analyzerHolder[0]?.reset() }
             } else {
                 onResult()
+                if (scanSettings.webSearch) {
+                    Logger.d("Scanner: auto web search", "engine=${scanSettings.searchEngine}")
+                    context.fireResultAction(
+                        com.ivistatect.qrscanner.domain.ResultAction.WEB_SEARCH,
+                        code.rawValue,
+                        scanSettings.searchEngine,
+                    )
+                }
             }
         }.also { analyzerHolder[0] = it }
     }
@@ -234,7 +266,7 @@ fun ScannerScreen(
                     ) {
                         val next = !mainVm.batchMode
                         Logger.d("Click Batch toggle @ Scanner", "enabled=$next")
-                        mainVm.updateBatchMode(next)
+                        mainVm.setBatchScanning(next)
                         Toast.makeText(
                             context,
                             if (next) R.string.batch_on else R.string.batch_off,

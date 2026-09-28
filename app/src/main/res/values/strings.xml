@@ -43,6 +43,7 @@
     <string name="result_title">Result</string>
     <string name="action_open">Open</string>
     <string name="action_web_search">Web Search</string>
+    <string name="action_product_details">Product details</string>
     <string name="action_call">Call</string>
     <string name="action_email">Send Email</string>
     <string name="action_sms">Send SMS</string>

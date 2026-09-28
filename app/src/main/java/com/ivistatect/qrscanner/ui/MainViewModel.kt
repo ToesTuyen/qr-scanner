@@ -73,6 +73,17 @@ class MainViewModel @Inject constructor(
         Logger.d("Scanner: batch mode ${if (enabled) "on" else "off"}")
     }
 
+    /** Mirrors the persisted Batch Scanning setting when the scanner becomes active. */
+    fun syncBatchMode(enabled: Boolean) {
+        if (batchMode != enabled) updateBatchMode(enabled)
+    }
+
+    /** Changes batch mode from the Scanner control and persists the matching setting. */
+    fun setBatchScanning(enabled: Boolean) {
+        updateBatchMode(enabled)
+        viewModelScope.launch { settingsRepo.setBoolean(SettingsRepository.Key.BATCH, enabled) }
+    }
+
     /** Persist that the scanner tutorial sheet has been seen (shown once, like the reference). */
     fun markScanGuideSeen() {
         viewModelScope.launch { settingsRepo.setScanGuideSeen(true) }
