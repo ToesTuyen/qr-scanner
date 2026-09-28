@@ -7,8 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +47,6 @@ import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.ResultAction
 import com.ivistatect.qrscanner.domain.ScanValueType
-import com.ivistatect.qrscanner.domain.tileGlyph
 import com.ivistatect.qrscanner.scan.QrGenerator
 import com.ivistatect.qrscanner.ui.MainViewModel
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
@@ -58,12 +55,11 @@ import com.ivistatect.qrscanner.ui.common.printBitmap
 import com.ivistatect.qrscanner.ui.common.shareText
 import com.ivistatect.qrscanner.ui.common.shareTextAs
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
     val context = LocalContext.current
     val code = mainVm.currentScan
-    val favorite = mainVm.currentScanFavorite
     val settings by mainVm.settings.collectAsState()
     var showMore by remember { mutableStateOf(false) }
 
@@ -81,11 +77,23 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
             ?.takeIf(QrGenerator::isTwoDimensional)
             ?.let { QrGenerator.encode(code.rawValue, it, 600) }
     }
+    val resultActions = code.valueType.actions(settings.showProduct, code.formatName)
+    val executeAction: (ResultAction) -> Unit = { action ->
+        Logger.d("Click ${action.name} @ ScanResult", "raw=${code.rawValue.take(64)}")
+        when (action) {
+            ResultAction.COPY -> {
+                context.copyToClipboard(code.rawValue)
+                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+            }
+            ResultAction.SHARE -> context.shareText(code.rawValue)
+            else -> context.fireResultAction(action, code.rawValue, settings.searchEngine)
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("${friendlyFormat(code.formatName)} (${code.valueType.name})") },
+                title = { Text(stringResource(R.string.result_title)) },
                 navigationIcon = {
                     IconButton(onClick = { Logger.d("Click Back @ ScanResult"); onBack() }) {
                         Icon(painterResource(R.drawable.ic_back), stringResource(R.string.cd_back), Modifier.size(24.dp))
@@ -110,69 +118,14 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
             Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Header row (flat, no card — matches the reference scan result): glyph + type + favorite.
-            Row(
-                Modifier.fillMaxWidth().padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    Modifier.size(48.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Image(
-                        painterResource(code.valueType.tileGlyph()),
-                        contentDescription = null,
-                        modifier = Modifier.size(26.dp),
-                    )
-                }
-                Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                    Text(code.valueType.name, style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        resultSubtitle(code.formatName),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                IconButton(onClick = {
-                    Logger.d("Click Favorite @ ScanResult", "next=${!favorite}")
-                    mainVm.toggleCurrentScanFavorite()
-                }) {
-                    Image(
-                        painterResource(if (favorite) R.drawable.ic_fav else R.drawable.ic_un_fav),
-                        contentDescription = stringResource(R.string.action_favorite),
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            }
-            androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
-
-            // Decoded content (blue hyperlink styling for URLs).
-            Text(
-                code.display,
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (code.valueType == ScanValueType.URL) Color(0xFF1877F2) else MaterialTheme.colorScheme.onSurface,
-            )
-
-            // Type-specific action grid (rvQrOption) — icon + label, real reference glyphs.
-            FlowRow(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                code.valueType.actions(settings.showProduct, code.formatName).forEach { action ->
-                    ActionItem(action) {
-                        Logger.d("Click ${action.name} @ ScanResult", "raw=${code.rawValue.take(64)}")
-                        when (action) {
-                            ResultAction.COPY -> {
-                                context.copyToClipboard(code.rawValue)
-                                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
-                            }
-                            ResultAction.SHARE -> context.shareText(code.rawValue)
-                            else -> context.fireResultAction(action, code.rawValue, settings.searchEngine)
-                        }
-                    }
-                }
+            Text(stringResource(R.string.created_content), style = MaterialTheme.typography.titleSmall)
+            Card(Modifier.fillMaxWidth()) {
+                Text(
+                    code.display,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (code.valueType == ScanValueType.URL) Color(0xFF1877F2) else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(16.dp),
+                )
             }
 
             // QR-family previews are recreated locally. Linear barcodes retain their decoded text only.
@@ -183,6 +136,21 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                         contentDescription = stringResource(R.string.cd_qr_preview),
                         modifier = Modifier.size(220.dp).background(Color.White).padding(10.dp),
                     )
+                }
+            }
+
+            Row(Modifier.fillMaxWidth()) {
+                resultActions.forEach { action ->
+                    ActionItem(action, Modifier.weight(1f)) { executeAction(action) }
+                }
+            }
+
+            resultActions.firstOrNull { it == ResultAction.WEB_SEARCH }?.let { searchAction ->
+                Button(
+                    onClick = { executeAction(searchAction) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(R.string.action_web_search))
                 }
             }
         }
@@ -227,17 +195,22 @@ private fun SheetItem(@DrawableRes icon: Int, label: String, onClick: () -> Unit
 }
 
 @Composable
-private fun ActionItem(action: ResultAction, onClick: () -> Unit) {
+private fun ActionItem(action: ResultAction, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(
-        Modifier.clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 8.dp),
+        modifier.clickable(onClick = onClick).padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Icon(
-            painterResource(action.glyph()),
-            contentDescription = null,
-            modifier = Modifier.size(26.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Box(
+            Modifier.size(48.dp).background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(24.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painterResource(action.glyph()),
+                contentDescription = null,
+                modifier = Modifier.size(26.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Text(
             stringResource(action.labelRes()),
             style = MaterialTheme.typography.labelMedium,
@@ -260,17 +233,6 @@ private fun ResultAction.glyph(): Int = when (this) {
     ResultAction.CONTACT -> R.drawable.ic_add_contact
     ResultAction.COPY -> R.drawable.ic_copy
     ResultAction.SHARE -> R.drawable.ic_share
-}
-
-/** Friendly format name: QR_CODE → "QR Code", CODE_128 → "Code 128". */
-private fun friendlyFormat(formatName: String): String =
-    if (formatName == "QR_CODE") "QR Code"
-    else formatName.split("_").joinToString(" ") { it.lowercase().replaceFirstChar { c -> c.uppercase() } }
-
-/** "MMM d, yyyy hh:mm a, <friendly format>" — matches the reference result subtitle shape. */
-private fun resultSubtitle(formatName: String): String {
-    val date = java.text.SimpleDateFormat("MMM d, yyyy hh:mm a", java.util.Locale.getDefault()).format(java.util.Date())
-    return "$date, ${friendlyFormat(formatName)}"
 }
 
 @StringRes
