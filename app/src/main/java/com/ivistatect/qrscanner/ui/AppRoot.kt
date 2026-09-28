@@ -19,7 +19,6 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -112,13 +111,9 @@ fun AppRoot() {
     }
 
     Scaffold(
-        // Tab surfaces paint behind the transparent status bar themselves. Their headers apply
-        // the status inset, avoiding an extra gap above the toolbar.
-        contentWindowInsets = if (currentRoute in setOf(Routes.SCANNER, Routes.HISTORY, Routes.SETTINGS)) {
-            WindowInsets(0, 0, 0, 0)
-        } else {
-            ScaffoldDefaults.contentWindowInsets
-        },
+        // Destination screens own their window insets. This avoids applying the status-bar inset
+        // twice when a destination has its own Scaffold and TopAppBar.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
