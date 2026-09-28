@@ -11,3 +11,8 @@ fun Activity.hideSystemNavigationBar() {
         hide(WindowInsetsCompat.Type.navigationBars())
     }
 }
+
+/** Uses dark status-bar icons for light app surfaces and light icons for dark surfaces. */
+fun Activity.setLightStatusBarAppearance(lightBackground: Boolean) {
+    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = lightBackground
+}

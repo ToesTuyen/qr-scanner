@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -22,12 +23,14 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,6 +41,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.ui.common.findActivity
+import com.ivistatect.qrscanner.ui.common.setLightStatusBarAppearance
 import com.ivistatect.qrscanner.ui.history.HistoryScreen
 import com.ivistatect.qrscanner.ui.language.LanguageScreen
 import com.ivistatect.qrscanner.ui.result.BatchResultScreen
@@ -74,6 +78,10 @@ fun AppRoot() {
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
     val showBottomBar = currentRoute in setOf(Routes.SCANNER, Routes.HISTORY, Routes.SETTINGS)
+
+    // Status bar remains visible. Match its icon colour to the surface behind it.
+    val lightStatusBar = currentRoute != Routes.SCANNER && MaterialTheme.colorScheme.background.luminance() > 0.5f
+    SideEffect { activity.setLightStatusBarAppearance(lightStatusBar) }
 
     var showExitSheet by remember { mutableStateOf(false) }
 

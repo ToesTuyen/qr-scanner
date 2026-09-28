@@ -24,8 +24,7 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Deliberate edge-to-edge: content draws behind the transparent status/navigation bars
-        // (theme sets both transparent); Compose applies WindowInsets on every screen with a CTA.
+        // Content is edge-to-edge; the app hides only Android's navigation controls.
         WindowCompat.setDecorFitsSystemWindows(window, false)
         hideSystemNavigationBar()
         setContent { QrScannerTheme { AppRoot() } }
