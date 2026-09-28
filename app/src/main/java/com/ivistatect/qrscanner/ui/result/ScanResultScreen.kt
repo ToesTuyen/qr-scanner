@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,7 +47,6 @@ import androidx.annotation.StringRes
 import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.ResultAction
-import com.ivistatect.qrscanner.domain.ScanValueType
 import com.ivistatect.qrscanner.scan.QrGenerator
 import com.ivistatect.qrscanner.ui.MainViewModel
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
@@ -119,11 +119,14 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(stringResource(R.string.created_content), style = MaterialTheme.typography.titleSmall)
-            Card(Modifier.fillMaxWidth()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+            ) {
                 Text(
                     code.display,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = if (code.valueType == ScanValueType.URL) Color(0xFF1877F2) else MaterialTheme.colorScheme.onSurface,
+                    color = Color(0xFF1877F2),
                     modifier = Modifier.padding(16.dp),
                 )
             }
