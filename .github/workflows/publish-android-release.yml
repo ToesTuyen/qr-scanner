@@ -58,8 +58,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/QRScanner.apk
+          APK_NAME="IVISTA-QR-Scanner-v${{ steps.version.outputs.name }}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "app/build/outputs/apk/release/$APK_NAME"
           gh release create "${GITHUB_REF_NAME}" \
-            "app/build/outputs/apk/release/QRScanner.apk" \
+            "app/build/outputs/apk/release/$APK_NAME" \
             --title "QR Scanner ${{ steps.version.outputs.name }}" \
             --generate-notes

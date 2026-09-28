@@ -133,7 +133,10 @@ class GithubAppUpdateRepository @Inject constructor(
         val assets = release.optJSONArray("assets")
         val asset = (0 until (assets?.length() ?: 0))
             .map { assets!!.getJSONObject(it) }
-            .firstOrNull { it.optString("name").equals(APK_ASSET_NAME, ignoreCase = true) }
+            .firstOrNull { it.optString("name").startsWith(PROFESSIONAL_APK_PREFIX, ignoreCase = true) }
+            ?: (0 until (assets?.length() ?: 0))
+                .map { assets!!.getJSONObject(it) }
+                .firstOrNull { it.optString("name").equals(LEGACY_APK_ASSET_NAME, ignoreCase = true) }
             ?: (0 until (assets?.length() ?: 0))
                 .map { assets!!.getJSONObject(it) }
                 .firstOrNull { it.optString("name").endsWith(".apk", ignoreCase = true) }
@@ -166,7 +169,8 @@ class GithubAppUpdateRepository @Inject constructor(
 
     private companion object {
         const val LATEST_RELEASE_URL = "https://api.github.com/repos/ToesTuyen/qr-scanner/releases/latest"
-        const val APK_ASSET_NAME = "QRScanner.apk"
+        const val PROFESSIONAL_APK_PREFIX = "IVISTA-QR-Scanner-v"
+        const val LEGACY_APK_ASSET_NAME = "QRScanner.apk"
         const val APK_MIME_TYPE = "application/vnd.android.package-archive"
         const val CONNECT_TIMEOUT_MS = 15_000
         const val READ_TIMEOUT_MS = 20_000
