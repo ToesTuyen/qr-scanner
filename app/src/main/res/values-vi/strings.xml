@@ -214,7 +214,8 @@
 
     <!-- Exit -->
     <string name="exit_title">Thoát ứng dụng?</string>
-    <string name="exit_confirm">Exit</string>
+    <string name="exit_message">Bạn có muốn thoát QR Scanner không?</string>
+    <string name="exit_confirm">Thoát</string>
 
     <!-- Share App text -->
     <string name="share_app_text">Hãy xem ứng dụng QR Scanner này!</string>

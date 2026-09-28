@@ -20,9 +20,10 @@ private val Context.settingsDataStore: DataStore<Preferences> by preferencesData
 class SettingsRepository @Inject constructor(@ApplicationContext private val context: Context) {
 
     data class Settings(
-        val batchScanning: Boolean = false,
-        /** Off by default: scanned batch items wait for the user to submit them together. */
-        val autoSubmitServer: Boolean = false,
+        /** New installs start in batch mode so every scan is accumulated. */
+        val batchScanning: Boolean = true,
+        /** New batch scans are sent to the server immediately. */
+        val autoSubmitServer: Boolean = true,
         val vibration: Boolean = true,
         val sound: Boolean = true,
         /** Auto copy is deliberately disabled; manual Copy remains available on the result. */
@@ -41,8 +42,8 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
 
     val settings: Flow<Settings> = context.settingsDataStore.data.map { p ->
         Settings(
-            batchScanning = p[KEY_BATCH] ?: false,
-            autoSubmitServer = p[KEY_AUTO_SUBMIT_SERVER] ?: false,
+            batchScanning = p[KEY_BATCH] ?: true,
+            autoSubmitServer = p[KEY_AUTO_SUBMIT_SERVER] ?: true,
             vibration = p[KEY_VIBRATION] ?: true,
             sound = p[KEY_SOUND] ?: true,
             // Do not revive values stored by older releases: these four former settings are

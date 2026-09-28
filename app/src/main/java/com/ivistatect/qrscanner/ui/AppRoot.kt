@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -210,29 +213,65 @@ fun AppRoot() {
     }
 
     if (showExitSheet) {
-        ModalBottomSheet(onDismissRequest = {
-            Logger.d("Dismiss Exit sheet @ Scanner")
-            showExitSheet = false
-        }) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                Logger.d("Dismiss Exit sheet @ Scanner")
+                showExitSheet = false
+            },
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp,
+            dragHandle = {
+                Box(
+                    Modifier.padding(top = 12.dp)
+                        .width(38.dp)
+                        .height(4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.28f),
+                            RoundedCornerShape(4.dp),
+                        ),
+                )
+            },
+        ) {
             Column(
-                Modifier.fillMaxWidth().padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text(stringResource(R.string.exit_title))
-                Button(
-                    onClick = {
-                        Logger.d("Click Exit @ Exit sheet")
-                        activity.finish()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.exit_confirm)) }
-                OutlinedButton(
-                    onClick = {
-                        Logger.d("Click Cancel @ Exit sheet")
-                        showExitSheet = false
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.cancel)) }
+                Text(
+                    stringResource(R.string.exit_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    stringResource(R.string.exit_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            Logger.d("Click Cancel @ Exit sheet")
+                            showExitSheet = false
+                        },
+                        modifier = Modifier.weight(1f).height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                    ) { Text(stringResource(R.string.cancel)) }
+                    Button(
+                        onClick = {
+                            Logger.d("Click Exit @ Exit sheet")
+                            activity.finish()
+                        },
+                        modifier = Modifier.weight(1f).height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
+                    ) { Text(stringResource(R.string.exit_confirm)) }
+                }
             }
         }
     }

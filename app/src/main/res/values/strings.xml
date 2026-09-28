@@ -218,6 +218,7 @@
 
     <!-- Exit -->
     <string name="exit_title">Exit app?</string>
+    <string name="exit_message">Are you sure you want to exit QR Scanner?</string>
     <string name="exit_confirm">Exit</string>
 
     <!-- Share App text -->
