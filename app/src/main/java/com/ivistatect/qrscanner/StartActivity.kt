@@ -37,9 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * Launcher = branded splash before the standalone main activity.
- */
+/** Launcher that verifies the mandatory GitHub update before opening the app. */
 @AndroidEntryPoint
 class StartActivity : FragmentActivity() {
 
@@ -59,7 +57,7 @@ class StartActivity : FragmentActivity() {
         setContent {
             QrScannerTheme {
                 when (val state = startupUpdateState) {
-                    StartupUpdateState.Checking -> SplashContent(checkingForUpdate = true)
+                    StartupUpdateState.Checking -> UpdateCheckContent()
                     is StartupUpdateState.Required -> ForceUpdateContent(
                         release = state.release,
                         downloading = false,
@@ -148,30 +146,13 @@ class StartActivity : FragmentActivity() {
 }
 
 @Composable
-private fun SplashContent(checkingForUpdate: Boolean = false) {
+private fun UpdateCheckContent() {
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(
-            painterResource(R.drawable.ic_qr_logo),
-            contentDescription = null,
-            modifier = Modifier.size(120.dp),
-        )
-        Text(
-            stringResource(R.string.app_name),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(top = 16.dp),
-        )
-        if (checkingForUpdate) {
-            CircularProgressIndicator(modifier = Modifier.padding(top = 24.dp))
-            Text(
-                stringResource(R.string.startup_update_checking),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 12.dp),
-            )
-        }
+        CircularProgressIndicator(modifier = Modifier.size(28.dp))
     }
 }
 
