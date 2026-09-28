@@ -125,15 +125,21 @@ fun ScannerScreen(
     val zoomSteps = remember { listOf(1f, 2f, 3f, 5f) }
     val zoomRatio = zoomSteps[zoomStepIndex]
     val scannerMotion = rememberInfiniteTransition(label = "scannerMotion")
-    val scanLineProgress by scannerMotion.animateFloat(
-        initialValue = 0.12f,
-        targetValue = 0.88f,
+    val scanSweepPhase by scannerMotion.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1_800, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse,
+            animation = tween(durationMillis = 3_600, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "scannerLineProgress",
+        label = "scannerSweepPhase",
     )
+    val scanLineProgress = if (scanSweepPhase <= 0.5f) {
+        0.12f + scanSweepPhase * 1.52f
+    } else {
+        0.88f - (scanSweepPhase - 0.5f) * 1.52f
+    }
+    val scanMovesUpward = scanSweepPhase > 0.5f
 
     val analyzerHolder = remember { arrayOfNulls<BarcodeAnalyzer>(1) }
     val analyzer = remember {
@@ -297,18 +303,25 @@ fun ScannerScreen(
                         StrokeCap.Round,
                     )
                     drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
-                    // Keep dots fixed in the blue recognition overlay, including while the sweep reverses.
+                    // A fixed grid appears only after the upward sweep has passed each dot.
+                    val sweepSpeed = size.height * 0.76f / 1.8f
                     repeat(6) { row ->
                         val y = size.height * ((row + 1f) / 7f)
                         repeat(7) { column ->
-                            val x = size.width * (0.12f + column * 0.105f + row * 0.025f)
-                            if (y >= scanY) {
-                                val depthInOverlay = (y - scanY) / size.height
-                                drawCircle(
-                                    color = Color.White.copy(alpha = 0.58f - depthInOverlay * 0.18f),
-                                    radius = 2.75f,
-                                    center = Offset(x, y),
-                                )
+                            val x = size.width * ((column + 1f) / 8f)
+                            if (scanMovesUpward && y >= scanY) {
+                                val secondsSincePass = (y - scanY) / sweepSpeed
+                                val visibility = when {
+                                    secondsSincePass <= 0.25f -> 1f
+                                    else -> (1f - (secondsSincePass - 0.25f) / 0.75f).coerceIn(0f, 1f)
+                                }
+                                if (visibility > 0f) {
+                                    drawCircle(
+                                        color = Color.White.copy(alpha = 0.58f * visibility),
+                                        radius = 2.75f,
+                                        center = Offset(x, y),
+                                    )
+                                }
                             }
                         }
                     }
