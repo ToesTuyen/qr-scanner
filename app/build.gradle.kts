@@ -7,6 +7,18 @@ plugins {
     alias(libs.plugins.hilt.android)
 }
 
+val releaseVersionCode = providers.gradleProperty("releaseVersionCode")
+    .orNull
+    ?.toIntOrNull()
+    ?: 1_000_000
+val releaseVersionName = providers.gradleProperty("releaseVersionName")
+    .orNull
+    ?: "1.0.0"
+val githubKeystorePath = providers.environmentVariable("ANDROID_KEYSTORE_PATH").orNull
+val githubKeystorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
+val githubKeyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS").orNull
+val githubKeyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD").orNull
+
 android {
     namespace = "com.ivistatect.qrscanner"
     compileSdk = 36
@@ -15,8 +27,8 @@ android {
         applicationId = "com.ivistatect.qrscanner"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = releaseVersionCode
+        versionName = releaseVersionName
     }
 
     buildTypes {
@@ -27,8 +39,18 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Sign release with the debug key so it installs on the test device (no release keystore yet).
-            signingConfig = signingConfigs.getByName("debug")
+            // Local release builds use the existing debug key. GitHub Actions replaces it with
+            // the same key supplied through repository secrets so updates can install in place.
+            signingConfig = if (githubKeystorePath != null) {
+                signingConfigs.maybeCreate("githubRelease").apply {
+                    storeFile = file(githubKeystorePath)
+                    storePassword = githubKeystorePassword
+                    keyAlias = githubKeyAlias
+                    keyPassword = githubKeyPassword
+                }
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
     compileOptions {

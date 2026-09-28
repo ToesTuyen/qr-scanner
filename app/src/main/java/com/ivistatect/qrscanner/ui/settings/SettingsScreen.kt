@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ivistatect.qrscanner.BuildConfig
 import com.ivistatect.qrscanner.util.Logger
 import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.data.ScanDeviceId
@@ -52,6 +53,7 @@ fun SettingsScreen(
     val deviceId = remember(context) { ScanDeviceId.from(context) }
     LaunchedEffect(Unit) { Logger.d("Enter Settings") }
     val s by vm.settings.collectAsState()
+    val updateState by vm.updateState.collectAsState()
     var showThemeSheet by remember { mutableStateOf(false) }
     var showSearchEngine by remember { mutableStateOf(false) }
     var showCameraFacing by remember { mutableStateOf(false) }
@@ -107,6 +109,21 @@ fun SettingsScreen(
         ToggleRow(R.drawable.ic_set_sound, stringResource(R.string.settings_sound), s.sound) { vm.toggleLogged(SettingsRepository.Key.SOUND, it, "Sound") }
 
         SectionLabel(stringResource(R.string.settings_about))
+        val updateValue = when (val state = updateState) {
+            AppUpdateUiState.Idle -> stringResource(R.string.settings_update_current_version, BuildConfig.VERSION_NAME)
+            AppUpdateUiState.Checking -> stringResource(R.string.settings_update_checking)
+            AppUpdateUiState.Downloading -> stringResource(R.string.settings_update_downloading)
+            AppUpdateUiState.InstallPromptOpened -> stringResource(R.string.settings_update_install_prompt_opened)
+            is AppUpdateUiState.Available -> state.release.tagName
+            is AppUpdateUiState.UpToDate -> stringResource(R.string.settings_update_latest)
+            AppUpdateUiState.NoRelease -> stringResource(R.string.settings_update_no_release)
+            is AppUpdateUiState.Error -> stringResource(R.string.settings_update_failed)
+            is AppUpdateUiState.InstallPermissionRequired -> state.release.tagName
+        }
+        NavRow(R.drawable.ic_set_update, stringResource(R.string.settings_check_update), value = updateValue) {
+            Logger.d("Click Check update @ Settings", "version=${BuildConfig.VERSION_NAME}")
+            vm.checkForUpdate()
+        }
         NavRow(R.drawable.ic_set_privacy, stringResource(R.string.settings_privacy)) {
             Logger.d("Click Privacy @ Settings")
             context.openUrl(context.getString(R.string.url_privacy))
@@ -163,6 +180,83 @@ fun SettingsScreen(
             },
         )
     }
+
+    when (val state = updateState) {
+        is AppUpdateUiState.Available -> androidx.compose.material3.AlertDialog(
+            onDismissRequest = vm::dismissUpdateMessage,
+            title = { Text(stringResource(R.string.settings_update_available_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.settings_update_available_message,
+                        state.release.versionName,
+                        BuildConfig.VERSION_NAME,
+                    ),
+                )
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    Logger.d("Click Download update @ Settings", "version=${state.release.versionName}")
+                    vm.downloadAvailableUpdate()
+                }) { Text(stringResource(R.string.settings_update_download)) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = vm::dismissUpdateMessage) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
+        is AppUpdateUiState.InstallPermissionRequired -> androidx.compose.material3.AlertDialog(
+            onDismissRequest = vm::dismissUpdateMessage,
+            title = { Text(stringResource(R.string.settings_update_permission_title)) },
+            text = { Text(stringResource(R.string.settings_update_permission_message)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    Logger.d("Click Allow update install @ Settings")
+                    vm.openInstallPermissionSettings()
+                }) { Text(stringResource(R.string.settings_update_open_settings)) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = vm::dismissUpdateMessage) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
+        is AppUpdateUiState.UpToDate -> UpdateInfoDialog(
+            title = stringResource(R.string.settings_update_latest_title),
+            message = stringResource(R.string.settings_update_latest_message, state.versionName),
+            onDismiss = vm::dismissUpdateMessage,
+        )
+        AppUpdateUiState.NoRelease -> UpdateInfoDialog(
+            title = stringResource(R.string.settings_update_no_release_title),
+            message = stringResource(R.string.settings_update_no_release_message),
+            onDismiss = vm::dismissUpdateMessage,
+        )
+        is AppUpdateUiState.Error -> UpdateInfoDialog(
+            title = stringResource(R.string.settings_update_failed_title),
+            message = state.message,
+            onDismiss = vm::dismissUpdateMessage,
+        )
+        AppUpdateUiState.Idle,
+        AppUpdateUiState.Checking,
+        AppUpdateUiState.Downloading,
+        AppUpdateUiState.InstallPromptOpened,
+        -> Unit
+    }
+}
+
+@Composable
+private fun UpdateInfoDialog(title: String, message: String, onDismiss: () -> Unit) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(message) },
+        confirmButton = {
+            androidx.compose.material3.TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.got_it))
+            }
+        },
+    )
 }
 
 @Composable
