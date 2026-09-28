@@ -299,8 +299,8 @@ fun ScannerScreen(
                     Row(
                         Modifier.align(Alignment.Center)
                             .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(28.dp))
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            .padding(horizontal = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         ScannerControl(R.drawable.ic_fig_gallery, stringResource(R.string.cd_gallery)) {
                             Logger.d("Click Gallery @ Scanner")
@@ -451,7 +451,7 @@ private fun ScannerControl(
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-    androidx.compose.material3.IconButton(onClick = onClick, modifier = Modifier.size(64.dp)) {
+    androidx.compose.material3.IconButton(onClick = onClick, modifier = Modifier.size(52.dp)) {
         Icon(
             painterResource(icon),
             contentDescription,
