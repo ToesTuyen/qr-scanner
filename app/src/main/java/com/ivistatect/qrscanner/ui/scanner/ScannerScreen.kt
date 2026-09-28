@@ -1,10 +1,13 @@
 package com.ivistatect.qrscanner.ui.scanner
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
-import android.view.HapticFeedbackConstants
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,7 +60,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -88,7 +90,6 @@ fun ScannerScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val hapticView = LocalView.current
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) { Logger.d("Enter Scanner") }
@@ -118,7 +119,7 @@ fun ScannerScreen(
         BarcodeAnalyzer { code ->
             val scanSettings = currentSettings.value
             val hapticPlayed = if (scanSettings.vibration) {
-                hapticView.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                context.vibrateOnScan()
             } else {
                 false
             }
@@ -396,6 +397,19 @@ private fun GuideStep(index: Int, text: String) {
         )
     }
 }
+
+/** Uses the device vibrator directly so the Settings "Vibration" switch affects every scan. */
+@Suppress("DEPRECATION")
+private fun Context.vibrateOnScan(): Boolean = runCatching {
+    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator ?: return false
+    if (!vibrator.hasVibrator()) return false
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        vibrator.vibrate(VibrationEffect.createOneShot(90L, VibrationEffect.DEFAULT_AMPLITUDE))
+    } else {
+        vibrator.vibrate(90L)
+    }
+    true
+}.getOrDefault(false)
 
 /** A scanner control = plain white icon (no button background) with a white caption below it. */
 @Composable

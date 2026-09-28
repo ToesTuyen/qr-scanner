@@ -3,6 +3,7 @@
 
     <!-- Primary dangerous permission for this app: the live camera scanner. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
