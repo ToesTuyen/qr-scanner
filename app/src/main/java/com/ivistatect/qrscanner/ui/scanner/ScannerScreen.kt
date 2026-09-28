@@ -272,6 +272,12 @@ fun ScannerScreen(
                     drawLine(c, Offset(size.width, size.height), Offset(size.width - len, size.height), w, StrokeCap.Round)
                     drawLine(c, Offset(size.width, size.height), Offset(size.width, size.height - len), w, StrokeCap.Round)
                     val scanY = size.height * scanLineProgress
+                    // A glowing scan sweep and moving detection points make the active recognition state visible.
+                    drawRect(
+                        c.copy(alpha = 0.12f),
+                        Offset(0f, scanY - 16f),
+                        Size(size.width, 32f),
+                    )
                     drawLine(
                         c.copy(alpha = 0.32f),
                         Offset(0f, scanY),
@@ -280,6 +286,18 @@ fun ScannerScreen(
                         StrokeCap.Round,
                     )
                     drawLine(c, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
+                    floatArrayOf(0.09f, 0.21f, 0.36f, 0.51f, 0.64f, 0.78f, 0.91f).forEachIndexed { index, x ->
+                        val offsetY = when (index % 3) {
+                            0 -> -26f
+                            1 -> 18f
+                            else -> 42f
+                        }
+                        drawCircle(
+                            c.copy(alpha = if (index % 2 == 0) 0.7f else 0.4f),
+                            radius = if (index % 2 == 0) 2.5f else 1.75f,
+                            center = Offset(x * size.width, (scanY + offsetY).coerceIn(10f, size.height - 10f)),
+                        )
+                    }
                 }
 
                 // The three scanner actions become a compact floating control strip.
