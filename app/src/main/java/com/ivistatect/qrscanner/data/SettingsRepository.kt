@@ -25,8 +25,10 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         val autoSubmitServer: Boolean = false,
         val vibration: Boolean = true,
         val sound: Boolean = true,
+        /** Auto copy is deliberately disabled; manual Copy remains available on the result. */
         val autoCopy: Boolean = false,
-        val webSearch: Boolean = false,
+        /** These scan behaviours are always enabled and are no longer configurable in Settings. */
+        val webSearch: Boolean = true,
         val saveHistory: Boolean = true,
         val showProduct: Boolean = true,
         val themeMode: Int = THEME_SYSTEM,
@@ -43,10 +45,12 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
             autoSubmitServer = p[KEY_AUTO_SUBMIT_SERVER] ?: false,
             vibration = p[KEY_VIBRATION] ?: true,
             sound = p[KEY_SOUND] ?: true,
-            autoCopy = p[KEY_AUTO_COPY] ?: false,
-            webSearch = p[KEY_WEB_SEARCH] ?: false,
-            saveHistory = p[KEY_SAVE_HISTORY] ?: true,
-            showProduct = p[KEY_SHOW_PRODUCT] ?: true,
+            // Do not revive values stored by older releases: these four former settings are
+            // now fixed product behaviour.
+            autoCopy = false,
+            webSearch = true,
+            saveHistory = true,
+            showProduct = true,
             themeMode = p[KEY_THEME] ?: THEME_SYSTEM,
             cameraFacing = p[KEY_CAMERA_FACING] ?: CAMERA_REAR,
             searchEngine = p[KEY_SEARCH_ENGINE] ?: 0,
@@ -81,8 +85,6 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
 
     enum class Key(val pref: Preferences.Key<Boolean>) {
         BATCH(KEY_BATCH), AUTO_SUBMIT_SERVER(KEY_AUTO_SUBMIT_SERVER), VIBRATION(KEY_VIBRATION), SOUND(KEY_SOUND),
-        AUTO_COPY(KEY_AUTO_COPY), WEB_SEARCH(KEY_WEB_SEARCH),
-        SAVE_HISTORY(KEY_SAVE_HISTORY), SHOW_PRODUCT(KEY_SHOW_PRODUCT),
     }
 
     companion object {
@@ -96,10 +98,6 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         private val KEY_AUTO_SUBMIT_SERVER = booleanPreferencesKey("auto_submit_server")
         private val KEY_VIBRATION = booleanPreferencesKey("vibration")
         private val KEY_SOUND = booleanPreferencesKey("sound")
-        private val KEY_AUTO_COPY = booleanPreferencesKey("auto_copy")
-        private val KEY_WEB_SEARCH = booleanPreferencesKey("web_search")
-        private val KEY_SAVE_HISTORY = booleanPreferencesKey("save_history")
-        private val KEY_SHOW_PRODUCT = booleanPreferencesKey("show_product")
         private val KEY_THEME = intPreferencesKey("theme_mode")
         private val KEY_CAMERA_FACING = intPreferencesKey("camera_facing")
         private val KEY_SEARCH_ENGINE = intPreferencesKey("search_engine")

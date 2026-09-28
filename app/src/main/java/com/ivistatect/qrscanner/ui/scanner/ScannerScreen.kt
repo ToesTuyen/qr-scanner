@@ -204,7 +204,17 @@ fun ScannerScreen(
                     val soundPlayed = if (scanSettings.sound) context.playScanTone() else false
                     Logger.d("Scan feedback", "vibration=$hapticPlayed sound=$soundPlayed source=gallery")
                     mainVm.onDecoded(decoded)
-                    if (!mainVm.batchMode) onResult()
+                    if (!mainVm.batchMode) {
+                        onResult()
+                        if (scanSettings.webSearch) {
+                            Logger.d("Scanner: auto web search", "engine=${scanSettings.searchEngine} source=gallery")
+                            context.fireResultAction(
+                                com.ivistatect.qrscanner.domain.ResultAction.WEB_SEARCH,
+                                decoded.rawValue,
+                                scanSettings.searchEngine,
+                            )
+                        }
+                    }
                 } else {
                     Toast.makeText(context, R.string.error_detecting, Toast.LENGTH_SHORT).show()
                     Logger.d("Scanner: gallery decode failed")

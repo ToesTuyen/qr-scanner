@@ -105,10 +105,6 @@ fun SettingsScreen(
         ToggleRow(R.drawable.ic_connect, stringResource(R.string.settings_auto_submit_server), s.autoSubmitServer) { vm.toggleLogged(SettingsRepository.Key.AUTO_SUBMIT_SERVER, it, "Auto server submit") }
         ToggleRow(R.drawable.ic_set_vibration, stringResource(R.string.settings_vibration), s.vibration) { vm.toggleLogged(SettingsRepository.Key.VIBRATION, it, "Vibration") }
         ToggleRow(R.drawable.ic_set_sound, stringResource(R.string.settings_sound), s.sound) { vm.toggleLogged(SettingsRepository.Key.SOUND, it, "Sound") }
-        ToggleRow(R.drawable.ic_set_auto_copy, stringResource(R.string.settings_auto_copy), s.autoCopy) { vm.toggleLogged(SettingsRepository.Key.AUTO_COPY, it, "AutoCopy") }
-        ToggleRow(R.drawable.ic_set_web_search, stringResource(R.string.settings_web_search), s.webSearch) { vm.toggleLogged(SettingsRepository.Key.WEB_SEARCH, it, "WebSearch") }
-        ToggleRow(R.drawable.ic_set_save_history, stringResource(R.string.settings_save_history), s.saveHistory) { vm.toggleLogged(SettingsRepository.Key.SAVE_HISTORY, it, "SaveHistory") }
-        ToggleRow(R.drawable.ic_set_product, stringResource(R.string.settings_product_details), s.showProduct) { vm.toggleLogged(SettingsRepository.Key.SHOW_PRODUCT, it, "ShowProduct") }
 
         SectionLabel(stringResource(R.string.settings_about))
         NavRow(R.drawable.ic_set_privacy, stringResource(R.string.settings_privacy)) {
