@@ -86,6 +86,12 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch { settingsRepo.setBoolean(SettingsRepository.Key.BATCH, enabled) }
     }
 
+    fun removeBatchItem(code: DecodedCode) {
+        if (batchItems.remove(code)) {
+            Logger.d("Delete Batch item", "remaining=${batchItems.size}")
+        }
+    }
+
     /** Persist that the scanner tutorial sheet has been seen (shown once, like the reference). */
     fun markScanGuideSeen() {
         viewModelScope.launch { settingsRepo.setScanGuideSeen(true) }

@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
@@ -60,11 +62,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -114,8 +121,6 @@ fun ScannerScreen(
     val guideSeen by mainVm.scanGuideSeen.collectAsState()
     val settings by mainVm.settings.collectAsState()
     val currentSettings = rememberUpdatedState(settings)
-    val scanTone = remember { ToneGenerator(AudioManager.STREAM_MUSIC, 65) }
-    DisposableEffect(scanTone) { onDispose { scanTone.release() } }
     LaunchedEffect(settings.batchScanning) { mainVm.syncBatchMode(settings.batchScanning) }
     var guideDismissed by remember { mutableStateOf(false) }
     val showGuide = !guideSeen && !guideDismissed
@@ -151,8 +156,8 @@ fun ScannerScreen(
             } else {
                 false
             }
-            if (scanSettings.sound) scanTone.startTone(ToneGenerator.TONE_PROP_BEEP2, 120)
-            Logger.d("Scan feedback", "vibration=$hapticPlayed sound=${scanSettings.sound}")
+            val soundPlayed = if (scanSettings.sound) context.playScanTone() else false
+            Logger.d("Scan feedback", "vibration=$hapticPlayed sound=$soundPlayed")
             Logger.d("Scanner: decoded", "type=${code.valueType} format=${code.formatName}")
             mainVm.onDecoded(code)
             if (scanSettings.autoCopy) {
@@ -251,10 +256,18 @@ fun ScannerScreen(
                     val right = frame.right.coerceIn(left, size.width)
                     val bottom = frame.bottom.coerceIn(top, size.height)
                     val shade = Color.Black.copy(alpha = 0.58f)
-                    drawRect(shade, Offset.Zero, Size(size.width, top))
-                    drawRect(shade, Offset.Zero.copy(y = top), Size(left, bottom - top))
-                    drawRect(shade, Offset(right, top), Size(size.width - right, bottom - top))
-                    drawRect(shade, Offset(0f, bottom), Size(size.width, size.height - bottom))
+                    val cornerRadius = minOf(right - left, bottom - top) * 0.035f
+                    val outsideViewfinder = Path().apply {
+                        fillType = PathFillType.EvenOdd
+                        addRect(Rect(0f, 0f, size.width, size.height))
+                        addRoundRect(
+                            RoundRect(
+                                Rect(left, top, right, bottom),
+                                CornerRadius(cornerRadius, cornerRadius),
+                            ),
+                        )
+                    }
+                    drawPath(outsideViewfinder, shade)
                 }
             }
 
@@ -298,60 +311,70 @@ fun ScannerScreen(
                         c, 0f, 90f, false, Offset(size.width - cornerRadius * 2f, size.height - cornerRadius * 2f),
                         Size(cornerRadius * 2f, cornerRadius * 2f), style = borderStroke,
                     )
-                    val scanY = size.height * scanLineProgress
-                    val scanBlue = Color(0xFF2879FA)
-                    // The blue sweep carries a translucent gradient through the recognition area.
-                    drawRect(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                scanBlue.copy(alpha = 0.42f),
-                                scanBlue.copy(alpha = 0.16f),
-                                Color.Transparent,
+                    val viewfinderPath = Path().apply {
+                        addRoundRect(
+                            RoundRect(
+                                Rect(0f, 0f, size.width, size.height),
+                                CornerRadius(cornerRadius, cornerRadius),
                             ),
-                            startY = scanY,
-                            endY = size.height,
-                        ),
-                        topLeft = Offset(0f, scanY),
-                        size = Size(size.width, size.height - scanY),
-                    )
-                    drawLine(
-                        scanBlue.copy(alpha = 0.5f),
-                        Offset(0f, scanY),
-                        Offset(size.width, scanY),
-                        12f,
-                        StrokeCap.Round,
-                    )
-                    drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
-                    // A fixed grid appears only after the upward sweep has passed each dot.
-                    val sweepSpeed = size.height * 0.76f / 1.5f
-                    repeat(6) { row ->
-                        val y = size.height * ((row + 1f) / 7f)
-                        repeat(7) { column ->
-                            val x = size.width * ((column + 1f) / 8f)
-                            if (scanMovesUpward && y >= scanY) {
-                                val secondsSincePass = (y - scanY) / sweepSpeed
-                                val visibility = when {
-                                    secondsSincePass <= 0.25f -> 1f
-                                    else -> (1f - (secondsSincePass - 0.25f) / 0.75f).coerceIn(0f, 1f)
-                                }
-                                if (visibility > 0f) {
-                                    val dotAge = (secondsSincePass / 1f).coerceIn(0f, 1f)
-                                    val dotRadius = 7.5f - dotAge * 4f
-                                    val dotCenter = Offset(x, y)
-                                    val dotAlpha = 0.68f * visibility
-                                    drawCircle(
-                                        brush = Brush.radialGradient(
-                                            colors = listOf(
-                                                Color.White.copy(alpha = dotAlpha),
-                                                Color.White.copy(alpha = dotAlpha * 0.35f),
-                                                Color.Transparent,
+                        )
+                    }
+                    clipPath(viewfinderPath) {
+                        val scanY = size.height * scanLineProgress
+                        val scanBlue = Color(0xFF2879FA)
+                        // The blue sweep carries a translucent gradient through the recognition area.
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    scanBlue.copy(alpha = 0.42f),
+                                    scanBlue.copy(alpha = 0.16f),
+                                    Color.Transparent,
+                                ),
+                                startY = scanY,
+                                endY = size.height,
+                            ),
+                            topLeft = Offset(0f, scanY),
+                            size = Size(size.width, size.height - scanY),
+                        )
+                        drawLine(
+                            scanBlue.copy(alpha = 0.5f),
+                            Offset(0f, scanY),
+                            Offset(size.width, scanY),
+                            12f,
+                            StrokeCap.Round,
+                        )
+                        drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
+                        // A fixed grid appears only after the upward sweep has passed each dot.
+                        val sweepSpeed = size.height * 0.76f / 1.5f
+                        repeat(6) { row ->
+                            val y = size.height * ((row + 1f) / 7f)
+                            repeat(7) { column ->
+                                val x = size.width * ((column + 1f) / 8f)
+                                if (scanMovesUpward && y >= scanY) {
+                                    val secondsSincePass = (y - scanY) / sweepSpeed
+                                    val visibility = when {
+                                        secondsSincePass <= 0.25f -> 1f
+                                        else -> (1f - (secondsSincePass - 0.25f) / 0.75f).coerceIn(0f, 1f)
+                                    }
+                                    if (visibility > 0f) {
+                                        val dotAge = (secondsSincePass / 1f).coerceIn(0f, 1f)
+                                        val dotRadius = 7.5f - dotAge * 4f
+                                        val dotCenter = Offset(x, y)
+                                        val dotAlpha = 0.68f * visibility
+                                        drawCircle(
+                                            brush = Brush.radialGradient(
+                                                colors = listOf(
+                                                    Color.White.copy(alpha = dotAlpha),
+                                                    Color.White.copy(alpha = dotAlpha * 0.35f),
+                                                    Color.Transparent,
+                                                ),
+                                                center = dotCenter,
+                                                radius = dotRadius,
                                             ),
-                                            center = dotCenter,
                                             radius = dotRadius,
-                                        ),
-                                        radius = dotRadius,
-                                        center = dotCenter,
-                                    )
+                                            center = dotCenter,
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -523,6 +546,18 @@ private fun Context.vibrateOnScan(): Boolean = runCatching {
         vibrator.vibrate(90L)
     }
     true
+}.getOrDefault(false)
+
+/** Plays beyond the Scanner composition so navigation to the result cannot cut off the scan beep. */
+private fun Context.playScanTone(): Boolean = runCatching {
+    val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+    if (tone.startTone(ToneGenerator.TONE_PROP_BEEP2, 220)) {
+        Handler(Looper.getMainLooper()).postDelayed(tone::release, 260L)
+        true
+    } else {
+        tone.release()
+        false
+    }
 }.getOrDefault(false)
 
 /** One compact action inside the floating scanner control strip. */
