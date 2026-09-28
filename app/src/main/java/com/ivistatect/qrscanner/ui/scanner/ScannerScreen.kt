@@ -299,13 +299,9 @@ fun ScannerScreen(
                     drawLine(scanBlue, Offset(0f, scanY), Offset(size.width, scanY), 3f, StrokeCap.Round)
                     // Keep dots fixed in the blue recognition overlay, including while the sweep reverses.
                     repeat(6) { row ->
-                        val baseY = size.height * ((row + 1f) / 7f)
+                        val y = size.height * ((row + 1f) / 7f)
                         repeat(7) { column ->
-                            val pattern = row * 7 + column
-                            val xOffset = ((pattern * 3) % 5 - 2) * size.width * 0.012f
-                            val yOffset = ((pattern * 2) % 3 - 1) * 7f
-                            val x = size.width * ((column + 1f) / 8f) + xOffset
-                            val y = baseY + yOffset
+                            val x = size.width * (0.12f + column * 0.105f + row * 0.025f)
                             if (y >= scanY) {
                                 val depthInOverlay = (y - scanY) / size.height
                                 drawCircle(
