@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night overrides for the mirrored reference vector drawable color tokens (provenance:
+         reference res/values-night/colors.xml). figma_blue has no night override in the reference. -->
+    <color name="colorBack">#c0c0c0</color>
+    <color name="color_camera_Icon_bg">#801b1c1e</color>
+    <color name="color_icon_dark_night">#c0c0c0</color>
+    <color name="prox_close">#ff42495c</color>
+    <!-- Reference X (Twitter) social-tile monochrome stroke. -->
+    <color name="social_monochrome">#ffffff</color>
+</resources>

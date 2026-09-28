@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector android:height="24.0dp" android:width="24.0dp" android:viewportWidth="24.0" android:viewportHeight="24.0"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#00000000" android:pathData="M10,13C10.43,13.58 10.98,14.05 11.61,14.39C12.24,14.73 12.94,14.92 13.66,14.96C14.37,15 15.09,14.88 15.75,14.61C16.42,14.34 17.02,13.93 17.51,13.41L20.51,10.41C21.39,9.5 21.88,8.28 21.87,7.01C21.86,5.75 21.35,4.54 20.46,3.64C19.56,2.75 18.35,2.24 17.09,2.23C15.82,2.22 14.6,2.71 13.69,3.59L11.97,5.3" android:strokeColor="@color/color_icon_dark_night" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path android:fillColor="#00000000" android:pathData="M14,11C13.57,10.42 13.02,9.95 12.39,9.61C11.76,9.27 11.06,9.08 10.34,9.04C9.63,9 8.91,9.12 8.25,9.39C7.58,9.66 6.98,10.07 6.49,10.59L3.49,13.59C2.61,14.5 2.12,15.72 2.13,16.99C2.14,18.25 2.65,19.46 3.54,20.36C4.44,21.25 5.65,21.76 6.91,21.77C8.18,21.78 9.4,21.29 10.31,20.41L12.02,18.7" android:strokeColor="@color/color_icon_dark_night" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+</vector>

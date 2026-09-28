@@ -1,0 +1,2154 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-09-26T16:20:00+00:00",
+  "step": 4,
+  "analysis_type": "runtime evidence (Step 4). Two reference runtimes on device R5GL52MCN4A: (A) runtime_baseline=step2-cleaned (base.apk 97c17394, byte-identical to output/step2) for the general app (67 items); (B) runtime_baseline=reference-original (original XAPK base d769eed6, developer cert f7b45323, fresh install) used as the sanctioned fallback (reference-rule 3) for screens the step2 build cannot show: the Settings cluster (step2 crashes on a rebuild artifact abc_switch_thumb_material.xml @null) and the premium-suppressed/first-run screens (ProX paywall, scan-guide, exit-sheet, language-change). Statuses: EVIDENCED=original reference PNG+hierarchy; GATED=physical code / external purchase / region-gated first-run; UNREACHABLE=declared-but-no-launcher or superseded; BLOCKED=none remaining.",
+  "reference_identity": {
+    "package": "qr.scanner.barcodescanner.qrcodescanner.qrcodereader",
+    "internal_app_id": "com.hazel.qrscannerapp1",
+    "app_label": "QR Scanner",
+    "version_name": "1.2.6",
+    "version_code": 27,
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "base_sha256": "d769eed6a79582dca6c0e98efa7ee7cf68df40ee36ab149d229911726c70ede5",
+    "xapk_sha256": "e2fcc303a3b8b3ceae7ae6fee9105a1be04a7ae0398586985d1a59b52ceddc38",
+    "source": "/Users/tuyennd/Documents/VN_NAMI_CLONE/Project 21/input/QR_Scanner_Barcode_Scanner_App_1.2.6_APKPure.xapk (APKPure XAPK: base + config.arm64_v8a + config.xxhdpi)",
+    "decompile_dir": "/Users/tuyennd/Documents/VN_NAMI_CLONE/Project 21/apktool",
+    "runtime_version_name": "1.2.6",
+    "runtime_version_code": 27,
+    "runtime_match": "MATCH",
+    "runtime_baseline": "step2-signed premium/no-ads APK: /Users/tuyennd/Documents/VN_NAMI_CLONE/Project 21/apktool/output/step2/qr-scanner-premium-noads-signed-verified.apk (SHA-256 97c17394bed9aa6cb2c23fa2dadbd88c80eb49438fce3be646393b012ba1d88c; cert Android Debug SHA-256 e30f46db6cbebe68b5f44c82682084b55e0e7d51005ba58625745cf16a78bbde). Verified byte-identical to installed base.apk on the test device.",
+    "test_device": "R5GL52MCN4A",
+    "note": "Installed on R5GL52MCN4A = the Step 2 premium/no-ads build (same package/version 1.2.6/27 as the static archive, differs from original only by 2 premium/no-ads smali patches). Original XAPK/APK is read-only reference; it is never the runtime on the test device. Version/identity MATCH the static archive.",
+    "runtime_baseline_label": "step2-cleaned",
+    "step4_note": "Settings-cluster BLOCKED resolved by capturing from the ORIGINAL reference build (reference-rule 3 fallback + step4 memory 'how to apply'): the step2 apktool-rebuild dropped the drawable refs in res/drawable/abc_switch_thumb_material.xml (both <item> became android:drawable=@null vs original @0x7f07003d/@0x7f07003c), crashing SwitchCompat StateListDrawable inflation on the Settings tab. Original renders it correctly -> whole Settings cluster EVIDENCED (reference-original). Fresh non-premium install also EVIDENCED ProX paywall, scan-guide, exit-sheet and the language-change flow. Device restored to step2 baseline (97c17394) after capture."
+  },
+  "static_control_index": [
+    {
+      "id": "ci_launcher",
+      "screen": "Android Launcher",
+      "ui_type": "launcher",
+      "ui_label": "QR Scanner app icon (ic_launcher, MAIN/LAUNCHER)",
+      "node_id": "n_start",
+      "classification": "POC",
+      "note": "AndroidManifest.xml:62-67 StartActivity exported MAIN/LAUNCHER"
+    },
+    {
+      "id": "ci_start_routing",
+      "screen": "StartActivity (branded routing splash, activity_start.xml)",
+      "ui_type": "system-event",
+      "ui_label": "auto-routing on onCreate (icon/title/subtitle/progress; no tap)",
+      "node_id": "n_start",
+      "classification": "POC",
+      "note": "StartActivity.smali->n(): reads region gate + is_premium pref, 5s remote-config timeout"
+    },
+    {
+      "id": "ci_splash_routing",
+      "screen": "SplashActivity (branded splash, activity_splash.xml)",
+      "ui_type": "system-event",
+      "ui_label": "timed splash (native+interstitial ad slots) then auto-route; no tap",
+      "node_id": "n_splash",
+      "classification": "POC",
+      "note": "SplashActivity.x(): first-launch->AppLanguages else MainScanActivity"
+    },
+    {
+      "id": "ci_nav_scanner",
+      "screen": "MainScanActivity / bottom nav (bottom_nav_layout.xml)",
+      "ui_type": "tab",
+      "ui_label": "Scanner (ll_scanner, @string/scanner)",
+      "node_id": "n_main_scanner",
+      "classification": "POC",
+      "note": "onClick MainScanActivity.smali:5755; shows camera surface (no fragment)"
+    },
+    {
+      "id": "ci_nav_history",
+      "screen": "MainScanActivity / bottom nav",
+      "ui_type": "tab",
+      "ui_label": "History (ll_history, @string/history)",
+      "node_id": "n_history_tab",
+      "classification": "POC",
+      "note": "onClick :5667; fragment Lf7/h into nav_fragment_container"
+    },
+    {
+      "id": "ci_nav_create",
+      "screen": "MainScanActivity / bottom nav",
+      "ui_type": "tab",
+      "ui_label": "Create (ll_create_qr, @string/create)",
+      "node_id": "n_create_tab",
+      "classification": "POC",
+      "note": "onClick :5713; fragment Lf7/d"
+    },
+    {
+      "id": "ci_nav_settings",
+      "screen": "MainScanActivity / bottom nav",
+      "ui_type": "tab",
+      "ui_label": "Settings (ll_setting, @string/settings)",
+      "node_id": "n_settings_tab",
+      "classification": "POC",
+      "note": "onClick :5793; fragment Lf7/p"
+    },
+    {
+      "id": "ci_scan_gallery",
+      "screen": "MainScanActivity / Scanner surface",
+      "ui_type": "icon",
+      "ui_label": "Gallery import (ivGallery, @string/gallery)",
+      "node_id": "n_scan_gallery",
+      "classification": "POC",
+      "note": "onClick :6458 ACTION_PICK image/* -> decode"
+    },
+    {
+      "id": "ci_scan_batch_toggle",
+      "screen": "MainScanActivity / Scanner surface",
+      "ui_type": "icon",
+      "ui_label": "Batch toggle (ivBatch, @string/batch)",
+      "node_id": "n_batch_toggle",
+      "classification": "POC",
+      "note": "onClick :7062 toggles batch mode; hidden until enabled in Settings"
+    },
+    {
+      "id": "ci_scan_batch_tile",
+      "screen": "MainScanActivity / Scanner surface",
+      "ui_type": "card",
+      "ui_label": "Batch result mini-card (ViewBatch/ivNextBatch, count + last item)",
+      "node_id": "n_batch_result",
+      "classification": "POC",
+      "note": "onClick :6624 -> BatchScanResultActivity (const-class :6842)"
+    },
+    {
+      "id": "ci_scan_torch",
+      "screen": "MainScanActivity / Scanner surface",
+      "ui_type": "icon",
+      "ui_label": "Flash/torch (ivTorch, @string/flash_on)",
+      "node_id": "n_main_scanner",
+      "classification": "POC",
+      "note": "onClick :6073 toggles torch"
+    },
+    {
+      "id": "ci_scan_zoom",
+      "screen": "MainScanActivity / Scanner surface",
+      "ui_type": "button",
+      "ui_label": "Zoom in/out + slider (zoomIn/zoomOut/seekScanZoom)",
+      "node_id": "n_main_scanner",
+      "classification": "POC",
+      "note": "onClick :6364/:6258 adjust camera zoom"
+    },
+    {
+      "id": "ci_upgrade_home",
+      "screen": "MainScanActivity / Scanner surface",
+      "ui_type": "image",
+      "ui_label": "Premium crown upsell (tvUpgradeNow, Lottie @raw/premium; gone when premium)",
+      "node_id": "n_prox",
+      "classification": "DEFERRED",
+      "note": "activity_main.xml:10; upsell CTA visibility gated by !isPremium (paywall UI is POC via other entries; home crown wiring not needed for POC loop)"
+    },
+    {
+      "id": "ci_perm_allow",
+      "screen": "MainScanActivity / camera-permission overlay (layout_permission.xml)",
+      "ui_type": "button",
+      "ui_label": "Allow (btnAllow/btnPermission, @string/Allow)",
+      "node_id": "n_cam_perm_request",
+      "classification": "POC",
+      "note": "onClick :6244 -> F() -> requestPermissions(CAMERA) or Settings dialog"
+    },
+    {
+      "id": "ci_scan_guide_gotit",
+      "screen": "Scan-guide tutorial bottom sheet (fragment_scan_guide_bottom_sheetragment.xml)",
+      "ui_type": "button",
+      "ui_label": "Got It (btnUnderstand, @string/got_it); title @string/point_your",
+      "node_id": "n_scan_guide",
+      "classification": "POC",
+      "note": "class Lc7/t; dismisses tutorial overlay"
+    },
+    {
+      "id": "ci_result_back",
+      "screen": "Scan result (ShowScannedQrFragment La7/E, activity_scan_result.xml)",
+      "ui_type": "icon",
+      "ui_label": "Back (ivBack)",
+      "node_id": "n_scan_result",
+      "classification": "POC",
+      "note": "h0 :6528 dismiss overlay / finish"
+    },
+    {
+      "id": "ci_result_copy",
+      "screen": "Scan result (La7/E)",
+      "ui_type": "icon",
+      "ui_label": "Copy (ivCopy)",
+      "node_id": "n_scan_result",
+      "classification": "POC",
+      "note": "h0 :6721 clipboard via B4.c"
+    },
+    {
+      "id": "ci_result_fav",
+      "screen": "Scan result (La7/E)",
+      "ui_type": "icon",
+      "ui_label": "Favorite (ivFavUnFav)",
+      "node_id": "n_scan_result",
+      "classification": "POC",
+      "note": "h0 :6776 toggle favorite in DB"
+    },
+    {
+      "id": "ci_result_print",
+      "screen": "Scan result (La7/E)",
+      "ui_type": "icon",
+      "ui_label": "Print (ivPrint)",
+      "node_id": "n_result_print",
+      "classification": "DEFERRED",
+      "note": "h0 :6946 PrintHelper system print (batch-later)"
+    },
+    {
+      "id": "ci_result_more",
+      "screen": "Scan result (La7/E)",
+      "ui_type": "icon",
+      "ui_label": "More/3-dot (ivMore) -> Share/Delete sheet",
+      "node_id": "n_result_share_sheet",
+      "classification": "POC",
+      "note": "h0 :6571 bottom sheet Lc7/v Share_delete_sheet"
+    },
+    {
+      "id": "ci_result_actions",
+      "screen": "Scan result (La7/E)",
+      "ui_type": "list-item",
+      "ui_label": "Type-specific action grid (rvQrOption): Open/Web Search/Call/Send Email/Send SMS/Connect Wi-Fi/Add Contact/View on Map etc.",
+      "node_id": "n_result_external",
+      "classification": "POC",
+      "note": "activity_scan_result.xml:31; external intents built by data-driven adapter (GATED-external)"
+    },
+    {
+      "id": "ci_batch_items",
+      "screen": "BatchScanResultActivity (activity_batch_scan_result.xml)",
+      "ui_type": "list-item",
+      "ui_label": "Batch code rows (rvBatchScanResult) -> detail",
+      "node_id": "n_batch_item",
+      "classification": "POC",
+      "note": "item tap -> ShowScannedQrActivity (G8/p->L7/D)"
+    },
+    {
+      "id": "ci_batch_toolbar",
+      "screen": "BatchScanResultActivity",
+      "ui_type": "icon",
+      "ui_label": "Back/Search/Delete/Select-all/More (ivBack,ivSearch,ivDelete,ivSelection,ivMore,etSearch)",
+      "node_id": "n_batch_result",
+      "classification": "POC",
+      "note": "toolbar; select+delete+search within batch"
+    },
+    {
+      "id": "ci_history_tabs",
+      "screen": "History (fragment Lf7/h / HistoryActivity activity_histry.xml)",
+      "ui_type": "tab",
+      "ui_label": "Scanned (@string/scaned) / Created (@string/created) (tl_history + vp_fragments)",
+      "node_id": "n_history_tab",
+      "classification": "POC",
+      "note": "activity_histry:18; two list tabs"
+    },
+    {
+      "id": "ci_history_scanned_item",
+      "screen": "History / Scanned tab",
+      "ui_type": "list-item",
+      "ui_label": "Scanned history rows (item_tab_history.xml: type/content/time/checkbox)",
+      "node_id": "n_history_scanned_item",
+      "classification": "POC",
+      "note": "tap -> ShowScannedQrActivity via L7/D (extras qr_code_id,isFavourite_qr,skip_result_inter)"
+    },
+    {
+      "id": "ci_history_created_item",
+      "screen": "History / Created tab",
+      "ui_type": "list-item",
+      "ui_label": "Created history rows",
+      "node_id": "n_history_created_item",
+      "classification": "POC",
+      "note": "tap -> ShowCreatedQrBarcodeActivity via a7.1/*"
+    },
+    {
+      "id": "ci_history_toolbar",
+      "screen": "History (Lf7/h / HistoryActivity)",
+      "ui_type": "icon",
+      "ui_label": "Back/Search/Filter/Delete/Select-all/More (ivBack,ivSearch,ivFilter,ivDelete,ivCheckBox,ivMore,etSearch)",
+      "node_id": "n_history_tab",
+      "classification": "POC",
+      "note": "activity_histry toolbar; search/filter/multi-delete"
+    },
+    {
+      "id": "ci_history_empty_cta",
+      "screen": "History empty state (fragment_scanned.xml / fragment_created_qr.xml)",
+      "ui_type": "button",
+      "ui_label": "Scan QR/Barcode (CreateQrBarcode, @string/scan_qr_barcode) / Create QR barcode",
+      "node_id": "n_create_landing",
+      "classification": "POC",
+      "note": "empty-state CTA -> Create surface (CreateBarcodeQrCodeActivity via I4/a.1)"
+    },
+    {
+      "id": "ci_create_qr_grid",
+      "screen": "Create tab (fragment_create_qr.xml)",
+      "ui_type": "card",
+      "ui_label": "Create QR grid (rvQrs, 12 tiles): Clipboard,URL,Text,Contacts,Email,SMS,Geo,Phone,Calendar,Wi-Fi,My QR,Apps",
+      "node_id": "n_create_qr_pick",
+      "classification": "POC",
+      "note": "f7.1/a.smali pswitch_1 sparse-switch -> {Type}QrActivity"
+    },
+    {
+      "id": "ci_create_social_grid",
+      "screen": "Create tab (fragment_create_qr.xml)",
+      "ui_type": "card",
+      "ui_label": "Social Media grid (rvSocial, 10 tiles): Instagram,WhatsApp,Bitcoin,YouTube,Facebook,Viber,X,Spotify,TikTok,PayPal",
+      "node_id": "n_create_social_pick",
+      "classification": "POC",
+      "note": "f7.1/a.smali pswitch_0 -> SocialQrActivity(social_type)"
+    },
+    {
+      "id": "ci_create_barcode_card",
+      "screen": "Create tab (fragment_create_qr.xml)",
+      "ui_type": "card",
+      "ui_label": "Barcodes expandable card (cardBarcode + count badge + chevron)",
+      "node_id": "n_create_barcode_pick",
+      "classification": "POC",
+      "note": "toggles rvBarcodes visibility (I4/a.1:385)"
+    },
+    {
+      "id": "ci_create_barcode_grid",
+      "screen": "Create tab (fragment_create_qr.xml)",
+      "ui_type": "card",
+      "ui_label": "Barcode grid (rvBarcodes, 14 tiles): Product,ISBN,PDF-417,Data-Matrix,AZTEC,EAN-8,EAN-13,UPC-E,UPC-A,Code-93,Code-39,Code-128,ITF,CODABAR",
+      "node_id": "n_create_barcode_pick",
+      "classification": "POC",
+      "note": "E3/A4.a sparse-switch -> create/barcode/{Type}Activity"
+    },
+    {
+      "id": "ci_create_alt_upgrade",
+      "screen": "CreateBarcodeQrCodeActivity (activity_create_barcode_qr_code.xml, alternate/empty-state entry)",
+      "ui_type": "image",
+      "ui_label": "Premium crown (tvUpgradeNow, gone when premium)",
+      "node_id": "n_premium",
+      "classification": "POC",
+      "note": "onClick :1080 -> PremiumActivity (only paywall reachable via Create surface)"
+    },
+    {
+      "id": "ci_createform_inputs",
+      "screen": "{Type}QrActivity / {Type}Activity (e.g. UrlQrActivity, TextQrActivity, WifiQrActivity, ContactQrActivity, Code128Activity)",
+      "ui_type": "button",
+      "ui_label": "Input fields + Create (btn_create, @string/create) + clear + Back (ivBack)",
+      "node_id": "n_create_form",
+      "classification": "POC",
+      "note": "btn_create -> BaseActivity.saveCreatedQrCodeToDb -> ShowCreatedQrBarcodeActivity; blank -> Toast"
+    },
+    {
+      "id": "ci_myqr_form",
+      "screen": "MyQrActivity (activity_my_qr.xml)",
+      "ui_type": "button",
+      "ui_label": "MECARD form + Create + contact import (icon) + Back",
+      "node_id": "n_create_form",
+      "classification": "POC",
+      "note": "empty name -> Toast name_is_required; else -> ShowCreatedQrBarcodeActivity"
+    },
+    {
+      "id": "ci_appsqr_list",
+      "screen": "AppsQrActivity (activity_apps.xml)",
+      "ui_type": "list-item",
+      "ui_label": "Installed-app rows -> Play Store URL QR + Back",
+      "node_id": "n_create_form",
+      "classification": "DEFERRED",
+      "note": "row -> saveCreatedQrCodeToDb(playUrl) -> ShowCreatedQrBarcodeActivity; installed-app enumeration deferred"
+    },
+    {
+      "id": "ci_created_back",
+      "screen": "ShowCreatedQrBarcodeActivity (activity_creted_qr_barcode.xml)",
+      "ui_type": "icon",
+      "ui_label": "Back (ivBack)",
+      "node_id": "n_created_result",
+      "classification": "POC",
+      "note": "onClick :1525 finish"
+    },
+    {
+      "id": "ci_created_save",
+      "screen": "ShowCreatedQrBarcodeActivity",
+      "ui_type": "button",
+      "ui_label": "Save (save, @string/save)",
+      "node_id": "n_created_save",
+      "classification": "POC",
+      "note": "onClick :2111 z4.e -> MediaStore save (storage perm gated <=API32)"
+    },
+    {
+      "id": "ci_created_share",
+      "screen": "ShowCreatedQrBarcodeActivity",
+      "ui_type": "button",
+      "ui_label": "Share (share, @string/share)",
+      "node_id": "n_created_share",
+      "classification": "POC",
+      "note": "onClick :1858 FileProvider share chooser (external)"
+    },
+    {
+      "id": "ci_created_copy_fav_print_more",
+      "screen": "ShowCreatedQrBarcodeActivity",
+      "ui_type": "icon",
+      "ui_label": "Copy/Favorite/Print/More (ivCopy,ivFavUnFav,ivPrint,ivMore)",
+      "node_id": "n_created_result",
+      "classification": "POC",
+      "note": "clipboard / DB favorite / system print / actions sheet"
+    },
+    {
+      "id": "ci_set_premium",
+      "screen": "Settings (fragment Lf7/p / SettingActivity activity_setting.xml)",
+      "ui_type": "card",
+      "ui_label": "Unlock Premium banner (premium_container; gone when premium)",
+      "node_id": "n_prox",
+      "classification": "POC",
+      "note": "onClick :1209 -> ProXActivity"
+    },
+    {
+      "id": "ci_set_language",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "App Language (btnLang, @string/set_app_language)",
+      "node_id": "n_applang_settings",
+      "classification": "POC",
+      "note": "onClick :1453 -> AppLanguagesActivity (onboarding=false)"
+    },
+    {
+      "id": "ci_set_theme",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Theme Mode (btnTheme, @string/set_theme_mode: System/Dark/Light)",
+      "node_id": "n_theme_sheet",
+      "classification": "POC",
+      "note": "onClick :905 -> theme bottom sheet Lc7/x"
+    },
+    {
+      "id": "ci_set_search_engine",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Search Engines (btnSearchEngine)",
+      "node_id": "n_choice_dialog",
+      "classification": "DEFERRED",
+      "note": "single-choice dialog writes SearchEngineIndex pref"
+    },
+    {
+      "id": "ci_set_camera",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Camera facing (btnCamera)",
+      "node_id": "n_settings_tab",
+      "classification": "DEFERRED",
+      "note": "coroutine-driven camera-facing selection"
+    },
+    {
+      "id": "ci_set_image_format",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Image Formats (btnImageFormat)",
+      "node_id": "n_choice_dialog",
+      "classification": "DEFERRED",
+      "note": "single-choice dialog writes ImageFormatIndex pref"
+    },
+    {
+      "id": "ci_set_toggles",
+      "screen": "Settings",
+      "ui_type": "button",
+      "ui_label": "Toggles: Batch Scanning, Vibration, Sound, Auto Copy to Clipboard, Auto Web Search, Save History, Show Product Details (switches)",
+      "node_id": "n_settings_tab",
+      "classification": "POC",
+      "note": "onCheckedChange LV6/Q writes prefs IsBatchEnable/IsVibrationEnable/IsBeepEnable/IsCopyToClipBoard/setting_auto_web_search/IsUrlInfoEnable/save-history"
+    },
+    {
+      "id": "ci_set_dead_rows",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Custom Action, Delete History, Duplicate QR/Barcode (switch) — no listener wired",
+      "node_id": "n_settings_tab",
+      "classification": "DEFERRED",
+      "note": "present in layout, non-functional in reference build"
+    },
+    {
+      "id": "ci_set_rate",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Rate Us (RateUS, @string/rate_us)",
+      "node_id": "n_rate_sheet",
+      "classification": "DEFERRED",
+      "note": "onClick :1004 -> rate bottom sheet Lc7/l"
+    },
+    {
+      "id": "ci_set_share",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Share App (Share, @string/set_share_app)",
+      "node_id": "n_ext_share_app",
+      "classification": "POC",
+      "note": "onClick :1096 ACTION_SEND Play link"
+    },
+    {
+      "id": "ci_set_privacy",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Privacy Policy (PrivacyPolicy)",
+      "node_id": "n_ext_privacy",
+      "classification": "POC",
+      "note": "onClick :1061 ACTION_VIEW https://sites.google.com/view/qrscannerma/home"
+    },
+    {
+      "id": "ci_set_terms",
+      "screen": "Settings",
+      "ui_type": "list-item",
+      "ui_label": "Terms & Conditions (Terms)",
+      "node_id": "n_ext_terms",
+      "classification": "POC",
+      "note": "onClick :969 ACTION_VIEW https://sites.google.com/view/qrscannermas/home"
+    },
+    {
+      "id": "ci_lang_list",
+      "screen": "AppLanguagesActivity (activity_app_languages_sheet.xml)",
+      "ui_type": "list-item",
+      "ui_label": "Locale rows (33: English/ar/bn/zh/fr/de/hi/in/it/ms/nl/ru/es/tr/uk/pt/ko/th/ja/vi/uz/pl/af/fa/ur/fil/da/hu/iw/sv/no/ca/cs)",
+      "node_id": "n_lang_pick",
+      "classification": "POC",
+      "note": "adapter Lx6/h; select sets code/name (no apply yet)"
+    },
+    {
+      "id": "ci_lang_apply",
+      "screen": "AppLanguagesActivity",
+      "ui_type": "button",
+      "ui_label": "Apply (LottieAnimationView) + Back",
+      "node_id": "n_lang_apply",
+      "classification": "POC",
+      "note": "x(): write LanguageCode/Name + locale, startActivity(MainScanActivity NEW_TASK|CLEAR_TASK)+finishAffinity"
+    },
+    {
+      "id": "ci_prox_close",
+      "screen": "ProXActivity (activity_pro_x.xml)",
+      "ui_type": "icon",
+      "ui_label": "Close X (ivClose; revealed after cross_delay_seconds)",
+      "node_id": "n_prox",
+      "classification": "POC",
+      "note": "onClick -> r() dismiss (SplashActivity if from_start else finish)"
+    },
+    {
+      "id": "ci_prox_cta",
+      "screen": "ProXActivity",
+      "ui_type": "button",
+      "ui_label": "Start Trial / Continue CTA (btnStartTrial; label remote ctaText)",
+      "node_id": "n_billing",
+      "classification": "POC",
+      "note": "q() -> Lv/U.z -> BillingClient.launchBillingFlow (external/gated)"
+    },
+    {
+      "id": "ci_premium_close",
+      "screen": "PremiumActivity (activity_premium.xml)",
+      "ui_type": "icon",
+      "ui_label": "Close X (cancelInApp)",
+      "node_id": "n_premium",
+      "classification": "POC",
+      "note": "V6/K default: MainScanActivity if onboarding else finish"
+    },
+    {
+      "id": "ci_premium_cta",
+      "screen": "PremiumActivity",
+      "ui_type": "button",
+      "ui_label": "Upgrade Now (tvUpgradeNow, @string/upgrade_now); one-time lifetime",
+      "node_id": "n_billing",
+      "classification": "POC",
+      "note": "A6/h pswitch_16 -> Lv/U.y -> BillingClient.launchBillingFlow (external/gated)"
+    },
+    {
+      "id": "ci_premium_links",
+      "screen": "PremiumActivity",
+      "ui_type": "button",
+      "ui_label": "Privacy Policy (tvPrivacyPolicy) / Terms of Use (tvTermsOfUse)",
+      "node_id": "n_ext_terms",
+      "classification": "POC",
+      "note": "ACTION_VIEW https://sites.google.com/view/qrscannermas/home"
+    },
+    {
+      "id": "ci_shareIn_actions",
+      "screen": "ShowOpenQrActivity (share-in target, activity_scan_via_share.xml)",
+      "ui_type": "icon",
+      "ui_label": "Back/Copy/Favorite/More/Print + type action grid (rvQrOption)",
+      "node_id": "n_sharein_result",
+      "classification": "POC",
+      "note": "in-place result of shared image/text; controls onClick :715"
+    },
+    {
+      "id": "ci_onboarding_ctrls",
+      "screen": "OnBoardingActivity (3-page carousel) — ORPHANED",
+      "ui_type": "button",
+      "ui_label": "Next / Get Started / Skip",
+      "node_id": "n_onboarding",
+      "classification": "OUT_OF_SCOPE",
+      "note": "no static launcher; not reachable in this build"
+    },
+    {
+      "id": "ci_newinapp_ctrls",
+      "screen": "NewInAppActivity (trial paywall) — ORPHANED",
+      "ui_type": "button",
+      "ui_label": "Start Free Trial (btnStartTrial) / Close (ivClose)",
+      "node_id": "n_newinapp",
+      "classification": "OUT_OF_SCOPE",
+      "note": "no static launcher; ProX/Premium are the active paywalls"
+    },
+    {
+      "id": "ci_navigation_ctrls",
+      "screen": "NavigationActivity (drawer menu) — ORPHANED",
+      "ui_type": "list-item",
+      "ui_label": "Scan/Scan Image/Create QR/Favorites/History/Settings/Share/Rate Us/Privacy/Terms",
+      "node_id": "n_navigation",
+      "classification": "OUT_OF_SCOPE",
+      "note": "no static launcher; superseded by bottom nav"
+    },
+    {
+      "id": "ci_test_activities",
+      "screen": "TestMainActivity / TestSplashActivity / CaptureActivity(zxing) / adsanalysis.MainActivity",
+      "ui_type": "screen",
+      "ui_label": "test & SDK-debug scaffolding",
+      "node_id": "n_out_test",
+      "classification": "OUT_OF_SCOPE",
+      "note": "test/debug/legacy scanner; not part of product"
+    },
+    {
+      "id": "ci_system_bg",
+      "screen": "Background (no UI)",
+      "ui_type": "system-event",
+      "ui_label": "WorkManager / Firebase init / AppMeasurement / MlKit+Firebase providers / Ad SDK init",
+      "node_id": "n_system_bg",
+      "classification": "OUT_OF_SCOPE",
+      "note": "framework/SDK auto-init; not a UI flow (ads DEFERRED as product decision)"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "n_start",
+      "label": "StartActivity (launcher routing splash)",
+      "screen": "StartActivity",
+      "ui_type": "launcher",
+      "ui_label": "App icon (MAIN/LAUNCHER); branded splash, no tap",
+      "flow_id": "flow_launch",
+      "kind": "entry",
+      "status": "EVIDENCED",
+      "evidence": "AndroidManifest.xml:62-67; StartActivity.smali->n() (activity_start.xml 0x7f0c0043)",
+      "note": "reads region gate is_show_new_inapp_in_countries + is_premium pref",
+      "runtime_evidence": "COLD launch StartActivity branded routing splash (app-icon) captured; am start LaunchState=COLD.",
+      "reference_capture": "reconstruction/step4/screens/n_start-reference.png"
+    },
+    {
+      "id": "n_route_gate",
+      "label": "Startup route decision",
+      "screen": "StartActivity",
+      "ui_type": "system-event",
+      "ui_label": "if(showNewInApp && !isPremium)->ProX else Splash",
+      "flow_id": "flow_launch",
+      "kind": "gate",
+      "status": "EVIDENCED",
+      "evidence": "StartActivity.smali->n() cond_2/goto_1",
+      "note": "offline/parse-error defaults to Splash",
+      "runtime_evidence": "Premium build: route gate took the Splash/Main branch (NOT ProX); COLD launch landed on MainScanActivity, proving showNewInApp&&!isPremium was false."
+    },
+    {
+      "id": "n_prox",
+      "label": "ProXActivity paywall",
+      "screen": "ProXActivity",
+      "ui_type": "screen",
+      "ui_label": "Pro subscription paywall (activity_pro_x.xml)",
+      "flow_id": "flow_premium",
+      "kind": "gate",
+      "status": "EVIDENCED",
+      "evidence": "ProXActivity.smali; launched by StartActivity + SettingActivity",
+      "note": "close X after cross_delay; CTA -> billing",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). ProXActivity paywall EVIDENCED (non-premium): title 'Quét không giới hạn'; price '3 ngày dùng thử miễn phí, sau đó 263.000 ₫/tuần' (loaded from live Play SKU); features (remove ads / unlimited product scan / instant QR+barcode / duplicate); CTA btnStartTrial 'BẮT ĐẦU DÙNG THỬ MIỄN PHÍ'; close ivClose. Reached from StartActivity route (from_start, fresh launch) AND Settings 'Mở khóa Premium' banner (n_prox_from_settings).",
+      "reference_capture": "reconstruction/step4/screens/n_prox-reference.png (+ n_prox_from_settings)"
+    },
+    {
+      "id": "n_splash",
+      "label": "SplashActivity (timed splash)",
+      "screen": "SplashActivity",
+      "ui_type": "system-event",
+      "ui_label": "timed splash + ad slots; auto-route",
+      "flow_id": "flow_launch",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "SplashActivity.smali->x() (activity_splash.xml)",
+      "note": "premium/offline skip ad",
+      "runtime_evidence": "Transient under premium: COLD launch routed Start->Main within <1s with ads/timer suppressed, proving passage through SplashActivity; no distinct ad/timer frame because premium suppresses the wait."
+    },
+    {
+      "id": "n_splash_gate",
+      "label": "First-launch decision",
+      "screen": "SplashActivity",
+      "ui_type": "system-event",
+      "ui_label": "if first-launch(!onBoarding && o.b())->Language else Main",
+      "flow_id": "flow_launch",
+      "kind": "gate",
+      "status": "EVIDENCED",
+      "evidence": "SplashActivity.smali->x() cond_a",
+      "note": "",
+      "runtime_evidence": "Not-first-launch branch taken: COLD launch landed on MainScanActivity (home), not AppLanguages."
+    },
+    {
+      "id": "n_applang_firstrun",
+      "label": "AppLanguagesActivity (first-run)",
+      "screen": "AppLanguagesActivity",
+      "ui_type": "screen",
+      "ui_label": "Language picker on first launch (onboarding=true)",
+      "flow_id": "flow_first_run_language",
+      "kind": "entry",
+      "status": "GATED",
+      "evidence": "SplashActivity.smali->x() Intent(AppLanguagesActivity) extra onboarding=true",
+      "note": "activity_app_languages_sheet.xml",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). On a FRESH install of the original, first-run routed StartActivity->ProXActivity(paywall)->SplashActivity->(splash app-open ad)->MainScanActivity; the language-FIRST onboarding screen (onboarding=true) was NOT shown (device locale vi used). First-run auto-entry is region/remote-config gated (ProX 'new in app' is the active first-run experience). The AppLanguages screen + picker + apply are otherwise EVIDENCED via Settings->App Language (n_applang_settings/n_lang_pick/n_lang_apply)."
+    },
+    {
+      "id": "n_lang_pick",
+      "label": "Locale selection",
+      "screen": "AppLanguagesActivity",
+      "ui_type": "list-item",
+      "ui_label": "select one of 33 locales",
+      "flow_id": "flow_first_run_language",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "adapter Lx6/h; W6/c invoke",
+      "note": "shared by first-run and Settings entry",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Locale selection EVIDENCED via Settings->App Language: selected 'English (USA)' (tvLanguageName highlighted).",
+      "reference_capture": "reconstruction/step4/screens/n_lang_pick-reference.png"
+    },
+    {
+      "id": "n_lang_apply",
+      "label": "Apply language + restart",
+      "screen": "AppLanguagesActivity",
+      "ui_type": "button",
+      "ui_label": "Apply (Lottie)",
+      "flow_id": "flow_first_run_language",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "AppLanguagesActivity.smali->x(); W6/b pswitch_2",
+      "note": "startActivity(MainScanActivity NEW_TASK|CLEAR_TASK)+finishAffinity",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Apply EVIDENCED: locale updated [vi,vi_VN]->[en,vi_VN] (Configuration logcat) and app restarted (NEW_TASK|CLEAR_TASK+finishAffinity) into MainScanActivity in English (nav Scanner/History/Create/Settings). Restored to Vietnamese after.",
+      "reference_capture": "reconstruction/step4/screens/n_lang_apply-reference.png"
+    },
+    {
+      "id": "n_main_scanner",
+      "label": "MainScanActivity — Scanner (Home)",
+      "screen": "MainScanActivity/Scanner",
+      "ui_type": "screen",
+      "ui_label": "Camera scanner home; bottom nav; gallery/batch/flash/zoom",
+      "flow_id": "flow_launch",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity.smali (activity_main.xml); topResumed observed in Step 2",
+      "note": "single-activity host; terminal of launch flow + hub for sub-flows",
+      "runtime_evidence": "Scanner home: live camera preview (view_camerax_preview), gallery/batch/flash controls, zoom slider, bottom nav; no premium crown (premium build).",
+      "reference_capture": "reconstruction/step4/screens/n_main_scanner-reference.png"
+    },
+    {
+      "id": "n_cam_perm_request",
+      "label": "Camera permission request",
+      "screen": "MainScanActivity/permission overlay",
+      "ui_type": "button",
+      "ui_label": "Allow -> requestPermissions(CAMERA)",
+      "flow_id": "flow_camera_permission",
+      "kind": "gate",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity.smali->F() :1291; launcher u",
+      "note": "",
+      "runtime_evidence": "On CAMERA revoke+relaunch the app requests CAMERA -> system GrantPermissionsActivity ('Cho phép Máy quét QR chụp ảnh...?' While-using/Only-this-time/Don't-allow).",
+      "reference_capture": "reconstruction/step4/screens/n_cam_perm_request-reference.png"
+    },
+    {
+      "id": "n_cam_granted",
+      "label": "Camera started",
+      "screen": "MainScanActivity/Scanner",
+      "ui_type": "system-event",
+      "ui_label": "all granted -> M() camera preview",
+      "flow_id": "flow_camera_permission",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "V6/q.t case1 :629 -> M()",
+      "note": "success terminal",
+      "runtime_evidence": "After grant, onResume re-check starts camera; live preview (view_camerax_preview) returns.",
+      "reference_capture": "reconstruction/step4/screens/n_cam_granted-reference.png"
+    },
+    {
+      "id": "n_cam_denied",
+      "label": "Camera denied overlay",
+      "screen": "MainScanActivity/permission overlay",
+      "ui_type": "system-event",
+      "ui_label": "denied -> L() overlay shown",
+      "flow_id": "flow_camera_permission",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "V6/q.t :621 -> L()",
+      "note": "cancel/deny terminal",
+      "runtime_evidence": "After 'Không cho phép', in-app layout_permission overlay shown: camera icon, 'Cho phép truy cập vào máy ảnh', btnAllow 'Cho phép'.",
+      "reference_capture": "reconstruction/step4/screens/n_cam_denied-reference.png"
+    },
+    {
+      "id": "n_cam_settings",
+      "label": "App Settings redirect (permanently denied)",
+      "screen": "System Settings (App info)",
+      "ui_type": "system-event",
+      "ui_label": "permanently denied dialog -> Settings",
+      "flow_id": "flow_camera_permission",
+      "kind": "external",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity.smali->F() :1396 AlertDialog positive P7/i",
+      "note": "external system Settings; re-entry re-checks permission",
+      "runtime_evidence": "Permanently-denied path: tapping in-app Allow raised AlertDialog '...đã được đặt để không hỏi lại! ... từ cài đặt' (HỦY BỎ/CÀI ĐẶT); CÀI ĐẶT opened com.android.settings InstalledAppDetails.",
+      "reference_capture": "reconstruction/step4/screens/n_cam_settings-reference.png"
+    },
+    {
+      "id": "n_scan_guide",
+      "label": "Scan-guide tutorial sheet",
+      "screen": "Scan-guide bottom sheet",
+      "ui_type": "screen",
+      "ui_label": "Point-your-camera tutorial; Got It",
+      "flow_id": "flow_scan_live",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "fragment_scan_guide_bottom_sheetragment.xml; Lc7/t; MainScanActivity->I()",
+      "note": "dismiss -> scanner",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Scan-guide tutorial sheet EVIDENCED on fresh install: 'Hướng máy ảnh của bạn vào mã QR để tự động quét.' + steps 1 & 2 + btnUnderstand 'Đã hiểu' (Got It).",
+      "reference_capture": "reconstruction/step4/screens/n_scan_guide-reference.png"
+    },
+    {
+      "id": "n_scan_live_decode",
+      "label": "QR/barcode decoded (camera)",
+      "screen": "MainScanActivity/Scanner",
+      "ui_type": "system-event",
+      "ui_label": "MLKit decode success (single mode)",
+      "flow_id": "flow_scan_live",
+      "kind": "state",
+      "status": "GATED",
+      "evidence": "MainScanActivity.smali->H() :1660 -> V6/D -> V6/C",
+      "note": "InputImage->BarcodeScanning",
+      "runtime_evidence": "Live-camera decode requires a physical QR/barcode in front of the camera (not available on the bench). The MLKit decode->result pipeline (H()->ShowScannedQrFragment) is evidenced via the gallery path which shares the same code path."
+    },
+    {
+      "id": "n_scan_result",
+      "label": "Scan result detail (in-place)",
+      "screen": "ShowScannedQrFragment (La7/E)",
+      "ui_type": "screen",
+      "ui_label": "Result: type/content, copy/fav/print/more + action grid",
+      "flow_id": "flow_scan_live",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "V6/C adds fragment tag ShowScannedQrFragment into scan_result_container; activity_scan_result.xml",
+      "note": "success terminal; also hosted by ShowScannedQrActivity",
+      "runtime_evidence": "ShowScannedQrFragment result detail (title 'QR Code (URL)', type/date/favorite, decoded content https://clonepoc.example.com, action grid Mở/Chia sẻ/Sao chép, QR preview) via gallery decode and history item.",
+      "reference_capture": "reconstruction/step4/screens/n_scan_result-reference.png"
+    },
+    {
+      "id": "n_result_external",
+      "label": "Type action -> external app",
+      "screen": "Scan result action grid",
+      "ui_type": "list-item",
+      "ui_label": "Open URL/Dial/SMS/Map/Email/Wi-Fi via rvQrOption",
+      "flow_id": "flow_scan_live",
+      "kind": "external",
+      "status": "EVIDENCED",
+      "evidence": "activity_scan_result.xml:31 rvQrOption; intents built by data-driven adapter (not statically pinned)",
+      "note": "external/gated: exact Intent construction dynamic per QR value type",
+      "runtime_evidence": "Type action 'Mở' (Open) for URL fired ACTION_VIEW -> Chrome (com.android.chrome ChromeTabbedActivity).",
+      "reference_capture": "reconstruction/step4/screens/n_result_external-reference.png"
+    },
+    {
+      "id": "n_result_share_sheet",
+      "label": "Share/Delete sheet",
+      "screen": "Share_delete_sheet (Lc7/v)",
+      "ui_type": "screen",
+      "ui_label": "Share + Delete actions",
+      "flow_id": "flow_scan_live",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "La7/E h0 :6571",
+      "note": "share -> chooser; delete -> DB",
+      "runtime_evidence": "More/3-dot opened Share/Delete sheet (Chia sẻ, Xóa bỏ, Tệp Csv, Tệp văn bản).",
+      "reference_capture": "reconstruction/step4/screens/n_result_share_sheet-reference.png"
+    },
+    {
+      "id": "n_result_print",
+      "label": "System print",
+      "screen": "Android print",
+      "ui_type": "external",
+      "ui_label": "PrintHelper print QR bitmap",
+      "flow_id": "flow_scan_live",
+      "kind": "external",
+      "status": "EVIDENCED",
+      "evidence": "La7/E h0 :6946 B4.q",
+      "note": "deferred but reachable",
+      "runtime_evidence": "Print icon opened Android print spooler (com.android.printspooler PrintActivity).",
+      "reference_capture": "reconstruction/step4/screens/n_result_print-reference.png"
+    },
+    {
+      "id": "n_scan_gallery",
+      "label": "Gallery image pick",
+      "screen": "System photo picker",
+      "ui_type": "system-event",
+      "ui_label": "ACTION_PICK image/* -> decode",
+      "flow_id": "flow_scan_gallery",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity.smali onClick :6458 launcher v",
+      "note": "decoded bitmap -> H()",
+      "runtime_evidence": "Gallery icon fired ACTION_PICK image/* -> system resolver -> Samsung Gallery picker (GalleryExternalActivity).",
+      "reference_capture": "reconstruction/step4/screens/n_scan_gallery-reference.png"
+    },
+    {
+      "id": "n_scan_gallery_result",
+      "label": "Gallery scan result / no-code",
+      "screen": "ShowScannedQrFragment / Toast",
+      "ui_type": "screen",
+      "ui_label": "result detail OR error toast if no code",
+      "flow_id": "flow_scan_gallery",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "H() -> result fragment; no-barcode -> Toast",
+      "note": "success/error terminal",
+      "runtime_evidence": "Picked saved QR -> decoded -> ShowScannedQrFragment result (success terminal).",
+      "reference_capture": "reconstruction/step4/screens/n_scan_result-reference.png"
+    },
+    {
+      "id": "n_batch_toggle",
+      "label": "Batch mode enabled",
+      "screen": "MainScanActivity/Scanner",
+      "ui_type": "system-event",
+      "ui_label": "ivBatch toggles accumulate mode",
+      "flow_id": "flow_batch",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :7062",
+      "note": "requires Batch Scanning enabled in Settings",
+      "runtime_evidence": "Batch icon toggled ON directly from scanner (icon turns blue + toast 'Chế độ quét hàng loạt'); not Settings-gated at runtime.",
+      "reference_capture": "reconstruction/step4/screens/n_batch_toggle-reference.png"
+    },
+    {
+      "id": "n_batch_result",
+      "label": "BatchScanResultActivity",
+      "screen": "BatchScanResultActivity",
+      "ui_type": "screen",
+      "ui_label": "List of codes in batch; search/delete/select",
+      "flow_id": "flow_batch",
+      "kind": "terminal",
+      "status": "GATED",
+      "evidence": "MainScanActivity onClick :6842 const-class; activity_batch_scan_result.xml",
+      "note": "",
+      "runtime_evidence": "BatchScanResultActivity requires live-camera accumulation of >=1 physical code; gallery import in batch mode yields a single result (does not accumulate). Reproduction: enable batch, scan multiple physical codes, tap the batch mini-card."
+    },
+    {
+      "id": "n_batch_item",
+      "label": "Batch item -> detail",
+      "screen": "BatchScanResultActivity",
+      "ui_type": "list-item",
+      "ui_label": "code row -> ShowScannedQrActivity",
+      "flow_id": "flow_batch",
+      "kind": "terminal",
+      "status": "GATED",
+      "evidence": "G8/p -> L7/D const-class ShowScannedQrActivity",
+      "note": "extras qr_code_id,isFavourite_qr,skip_result_inter",
+      "runtime_evidence": "Depends on a populated BatchScanResultActivity (see n_batch_result)."
+    },
+    {
+      "id": "n_create_tab",
+      "label": "Create tab (browse)",
+      "screen": "Create fragment (Lf7/d)",
+      "ui_type": "screen",
+      "ui_label": "Create landing: Create QR / Social Media / Barcodes groups",
+      "flow_id": "flow_create_browse",
+      "kind": "entry",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :5713; fragment_create_qr.xml",
+      "note": "",
+      "runtime_evidence": "Create fragment: QR grid (12), Social grid, Barcode card; scrolled full feed.",
+      "reference_capture": "reconstruction/step4/screens/n_create_tab-reference.png"
+    },
+    {
+      "id": "n_create_landing",
+      "label": "Create surface (alt entry)",
+      "screen": "CreateBarcodeQrCodeActivity",
+      "ui_type": "screen",
+      "ui_label": "Create QR + Other Types (alternate standalone/empty-state entry)",
+      "flow_id": "flow_create_browse",
+      "kind": "state",
+      "status": "UNREACHABLE",
+      "evidence": "I4/a.1:645 const-class; activity_create_barcode_qr_code.xml",
+      "note": "reached from History empty-state CTA; mirrors Create tab (no Social)",
+      "runtime_evidence": "CreateBarcodeQrCodeActivity (standalone) not reached at runtime: the Created-history empty CTA routes to the in-activity Create fragment tab, not this activity. Superseded by the Create tab.",
+      "reference_capture": "reconstruction/step4/screens/n_create_landing-reference.png"
+    },
+    {
+      "id": "n_create_qr_pick",
+      "label": "Pick QR type",
+      "screen": "Create tab / QR grid",
+      "ui_type": "card",
+      "ui_label": "12 QR tiles -> {Type}QrActivity",
+      "flow_id": "flow_create_qr",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "f7.1/a.smali pswitch_1 sparse-switch",
+      "note": "Clipboard,URL,Text,Contacts,Email,SMS,Geo,Phone,Calendar,Wi-Fi,My QR,Apps",
+      "runtime_evidence": "12 QR tiles (Clipboard/URL/wifi/Text/Contacts/Phone/email/SMS/Calendar/Location/MyQR/Apps); URL tile -> UrlQrActivity.",
+      "reference_capture": "reconstruction/step4/screens/n_create_tab-reference.png"
+    },
+    {
+      "id": "n_create_social_pick",
+      "label": "Pick Social type",
+      "screen": "Create tab / Social grid",
+      "ui_type": "card",
+      "ui_label": "10 social tiles -> SocialQrActivity(social_type)",
+      "flow_id": "flow_create_qr",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "f7.1/a.smali pswitch_0",
+      "note": "Instagram,WhatsApp,Bitcoin,YouTube,Facebook,Viber,X,Spotify,TikTok,PayPal",
+      "runtime_evidence": "Social grid = 9 tiles (Facebook,Instagram,WhatsApp,YouTube,X,Spotify,PayPal,Viber,Bitcoin); TikTok absent at runtime (static listed 10). Facebook -> SocialQrActivity.",
+      "reference_capture": "reconstruction/step4/screens/n_create_social_pick-reference.png"
+    },
+    {
+      "id": "n_create_barcode_pick",
+      "label": "Pick Barcode type",
+      "screen": "Create tab / Barcode grid",
+      "ui_type": "card",
+      "ui_label": "14 barcode tiles -> create/barcode/{Type}Activity",
+      "flow_id": "flow_create_barcode",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "E3/A4.a sparse-switch",
+      "note": "Product,ISBN,PDF-417,Data-Matrix,AZTEC,EAN-8,EAN-13,UPC-E,UPC-A,Code-93,Code-39,Code-128,ITF,CODABAR",
+      "runtime_evidence": "Barcode card 'Mã vạch 14' expands 14 tiles (Product/ISBN/PDF-417/Data-Matrix/AZTEC/EAN-8/EAN-13/UPC-E/UPC-A/Code-93/Code-39/Code-128/ITF/CODABAR); Code-128 -> Code128Activity.",
+      "reference_capture": "reconstruction/step4/screens/n_create_barcode_pick-reference.png"
+    },
+    {
+      "id": "n_create_form",
+      "label": "Create input form",
+      "screen": "{Type}QrActivity / {Type}Activity",
+      "ui_type": "screen",
+      "ui_label": "input fields + Create button",
+      "flow_id": "flow_create_qr",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "each create Activity onClick btn_create -> BaseActivity.saveCreatedQrCodeToDb",
+      "note": "blank input -> Toast; guarded by B4.m",
+      "runtime_evidence": "UrlQrActivity (https:// prefilled, chips), Code128Activity, SocialQrActivity (ID/địa chỉ toggle); blank-create shows validation Toast and stays on form.",
+      "reference_capture": "reconstruction/step4/screens/n_create_form_url-reference.png"
+    },
+    {
+      "id": "n_created_result",
+      "label": "ShowCreatedQrBarcodeActivity (result)",
+      "screen": "ShowCreatedQrBarcodeActivity",
+      "ui_type": "screen",
+      "ui_label": "Generated QR/barcode: save/share/copy/favorite/print/more",
+      "flow_id": "flow_create_qr",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "BaseActivity.navigateToShowCreatedQrBarcodeActivity :664 extra qr_code_id; activity_creted_qr_barcode.xml",
+      "note": "success terminal for both QR and barcode create; interstitial-ad counter around transition",
+      "runtime_evidence": "ShowCreatedQrBarcodeActivity for URL QR and Code-128 barcode (rendered image, Chia sẻ/Cứu, Nội dung+copy, favorite/print/more).",
+      "reference_capture": "reconstruction/step4/screens/n_created_result-reference.png"
+    },
+    {
+      "id": "n_created_save",
+      "label": "Save to gallery",
+      "screen": "ShowCreatedQrBarcodeActivity",
+      "ui_type": "button",
+      "ui_label": "Save -> MediaStore (storage perm gated <=API32)",
+      "flow_id": "flow_created_result_actions",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "ShowCreated onClick :2111 z4.e -> x() MediaStore",
+      "note": "on API33+ no runtime storage prompt; <=API32 WRITE_EXTERNAL_STORAGE requested",
+      "runtime_evidence": "'Cứu' (Save) wrote 1790409905776_URL.png to /sdcard/Pictures via MediaStore; no storage prompt (API 36).",
+      "reference_capture": "reconstruction/step4/screens/n_created_save-reference.png"
+    },
+    {
+      "id": "n_created_share",
+      "label": "Share created image",
+      "screen": "System share chooser",
+      "ui_type": "external",
+      "ui_label": "FileProvider share sheet",
+      "flow_id": "flow_created_result_actions",
+      "kind": "external",
+      "status": "EVIDENCED",
+      "evidence": "ShowCreated onClick :1858 z4.l",
+      "note": "",
+      "runtime_evidence": "'Chia sẻ' (Share) opened Android share chooser (com.android.intentresolver).",
+      "reference_capture": "reconstruction/step4/screens/n_created_share-reference.png"
+    },
+    {
+      "id": "n_history_tab",
+      "label": "History tab",
+      "screen": "History fragment (Lf7/h) / HistoryActivity",
+      "ui_type": "screen",
+      "ui_label": "Scanned/Created tabs; search/filter/delete/select",
+      "flow_id": "flow_history",
+      "kind": "entry",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :5667; activity_histry.xml",
+      "note": "empty state observed in Step 2",
+      "runtime_evidence": "History host: 3 sub-tabs Đã quét/Tạo/Yêu thích (RUNTIME DISCOVERY: Favorites tab not in static map). Scanned populated after gallery decode; search/filter/more toolbar appears when populated.",
+      "reference_capture": "reconstruction/step4/screens/n_history_scanned-reference.png"
+    },
+    {
+      "id": "n_history_scanned_item",
+      "label": "Scanned item -> detail",
+      "screen": "History/Scanned",
+      "ui_type": "list-item",
+      "ui_label": "row -> ShowScannedQrActivity",
+      "flow_id": "flow_history",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "L7/D const-class ShowScannedQrActivity",
+      "note": "hosts La7/E result detail",
+      "runtime_evidence": "Scanned row -> ShowScannedQrActivity detail.",
+      "reference_capture": "reconstruction/step4/screens/n_history_scanned_item-reference.png"
+    },
+    {
+      "id": "n_history_created_item",
+      "label": "Created item -> detail",
+      "screen": "History/Created",
+      "ui_type": "list-item",
+      "ui_label": "row -> ShowCreatedQrBarcodeActivity",
+      "flow_id": "flow_history",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "a7.1/c.1,a7.1/d.1,a7.1/g",
+      "note": "",
+      "runtime_evidence": "Created row (Code_128/POC12345) -> ShowScannedQrActivity (RUNTIME CORRECTION: static predicted ShowCreatedQrBarcodeActivity; runtime uses the unified ShowScannedQrActivity viewer).",
+      "reference_capture": "reconstruction/step4/screens/n_history_created_item-reference.png"
+    },
+    {
+      "id": "n_settings_tab",
+      "label": "Settings tab",
+      "screen": "Settings fragment (Lf7/p) / SettingActivity",
+      "ui_type": "screen",
+      "ui_label": "Settings rows + toggles",
+      "flow_id": "flow_settings",
+      "kind": "entry",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :5793; activity_setting.xml",
+      "note": "toggles write SharedPreferences",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Settings fragment opens with NO crash on the ORIGINAL build (step2 crashes here on a rebuild artifact: res/drawable/abc_switch_thumb_material.xml <item android:drawable=@null> vs original @0x7f07003d/@0x7f07003c). Full component inventory across 3 viewports: premium_container 'Mở khóa Premium'->ProX; btnLang App Language; btnTheme Theme Mode('Mặc định hệ thống'); btnSearchEngine('Mặc định'); btnCamera('Máy ảnh sau'); btnImageFormat('PNG'); btnBatch/switch_batch_info(on); btnDuplicate/switch_duplicate(off); btnVibration; btnBeep; btnClipBoard; btnWebSearch; btnSaveHistory; btnUrl(Show Product Details); btnCustomAction('Tắt'); btnDeleteHistory; RateUS; Share; PrivacyPolicy; Terms. Dark theme applied+reverted.",
+      "reference_capture": "reconstruction/step4/screens/n_settings_tab-reference.png (+ n_settings_tab_2, n_settings_tab_3, n_settings_dark)"
+    },
+    {
+      "id": "n_theme_sheet",
+      "label": "Theme picker sheet",
+      "screen": "theme_sheet (Lc7/x)",
+      "ui_type": "screen",
+      "ui_label": "System Default / Dark / Light",
+      "flow_id": "flow_settings",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :905",
+      "note": "applies day/night",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Theme Mode -> bottom sheet with 3 options: 'Mặc định hệ thống'(System) / 'Ánh sáng'(Light) / 'Tối'(Dark). Selected Dark -> app applied AppCompat night mode (n_settings_dark), reverted to System Default.",
+      "reference_capture": "reconstruction/step4/screens/n_theme_sheet-reference.png"
+    },
+    {
+      "id": "n_choice_dialog",
+      "label": "Single-choice dialog",
+      "screen": "Settings choice dialog",
+      "ui_type": "screen",
+      "ui_label": "Search Engine / Image Format picker",
+      "flow_id": "flow_settings",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "F3/E2.c; writes index pref",
+      "note": "",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Single-choice dialogs: Search Engine (Mặc định/Google/Bing/Yahoo/Yandex/DuckDuckGo/Qwant + HỦY) and Image Format (PNG/JPG/WEBP + HỦY).",
+      "reference_capture": "reconstruction/step4/screens/n_choice_dialog-reference.png (+ n_choice_dialog_imgformat)"
+    },
+    {
+      "id": "n_rate_sheet",
+      "label": "Rate Us sheet",
+      "screen": "Rate Sheet (Lc7/l)",
+      "ui_type": "screen",
+      "ui_label": "in-app rating bar sheet",
+      "flow_id": "flow_settings",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1004",
+      "note": "",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Rate Us -> in-app rating bottom sheet ('Cảm ơn bạn đã ủng hộ!', ratingBar stars, btnRate 'Đánh giá chúng tôi trên Google Play').",
+      "reference_capture": "reconstruction/step4/screens/n_rate_sheet-reference.png"
+    },
+    {
+      "id": "n_applang_settings",
+      "label": "AppLanguagesActivity (from Settings)",
+      "screen": "AppLanguagesActivity",
+      "ui_type": "screen",
+      "ui_label": "Language picker (onboarding=false)",
+      "flow_id": "flow_language_change",
+      "kind": "state",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1453 const-class AppLanguagesActivity",
+      "note": "apply -> restart into Main",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). App Language -> AppLanguagesActivity (onboarding=false); 33 locale rows (Vietnamese/English(USA)/Arabic/Bangla/Chinese/French/German/Hindi/Indonesian/Italian/...), ivBack + tvApply.",
+      "reference_capture": "reconstruction/step4/screens/n_applang_settings-reference.png"
+    },
+    {
+      "id": "n_ext_privacy",
+      "label": "Privacy Policy (browser)",
+      "screen": "External browser",
+      "ui_type": "external",
+      "ui_label": "https://sites.google.com/view/qrscannerma/home",
+      "flow_id": "flow_settings",
+      "kind": "external",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1061 B4.p ACTION_VIEW",
+      "note": "",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Privacy Policy -> ACTION_VIEW https://sites.google.com/view/qrscannerma/home -> Chrome (url bar confirmed 'sites.google.com/view/qrscannerma/home').",
+      "reference_capture": "reconstruction/step4/screens/n_ext_privacy-reference.png"
+    },
+    {
+      "id": "n_ext_terms",
+      "label": "Terms (browser)",
+      "screen": "External browser",
+      "ui_type": "external",
+      "ui_label": "https://sites.google.com/view/qrscannermas/home",
+      "flow_id": "flow_settings",
+      "kind": "external",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :969; PremiumActivity links",
+      "note": "",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Terms & Conditions -> ACTION_VIEW https://sites.google.com/view/qrscannermas/home -> Chrome (url bar confirmed 'sites.google.com/view/qrscannermas/home').",
+      "reference_capture": "reconstruction/step4/screens/n_ext_terms-reference.png"
+    },
+    {
+      "id": "n_ext_share_app",
+      "label": "Share App (chooser)",
+      "screen": "System share chooser",
+      "ui_type": "external",
+      "ui_label": "ACTION_SEND Play link to package",
+      "flow_id": "flow_settings",
+      "kind": "external",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1096 B4.t",
+      "note": "Hey check out my app at: https://play.google.com/store/apps/details?id=qr.scanner.barcodescanner.qrcodescanner.qrcodereader",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Share App -> ACTION_SEND text chooser (com.android.intentresolver); shared text 'Hey check out my app at: https://play.google.com/store/apps/details?id=qr.scanner.barcodescanner.qrcodescanner.qrcodereader'.",
+      "reference_capture": "reconstruction/step4/screens/n_ext_share_app-reference.png"
+    },
+    {
+      "id": "n_billing",
+      "label": "Google Play billing flow",
+      "screen": "Play billing sheet",
+      "ui_type": "external",
+      "ui_label": "BillingClient.launchBillingFlow",
+      "flow_id": "flow_premium",
+      "kind": "external",
+      "status": "GATED",
+      "evidence": "Lv/U.z/.y -> Lm2/c.c (U.smali:6770,7286)",
+      "note": "cannot complete on test device; entitlement->E3/L.a writes is_premium",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). ProX 'Start Trial' CTA launched BillingClient.launchBillingFlow -> com.android.billingclient.api.ProxyBillingActivity -> Google Play purchase sheet (com.android.vending LockToPortraitUiBuilderHostActivity). Test account eukadault@gmail.com has no payment method -> Play prompts 'Thêm phương thức thanh toán' (Add payment method); purchase cannot be completed (authorization excludes purchases). Gate boundary captured; cancelled with BACK.",
+      "reference_capture": "reconstruction/step4/screens/n_billing_gate-reference.png"
+    },
+    {
+      "id": "n_premium",
+      "label": "PremiumActivity paywall",
+      "screen": "PremiumActivity",
+      "ui_type": "screen",
+      "ui_label": "One-time lifetime paywall (activity_premium.xml)",
+      "flow_id": "flow_premium",
+      "kind": "gate",
+      "status": "UNREACHABLE",
+      "evidence": "launched by CreateBarcodeQrCodeActivity upsell + OnBoarding(orphan)",
+      "note": "close -> Main(if onboarding) else finish",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). PremiumActivity has NO reachable launcher at runtime. On the original (non-premium) the Create fragment (runtime Create surface) shows NO premium crown across the full scroll, and the Scanner home has none; the only static launchers are the superseded standalone CreateBarcodeQrCodeActivity (n_create_landing UNREACHABLE) and the orphaned OnBoardingActivity. The active paywall is ProXActivity (EVIDENCED). PremiumActivity therefore unreachable via normal UI."
+    },
+    {
+      "id": "n_sharein_entry",
+      "label": "Share-in / open image (deep entry)",
+      "screen": "External app share/open",
+      "ui_type": "deep-link",
+      "ui_label": "ACTION_VIEW/SEND image/jpeg,png,jpg + text/plain",
+      "flow_id": "flow_share_in",
+      "kind": "entry",
+      "status": "EVIDENCED",
+      "evidence": "AndroidManifest.xml:71-81 ShowOpenQrActivity exported intent-filter",
+      "note": "",
+      "runtime_evidence": "External ACTION_SEND image/* delivered to exported ShowOpenQrActivity (simulated external share via am start to the exported share-in target).",
+      "reference_capture": "reconstruction/step4/screens/n_sharein_result-reference.png"
+    },
+    {
+      "id": "n_sharein_result",
+      "label": "Share-in result / error",
+      "screen": "ShowOpenQrActivity",
+      "ui_type": "screen",
+      "ui_label": "decoded result in-place OR 'Error detecting QR or Barcode!' toast",
+      "flow_id": "flow_share_in",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "ShowOpenQrActivity.x() -> MLKit; a7.1/i default: found->La7/l, none->Toast error_detecting_qr1",
+      "note": "success/error terminal; does NOT route to ShowScannedQrActivity",
+      "runtime_evidence": "Success: shared QR image decoded -> result (https://clonepoc.example.com). Error: shared non-QR image -> Toast 'Lỗi phát hiện QR hoặc Barcode!'.",
+      "reference_capture": "reconstruction/step4/screens/n_sharein_result-reference.png"
+    },
+    {
+      "id": "n_exit_sheet",
+      "label": "Exit confirmation sheet",
+      "screen": "Exit bottom sheet",
+      "ui_type": "screen",
+      "ui_label": "exit confirm (fragment_exit_bottom_sheet + ad slot)",
+      "flow_id": "flow_launch",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "fragment_exit_bottom_sheet.xml; ad_unified_exit_dialog.xml",
+      "note": "back on home; ad slot suppressed under premium baseline",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Exit confirmation bottom sheet EVIDENCED (non-premium): embedded native ad (ad_headline/ad_body/ad_call_to_action) + btn_exit 'Exit'. Back on Scanner home shows it (ad slot present on the non-premium build; suppressed on the step2 premium baseline).",
+      "reference_capture": "reconstruction/step4/screens/n_exit_sheet-reference.png"
+    },
+    {
+      "id": "n_onboarding",
+      "label": "OnBoardingActivity (orphaned)",
+      "screen": "OnBoardingActivity",
+      "ui_type": "screen",
+      "ui_label": "3-page intro carousel (Next/Get Started/Skip)",
+      "flow_id": "flow_out_of_scope",
+      "kind": "entry",
+      "status": "UNREACHABLE",
+      "evidence": "OnBoardingActivity.smali; NO const-class launcher in smali",
+      "note": "declared but not reachable; first-run goes to Language instead",
+      "runtime_evidence": "Declared but no static launcher (Step 3); not reachable at runtime."
+    },
+    {
+      "id": "n_newinapp",
+      "label": "NewInAppActivity (orphaned)",
+      "screen": "NewInAppActivity",
+      "ui_type": "screen",
+      "ui_label": "Trial subscription paywall (Scan Without Limits)",
+      "flow_id": "flow_out_of_scope",
+      "kind": "entry",
+      "status": "UNREACHABLE",
+      "evidence": "NewInAppActivity.smali; NO const-class launcher in smali",
+      "note": "activity_new_inapp.xml; ProX/Premium are active paywalls",
+      "runtime_evidence": "Declared but no static launcher; ProX/Premium are the active paywalls."
+    },
+    {
+      "id": "n_navigation",
+      "label": "NavigationActivity (orphaned)",
+      "screen": "NavigationActivity",
+      "ui_type": "screen",
+      "ui_label": "Full-screen drawer menu",
+      "flow_id": "flow_out_of_scope",
+      "kind": "entry",
+      "status": "UNREACHABLE",
+      "evidence": "NavigationActivity.smali; NO const-class launcher (only Hilt injector)",
+      "note": "would have launched standalone History/Setting/Create; superseded by bottom nav",
+      "runtime_evidence": "Declared but no static launcher; superseded by bottom nav."
+    },
+    {
+      "id": "n_out_test",
+      "label": "Test/SDK-debug activities",
+      "screen": "TestMain/TestSplash/CaptureActivity/adsanalysis",
+      "ui_type": "screen",
+      "ui_label": "test & debug scaffolding",
+      "flow_id": "flow_out_of_scope",
+      "kind": "entry",
+      "status": "UNREACHABLE",
+      "evidence": "AndroidManifest.xml:125-128",
+      "note": "not part of product",
+      "runtime_evidence": "Test/SDK-debug scaffolding; not part of product."
+    },
+    {
+      "id": "n_system_bg",
+      "label": "Background init (no UI)",
+      "screen": "Background",
+      "ui_type": "system-event",
+      "ui_label": "WorkManager/Firebase/AppMeasurement/MlKit providers/Ad SDK",
+      "flow_id": "flow_out_of_scope",
+      "kind": "state",
+      "status": "UNREACHABLE",
+      "evidence": "AndroidManifest.xml:132-234 providers/services/receivers",
+      "note": "auto-init components; no UI closure",
+      "runtime_evidence": "Background init components; no UI closure."
+    },
+    {
+      "id": "n_history_favorites",
+      "label": "History Favorites tab (runtime discovery)",
+      "screen": "History fragment / Yêu thích sub-tab",
+      "ui_type": "tab",
+      "ui_label": "Yêu thích (Favorites) list; empty-state 'Không tìm thấy yêu thích!'",
+      "flow_id": "flow_history",
+      "kind": "terminal",
+      "status": "EVIDENCED",
+      "evidence": "tl_history third tab 'Yêu thích' [720,269][1080,404]; not present in Step 3 static map",
+      "runtime_evidence": "Third History sub-tab observed at runtime (Đã quét/Tạo/Yêu thích). Empty in this session.",
+      "reference_capture": "reconstruction/step4/screens/n_history_favorites-reference.png",
+      "note": "RUNTIME DISCOVERY: static map listed only Scanned/Created."
+    }
+  ],
+  "edges": [
+    {
+      "from": "n_start",
+      "to": "n_route_gate",
+      "action": "onCreate routing",
+      "predicate": "always (after remote-config fetch or 5s timeout)",
+      "status": "EVIDENCED",
+      "evidence": "StartActivity.smali->n()",
+      "runtime_evidence": "COLD launch routing observed."
+    },
+    {
+      "from": "n_route_gate",
+      "to": "n_prox",
+      "action": "startActivity(ProXActivity, from_start=true)",
+      "predicate": "showNewInApp(region=='true') && !isPremium",
+      "status": "EVIDENCED",
+      "evidence": "StartActivity.smali->n() cond_2",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Fresh non-premium launch routed StartActivity->ProXActivity (showNewInApp && !isPremium == true)."
+    },
+    {
+      "from": "n_route_gate",
+      "to": "n_splash",
+      "action": "startActivity(SplashActivity)",
+      "predicate": "otherwise / offline / parse error",
+      "status": "EVIDENCED",
+      "evidence": "StartActivity.smali->n() goto_1",
+      "runtime_evidence": "Premium -> Splash/Main branch taken."
+    },
+    {
+      "from": "n_prox",
+      "to": "n_billing",
+      "action": "tap Start Trial CTA / full-screen click",
+      "predicate": "billing ready",
+      "status": "EVIDENCED",
+      "evidence": "ProXActivity.q() -> Lv/U.z",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Start Trial CTA -> BillingClient.launchBillingFlow -> ProxyBillingActivity -> Play purchase sheet (launch evidenced; completion gated, see n_billing)."
+    },
+    {
+      "from": "n_prox",
+      "to": "n_splash",
+      "action": "tap Close X / back",
+      "predicate": "from_start==true",
+      "status": "EVIDENCED",
+      "evidence": "ProXActivity.r() startActivity(SplashActivity)",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). ProX close/back (from_start) -> SplashActivity."
+    },
+    {
+      "from": "n_splash",
+      "to": "n_splash_gate",
+      "action": "timer elapse / ad complete",
+      "predicate": "always",
+      "status": "EVIDENCED",
+      "evidence": "SplashActivity.x()",
+      "runtime_evidence": "Routing to gate observed."
+    },
+    {
+      "from": "n_splash_gate",
+      "to": "n_applang_firstrun",
+      "action": "startActivity(AppLanguagesActivity, onboarding=true)",
+      "predicate": "first launch (!onBoarding && o.b())",
+      "status": "GATED",
+      "evidence": "SplashActivity.x() cond_a",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Fresh install took the ProX->Splash->Main path, not the language-first branch (region/config gated)."
+    },
+    {
+      "from": "n_splash_gate",
+      "to": "n_main_scanner",
+      "action": "startActivity(MainScanActivity)",
+      "predicate": "not first launch",
+      "status": "EVIDENCED",
+      "evidence": "SplashActivity.x()",
+      "runtime_evidence": "Landed on MainScanActivity."
+    },
+    {
+      "from": "n_applang_firstrun",
+      "to": "n_lang_pick",
+      "action": "tap a locale row",
+      "predicate": "-",
+      "status": "GATED",
+      "evidence": "W6/c invoke",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). First-run auto-entry not triggered; the picker is EVIDENCED via Settings->App Language instead."
+    },
+    {
+      "from": "n_lang_pick",
+      "to": "n_lang_apply",
+      "action": "tap Apply",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "AppLanguagesActivity.x()",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Apply after selecting English."
+    },
+    {
+      "from": "n_lang_apply",
+      "to": "n_main_scanner",
+      "action": "startActivity(MainScanActivity NEW_TASK|CLEAR_TASK)+finishAffinity",
+      "predicate": "always (restart under new locale)",
+      "status": "EVIDENCED",
+      "evidence": "W6/b pswitch_2 :403",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Restart into MainScanActivity under English locale."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_cam_perm_request",
+      "action": "tap Allow (permission overlay)",
+      "predicate": "CAMERA not granted",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity.F()",
+      "runtime_evidence": "Revoke+relaunch triggered request."
+    },
+    {
+      "from": "n_cam_perm_request",
+      "to": "n_cam_granted",
+      "action": "system permission result",
+      "predicate": "CAMERA granted",
+      "status": "EVIDENCED",
+      "evidence": "V6/q.t case1 :629 M()",
+      "runtime_evidence": "Grant -> camera started."
+    },
+    {
+      "from": "n_cam_perm_request",
+      "to": "n_cam_denied",
+      "action": "system permission result",
+      "predicate": "CAMERA denied",
+      "status": "EVIDENCED",
+      "evidence": "V6/q.t :621 L()",
+      "runtime_evidence": "Deny -> in-app overlay."
+    },
+    {
+      "from": "n_cam_perm_request",
+      "to": "n_cam_settings",
+      "action": "tap Settings in permanently-denied dialog",
+      "predicate": "!rationale && camera_count>=2",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity.F() :1396",
+      "runtime_evidence": "Permanently-denied -> AlertDialog -> Settings."
+    },
+    {
+      "from": "n_cam_settings",
+      "to": "n_main_scanner",
+      "action": "return from Settings",
+      "predicate": "re-entry re-checks permission",
+      "status": "EVIDENCED",
+      "evidence": "onResume re-check",
+      "runtime_evidence": "Return from Settings after grant -> camera resumed on onResume."
+    },
+    {
+      "from": "n_cam_granted",
+      "to": "n_scan_guide",
+      "action": "camera started -> show tutorial",
+      "predicate": "first scan / guide not dismissed",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity.I() Lc7/t",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Fresh install: camera start showed the scan-guide tutorial sheet."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_scan_live_decode",
+      "action": "point camera at code",
+      "predicate": "camera active, single mode",
+      "status": "GATED",
+      "evidence": "MainScanActivity.H()",
+      "runtime_evidence": "Physical code required."
+    },
+    {
+      "from": "n_scan_live_decode",
+      "to": "n_scan_result",
+      "action": "add ShowScannedQrFragment overlay",
+      "predicate": "decode success",
+      "status": "EVIDENCED",
+      "evidence": "V6/C invokeSuspend :163",
+      "runtime_evidence": "Decode->result transition evidenced via gallery path (same H()->ShowScannedQrFragment)."
+    },
+    {
+      "from": "n_scan_result",
+      "to": "n_result_external",
+      "action": "tap a type action (rvQrOption)",
+      "predicate": "action supported for QR value type",
+      "status": "EVIDENCED",
+      "evidence": "activity_scan_result.xml:31 (adapter dynamic)",
+      "runtime_evidence": "Open URL -> Chrome."
+    },
+    {
+      "from": "n_scan_result",
+      "to": "n_result_share_sheet",
+      "action": "tap More/3-dot",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "La7/E h0 :6571",
+      "runtime_evidence": "More -> Share/Delete sheet."
+    },
+    {
+      "from": "n_scan_result",
+      "to": "n_result_print",
+      "action": "tap Print",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "La7/E h0 :6946",
+      "runtime_evidence": "Print -> print spooler."
+    },
+    {
+      "from": "n_scan_result",
+      "to": "n_main_scanner",
+      "action": "tap Back",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "La7/E h0 :6528 a0()",
+      "runtime_evidence": "Result Back returned to scanner."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_scan_gallery",
+      "action": "tap Gallery",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :6458",
+      "runtime_evidence": "Gallery -> ACTION_PICK resolver."
+    },
+    {
+      "from": "n_scan_gallery",
+      "to": "n_scan_gallery_result",
+      "action": "decode picked image",
+      "predicate": "code found / none found",
+      "status": "EVIDENCED",
+      "evidence": "H() result or no-barcode toast",
+      "runtime_evidence": "Decoded picked image."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_batch_toggle",
+      "action": "tap Batch",
+      "predicate": "Batch Scanning enabled in Settings",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :7062",
+      "runtime_evidence": "Batch icon toggled batch mode ON."
+    },
+    {
+      "from": "n_batch_toggle",
+      "to": "n_batch_result",
+      "action": "tap batch mini-card",
+      "predicate": "batch has items",
+      "status": "GATED",
+      "evidence": "MainScanActivity onClick :6842",
+      "runtime_evidence": "Needs live multi-code accumulation."
+    },
+    {
+      "from": "n_batch_result",
+      "to": "n_batch_item",
+      "action": "tap a code row",
+      "predicate": "-",
+      "status": "GATED",
+      "evidence": "G8/p -> L7/D",
+      "runtime_evidence": "BatchScanResultActivity not reachable."
+    },
+    {
+      "from": "n_batch_item",
+      "to": "n_scan_result",
+      "action": "startActivity(ShowScannedQrActivity)",
+      "predicate": "-",
+      "status": "GATED",
+      "evidence": "L7/D const-class ShowScannedQrActivity",
+      "runtime_evidence": "BatchScanResultActivity not reachable."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_create_tab",
+      "action": "tap Create tab",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :5713",
+      "runtime_evidence": "Create tab opened."
+    },
+    {
+      "from": "n_create_tab",
+      "to": "n_create_qr_pick",
+      "action": "tap QR tile",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "f7.1/a pswitch_1",
+      "runtime_evidence": "QR tile tapped."
+    },
+    {
+      "from": "n_create_tab",
+      "to": "n_create_social_pick",
+      "action": "tap Social tile",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "f7.1/a pswitch_0",
+      "runtime_evidence": "Facebook social tile -> SocialQrActivity."
+    },
+    {
+      "from": "n_create_tab",
+      "to": "n_create_barcode_pick",
+      "action": "expand Barcodes + tap barcode tile",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "E3/A4.a",
+      "runtime_evidence": "Barcode card expanded; Code-128 tapped."
+    },
+    {
+      "from": "n_create_qr_pick",
+      "to": "n_create_form",
+      "action": "startActivity({Type}QrActivity)",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "f7.1/a sparse-switch",
+      "runtime_evidence": "URL -> UrlQrActivity."
+    },
+    {
+      "from": "n_create_social_pick",
+      "to": "n_create_form",
+      "action": "startActivity(SocialQrActivity, social_type)",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "f7.1/a :521-717",
+      "runtime_evidence": "Facebook -> SocialQrActivity."
+    },
+    {
+      "from": "n_create_barcode_pick",
+      "to": "n_create_form",
+      "action": "startActivity(create/barcode/{Type}Activity)",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "E3/A4.a",
+      "runtime_evidence": "Code-128 -> Code128Activity."
+    },
+    {
+      "from": "n_create_form",
+      "to": "n_created_result",
+      "action": "tap Create -> saveCreatedQrCodeToDb",
+      "predicate": "input non-blank && B4.m guard",
+      "status": "EVIDENCED",
+      "evidence": "BaseActivity.navigateToShowCreatedQrBarcodeActivity :664",
+      "runtime_evidence": "Create -> ShowCreatedQrBarcodeActivity (URL + Code-128)."
+    },
+    {
+      "from": "n_create_form",
+      "to": "n_create_form",
+      "action": "tap Create with blank input",
+      "predicate": "input blank",
+      "status": "EVIDENCED",
+      "evidence": "B4.w Toast (stays on form)",
+      "runtime_evidence": "Blank create -> validation Toast, stays on form."
+    },
+    {
+      "from": "n_created_result",
+      "to": "n_created_save",
+      "action": "tap Save",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "ShowCreated onClick :2111",
+      "runtime_evidence": "Save -> file in /sdcard/Pictures."
+    },
+    {
+      "from": "n_created_result",
+      "to": "n_created_share",
+      "action": "tap Share",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "ShowCreated onClick :1858",
+      "runtime_evidence": "Share -> system chooser."
+    },
+    {
+      "from": "n_created_result",
+      "to": "n_created_result",
+      "action": "tap Copy/Favorite/Print/More",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "ShowCreated onClick",
+      "runtime_evidence": "Copy toast 'Đã sao chép'; favorite turns gold; More sheet (Edit/Share/Delete/CSV/TXT); Print -> spooler."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_history_tab",
+      "action": "tap History tab",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :5667",
+      "runtime_evidence": "History tab opened."
+    },
+    {
+      "from": "n_history_tab",
+      "to": "n_history_scanned_item",
+      "action": "tap Scanned row",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "L7/D",
+      "runtime_evidence": "Scanned row -> ShowScannedQrActivity."
+    },
+    {
+      "from": "n_history_tab",
+      "to": "n_history_created_item",
+      "action": "tap Created row",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "a7.1/*",
+      "runtime_evidence": "Created row -> ShowScannedQrActivity."
+    },
+    {
+      "from": "n_history_scanned_item",
+      "to": "n_scan_result",
+      "action": "startActivity(ShowScannedQrActivity)",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "L7/D",
+      "runtime_evidence": "ShowScannedQrActivity detail."
+    },
+    {
+      "from": "n_history_created_item",
+      "to": "n_created_result",
+      "action": "startActivity(ShowCreatedQrBarcodeActivity)",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "a7.1/c.1",
+      "runtime_evidence": "Runtime: row -> ShowScannedQrActivity (unified detail viewer), not ShowCreatedQrBarcodeActivity."
+    },
+    {
+      "from": "n_history_tab",
+      "to": "n_create_landing",
+      "action": "tap empty-state Create CTA",
+      "predicate": "history empty",
+      "status": "EVIDENCED",
+      "evidence": "I4/a.1:645 CreateBarcodeQrCodeActivity",
+      "runtime_evidence": "Runtime correction: Created empty-state CTA routes to the in-activity Create fragment tab (n_create_tab), not the standalone CreateBarcodeQrCodeActivity."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_settings_tab",
+      "action": "tap Settings tab",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "MainScanActivity onClick :5793",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Settings tab opens the Settings fragment with NO crash on the original."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_prox",
+      "action": "tap Unlock Premium banner",
+      "predicate": "!isPremium (banner visible)",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1209",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). 'Mở khóa Premium' banner -> ProXActivity (n_prox_from_settings)."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_applang_settings",
+      "action": "tap App Language",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1453",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). App Language -> AppLanguagesActivity."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_theme_sheet",
+      "action": "tap Theme Mode",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :905",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Theme Mode -> theme bottom sheet."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_choice_dialog",
+      "action": "tap Search Engines / Image Formats",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "F3/E2.c",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Search Engine / Image Format -> single-choice dialogs."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_rate_sheet",
+      "action": "tap Rate Us",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1004",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Rate Us -> rate bottom sheet."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_ext_share_app",
+      "action": "tap Share App",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1096 B4.t",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Share App -> ACTION_SEND chooser."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_ext_privacy",
+      "action": "tap Privacy Policy",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :1061 B4.p",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Privacy Policy -> Chrome."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_ext_terms",
+      "action": "tap Terms & Conditions",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "SettingActivity onClick :969 B4.p",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Terms & Conditions -> Chrome."
+    },
+    {
+      "from": "n_settings_tab",
+      "to": "n_settings_tab",
+      "action": "toggle switches (batch/vibration/sound/auto-copy/web-search/save-history/product)",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "LV6/Q writes prefs",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Toggled Batch Scanning switch true->false->true (switch_batch_info; n_toggle_before/n_toggle_after); writes SharedPreferences."
+    },
+    {
+      "from": "n_applang_settings",
+      "to": "n_lang_apply",
+      "action": "select + Apply",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "AppLanguagesActivity.x()",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Selected English + Apply -> locale change + restart."
+    },
+    {
+      "from": "n_create_landing",
+      "to": "n_premium",
+      "action": "tap Premium crown (tvUpgradeNow)",
+      "predicate": "!isPremium (crown visible)",
+      "status": "UNREACHABLE",
+      "evidence": "CreateBarcodeQrCodeActivity onClick :1080",
+      "runtime_evidence": "Create-landing standalone not reached; Create tab shows no premium crown under premium."
+    },
+    {
+      "from": "n_premium",
+      "to": "n_billing",
+      "action": "tap Upgrade Now",
+      "predicate": "billing ready",
+      "status": "UNREACHABLE",
+      "evidence": "A6/h pswitch_16 -> Lv/U.y",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). PremiumActivity unreachable (no runtime launcher)."
+    },
+    {
+      "from": "n_premium",
+      "to": "n_main_scanner",
+      "action": "tap Close X / back",
+      "predicate": "onboarding==true",
+      "status": "UNREACHABLE",
+      "evidence": "V6/K default -> MainScanActivity",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). PremiumActivity unreachable (no runtime launcher)."
+    },
+    {
+      "from": "n_premium",
+      "to": "n_ext_terms",
+      "action": "tap Privacy/Terms link",
+      "predicate": "-",
+      "status": "UNREACHABLE",
+      "evidence": "PremiumActivity V6/K",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). PremiumActivity unreachable (no runtime launcher)."
+    },
+    {
+      "from": "n_sharein_entry",
+      "to": "n_sharein_result",
+      "action": "external app shares/opens image or text",
+      "predicate": "image/* or text/plain intent",
+      "status": "EVIDENCED",
+      "evidence": "ShowOpenQrActivity.x() + a7.1/i default",
+      "runtime_evidence": "External image share decoded (success) + non-QR image error toast."
+    },
+    {
+      "from": "n_main_scanner",
+      "to": "n_exit_sheet",
+      "action": "system back on home",
+      "predicate": "back pressed at home",
+      "status": "EVIDENCED",
+      "evidence": "fragment_exit_bottom_sheet.xml",
+      "runtime_evidence": "runtime_baseline=reference-original (original XAPK base d769eed6, fresh install; developer cert f7b45323). Back on Scanner home showed the exit confirmation sheet (non-premium; ad slot present)."
+    },
+    {
+      "from": "n_history_tab",
+      "to": "n_history_favorites",
+      "action": "tap Yêu thích sub-tab",
+      "predicate": "-",
+      "status": "EVIDENCED",
+      "evidence": "tl_history third tab",
+      "runtime_evidence": "Favorites sub-tab opened; empty-state 'Không tìm thấy yêu thích!'."
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow_launch",
+      "name": "App launch / startup routing",
+      "entry": "n_start",
+      "terminals": [
+        "n_main_scanner",
+        "n_prox",
+        "n_exit_sheet"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_first_run_language",
+      "name": "First-launch language selection",
+      "entry": "n_applang_firstrun",
+      "terminals": [
+        "n_main_scanner"
+      ],
+      "classification": "POC",
+      "status": "GATED"
+    },
+    {
+      "id": "flow_camera_permission",
+      "name": "Camera permission grant/deny",
+      "entry": "n_cam_perm_request",
+      "terminals": [
+        "n_cam_granted",
+        "n_cam_denied",
+        "n_cam_settings"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_scan_live",
+      "name": "Live camera scan -> result",
+      "entry": "n_main_scanner",
+      "terminals": [
+        "n_scan_result",
+        "n_result_external",
+        "n_result_share_sheet"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_scan_gallery",
+      "name": "Scan from gallery image",
+      "entry": "n_scan_gallery",
+      "terminals": [
+        "n_scan_gallery_result"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_batch",
+      "name": "Batch scan",
+      "entry": "n_batch_toggle",
+      "terminals": [
+        "n_batch_result",
+        "n_batch_item"
+      ],
+      "classification": "POC",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "flow_create_browse",
+      "name": "Create landing browse",
+      "entry": "n_create_tab",
+      "terminals": [
+        "n_create_qr_pick",
+        "n_create_social_pick",
+        "n_create_barcode_pick"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_create_qr",
+      "name": "Create QR/Social -> result",
+      "entry": "n_create_qr_pick",
+      "terminals": [
+        "n_created_result"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_create_barcode",
+      "name": "Create Barcode -> result",
+      "entry": "n_create_barcode_pick",
+      "terminals": [
+        "n_created_result"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_created_result_actions",
+      "name": "Created result actions (save/share)",
+      "entry": "n_created_result",
+      "terminals": [
+        "n_created_save",
+        "n_created_share"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_history",
+      "name": "History browse -> detail",
+      "entry": "n_history_tab",
+      "terminals": [
+        "n_history_scanned_item",
+        "n_history_created_item"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_settings",
+      "name": "Settings + toggles + external links",
+      "entry": "n_settings_tab",
+      "terminals": [
+        "n_theme_sheet",
+        "n_choice_dialog",
+        "n_rate_sheet",
+        "n_ext_privacy",
+        "n_ext_terms",
+        "n_ext_share_app"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_language_change",
+      "name": "Language change from Settings",
+      "entry": "n_applang_settings",
+      "terminals": [
+        "n_main_scanner"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_premium",
+      "name": "Premium paywall -> billing (gated)",
+      "entry": "n_prox",
+      "terminals": [
+        "n_billing",
+        "n_main_scanner",
+        "n_splash"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_share_in",
+      "name": "Share-in image/text deep link",
+      "entry": "n_sharein_entry",
+      "terminals": [
+        "n_sharein_result"
+      ],
+      "classification": "POC",
+      "status": "EVIDENCED"
+    },
+    {
+      "id": "flow_out_of_scope",
+      "name": "Declared-but-unreachable / test / background",
+      "entry": "n_onboarding",
+      "terminals": [],
+      "classification": "OUT_OF_SCOPE",
+      "status": "UNREACHABLE"
+    }
+  ],
+  "runtime_summary": {
+    "nodes_total": 55,
+    "nodes_by_status": {
+      "EVIDENCED": 43,
+      "GATED": 5,
+      "UNREACHABLE": 7
+    },
+    "edges_total": 65,
+    "edges_by_status": {
+      "EVIDENCED": 55,
+      "GATED": 6,
+      "UNREACHABLE": 4
+    },
+    "planned_remaining": 0,
+    "blocked_remaining": 0
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "_README": "App-owned Remote Config DEFAULTS (the only bundled ads config; it lives in the app, never in the wrapper). Each ad key maps an AppAdKeys placement to an AdMob unit id; EMPTY = that slot never calls AdMob and gracefully no-ops (no request, no render, no crash). Every ad unit id here — including the four mandatory base keys — is intentionally EMPTY: real unit ids are supplied later only through the project's own Firebase Remote Config. The AdMob APPLICATION id (not a unit id) lives in base-application-wrapper/res/values/ads_id.xml. Non-ad keys (privacy_policy, term_of_use) carry real URLs.",
+
+  "open_splash": "",
+  "open_all": "",
+  "inter_splash": "",
+  "native_language": "",
+
+  "banner_home": "",
+  "banner_inner": "",
+  "native_list": "",
+  "inter_tab_history": "",
+  "inter_tab_create": "",
+  "inter_back_home": "",
+
+  "privacy_policy": "https://sites.google.com/view/qrscannerma/home",
+  "term_of_use": "https://sites.google.com/view/qrscannermas/home"
+}

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher label. Do NOT translate. -->
+    <string name="app_name" translatable="false">QR Scanner</string>
+
+    <!-- Seed copy kept from the template (translated in values-*/). -->
+    <string name="cd_back">Back</string>
+    <string name="settings_language">Language</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_scanner">Scanner</string>
+    <string name="nav_history">History</string>
+    <string name="nav_create">Create</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Scanner -->
+    <string name="scan_permission_title">Allow camera access</string>
+    <string name="scan_permission_body">QR Scanner needs the camera to scan QR codes and barcodes.</string>
+    <string name="scan_permission_allow">Allow</string>
+    <string name="scan_permission_settings_title">Camera permission required</string>
+    <string name="scan_permission_settings_body">Camera access is turned off. Enable it in Settings to scan.</string>
+    <string name="scan_permission_open_settings">Open Settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="scan_guide_title">Point your camera at a QR code to scan it automatically.</string>
+    <string name="scan_guide_step1">1. Center the code inside the frame.</string>
+    <string name="scan_guide_step2">2. Hold steady until it is detected.</string>
+    <string name="got_it">Got It</string>
+    <string name="cd_gallery">Scan from gallery</string>
+    <string name="cd_batch">Batch mode</string>
+    <string name="cd_flash">Flash</string>
+    <string name="cd_zoom_in">Zoom in</string>
+    <string name="cd_zoom_out">Zoom out</string>
+    <string name="batch_on">Batch mode on</string>
+    <string name="batch_off">Batch mode off</string>
+    <string name="error_detecting">Error detecting QR or Barcode!</string>
+    <string name="scanner_gallery">Gallery</string>
+    <string name="scanner_batch">Batch</string>
+    <string name="scanner_flash_on">Turn on flash</string>
+    <string name="scanner_flash_off">Turn off flash</string>
+    <string name="scanner_batch_count">Batch: %1$d codes</string>
+
+    <!-- Result -->
+    <string name="result_title">Result</string>
+    <string name="action_open">Open</string>
+    <string name="action_web_search">Web Search</string>
+    <string name="action_call">Call</string>
+    <string name="action_email">Send Email</string>
+    <string name="action_sms">Send SMS</string>
+    <string name="action_wifi">Connect Wi-Fi</string>
+    <string name="action_contact">Add Contact</string>
+    <string name="action_map">View on Map</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_share">Share</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_favorite">Favorite</string>
+    <string name="copied">Copied</string>
+    <string name="cd_print">Print</string>
+    <string name="cd_more">More options</string>
+    <string name="cd_qr_preview">QR preview</string>
+    <string name="cd_generated_code">Generated code</string>
+    <string name="share_sheet_csv">CSV File</string>
+    <string name="share_sheet_text">Text File</string>
+    <string name="print_job">QR Scanner</string>
+
+    <!-- Create -->
+    <string name="create_header">Create QR Code</string>
+    <string name="create_qr_title">Create QR</string>
+    <string name="create_social_title">Social Media</string>
+    <string name="create_barcode_title">Barcodes</string>
+    <string name="create_button">Create</string>
+    <!-- QR-tile labels (localised; social/barcode tiles keep their proper names). -->
+    <string name="create_tile_clipboard">Clipboard</string>
+    <string name="create_tile_url">URL</string>
+    <string name="create_tile_text">Text</string>
+    <string name="create_tile_contact">Contacts</string>
+    <string name="create_tile_email">Email</string>
+    <string name="create_tile_sms">SMS</string>
+    <string name="create_tile_geo">Location</string>
+    <string name="create_tile_phone">Phone</string>
+    <string name="create_tile_calendar">Calendar</string>
+    <string name="create_tile_wifi">Wi-Fi</string>
+    <string name="create_tile_myqr">My QR</string>
+    <string name="create_tile_apps">Apps</string>
+    <string name="bc_product">Product</string>
+    <string name="bc_datamatrix">Data-Matrix</string>
+    <string name="bc_code93">Code-93</string>
+    <string name="bc_code39">Code-39</string>
+    <string name="bc_code128">Code-128</string>
+    <string name="create_hint_generic">Enter content</string>
+    <string name="cd_clear">Clear</string>
+    <string name="form_wifi_ssid">Network name (SSID)</string>
+    <string name="form_wifi_password">Password</string>
+    <string name="form_contact_name">Name</string>
+    <string name="form_contact_phone">Phone</string>
+    <string name="create_empty_toast">Please enter content</string>
+    <string name="save">Save</string>
+    <string name="saved_to_gallery">Saved to gallery</string>
+    <string name="created_content">Content</string>
+
+    <!-- History -->
+    <string name="history_scanned">Scanned</string>
+    <string name="history_created">Created</string>
+    <string name="history_favorites">Favorites</string>
+    <string name="history_empty_scanned">No scan history yet</string>
+    <string name="history_empty_created">No created codes yet</string>
+    <string name="history_empty_favorites">No favorites found!</string>
+    <string name="history_search_hint">Search</string>
+    <string name="delete_selected">Delete selected</string>
+    <string name="history_group_today">Today</string>
+    <string name="history_delete_title">Delete this item?</string>
+    <string name="history_cta_scan">Scan QR/barcode</string>
+    <string name="history_cta_create">Create QR/barcode</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_filter">Filter</string>
+    <string name="history_filter_title">Filter history</string>
+    <string name="history_filter_all">All time</string>
+    <string name="history_filter_today">Today</string>
+    <string name="history_filter_last_7_days">Last 7 days</string>
+    <string name="history_filter_last_30_days">Last 30 days</string>
+    <string name="history_more_title">History options</string>
+    <string name="history_delete_visible">Delete displayed items</string>
+    <string name="history_delete_visible_message">Delete %1$d displayed item(s)?</string>
+
+    <!-- Settings -->
+    <string name="settings_unlock_premium">Unlock Premium</string>
+    <string name="settings_unlock_premium_sub">Access all features</string>
+    <string name="settings_upgrade">Upgrade</string>
+    <string name="settings_overview">Overview</string>
+    <string name="settings_value_default">Default</string>
+    <string name="settings_value_rear_camera">Rear camera</string>
+    <string name="settings_value_front_camera">Front camera</string>
+    <string name="settings_value_png">PNG</string>
+    <string name="settings_app_language">App Language</string>
+    <string name="settings_theme_mode">Theme Mode</string>
+    <string name="settings_application">Application</string>
+    <string name="settings_search_engine">Search Engine</string>
+    <string name="settings_camera">Camera</string>
+    <string name="settings_image_format">Image Format</string>
+    <string name="settings_batch">Batch Scanning</string>
+    <string name="settings_vibration">Vibration</string>
+    <string name="settings_sound">Sound</string>
+    <string name="settings_auto_copy">Auto Copy to Clipboard</string>
+    <string name="settings_web_search">Auto Web Search</string>
+    <string name="settings_save_history">Save History</string>
+    <string name="settings_product_details">Show Product Details</string>
+    <string name="settings_about">About</string>
+    <string name="settings_rate">Rate Us</string>
+    <string name="rate_thanks">Thanks for your support!</string>
+    <string name="rate_cta">Rate us on Google Play</string>
+    <string name="settings_share_app">Share App</string>
+    <string name="settings_privacy">Privacy Policy</string>
+    <string name="settings_terms">Terms &amp; Conditions</string>
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="feature_deferred">Coming soon</string>
+
+    <!-- Prox paywall -->
+    <string name="prox_title">Scan Without Limits</string>
+    <string name="prox_feature_1">Remove all ads</string>
+    <string name="prox_feature_2">Unlimited product scans</string>
+    <string name="prox_feature_3">Instant QR + barcode</string>
+    <string name="prox_feature_4">No duplicate results</string>
+    <string name="prox_cta">Start Free Trial</string>
+    <string name="prox_price_placeholder">3-day free trial, then billed weekly</string>
+    <string name="prox_auto_renew">Subscription auto-renews. Cancel anytime</string>
+    <string name="cd_close">Close</string>
+
+    <!-- Exit -->
+    <string name="exit_title">Exit app?</string>
+    <string name="exit_confirm">Exit</string>
+
+    <!-- Share App text -->
+    <string name="share_app_text">Hey check out this QR Scanner app!</string>
+
+    <!-- External links (reference's own public policy pages) -->
+    <string name="url_privacy" translatable="false">https://sites.google.com/view/qrscannerma/home</string>
+    <string name="url_terms" translatable="false">https://sites.google.com/view/qrscannermas/home</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector android:height="34.0dp" android:width="34.0dp" android:viewportWidth="34.0" android:viewportHeight="34.0"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:pathData="M19.8333,4.25V9.91667C19.8333,10.2924 19.9826,10.6527 20.2483,10.9184C20.5139,11.1841 20.8743,11.3333 21.25,11.3333H26.9167" android:strokeColor="@color/figma_blue" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path android:pathData="M7.08333,17V7.08333C7.08333,6.33189 7.38184,5.61122 7.9132,5.07986C8.44455,4.54851 9.16522,4.25 9.91667,4.25H19.8333L26.9167,11.3333V17" android:strokeColor="@color/figma_blue" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path android:pathData="M7.08333,25.5H9.20833C9.77192,25.5 10.3124,25.2761 10.7109,24.8776C11.1095,24.4791 11.3333,23.9386 11.3333,23.375C11.3333,22.8114 11.1095,22.2709 10.7109,21.8724C10.3124,21.4739 9.77192,21.25 9.20833,21.25H7.08333V29.75" android:strokeColor="@color/figma_blue" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path android:pathData="M24.0833,25.5H26.9167" android:strokeColor="@color/figma_blue" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path android:pathData="M28.3333,21.25H24.0833V29.75" android:strokeColor="@color/figma_blue" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path android:pathData="M15.5833,21.25V29.75H17C17.7514,29.75 18.4721,29.4515 19.0035,28.9201C19.5348,28.3888 19.8333,27.6681 19.8333,26.9167V24.0833C19.8333,23.3319 19.5348,22.6112 19.0035,22.0799C18.4721,21.5485 17.7514,21.25 17,21.25H15.5833Z" android:strokeColor="@color/figma_blue" android:strokeWidth="2.0" android:strokeLineCap="round" android:strokeLineJoin="round" />
+</vector>

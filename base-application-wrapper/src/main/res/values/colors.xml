@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home and Dialog Colors -->
+    <color name="primaryColor">#D9015C</color>
+    <color name="accentTone">#D9015C</color>
+    <color name="ic_launcher_bg">#FFFFFFFF</color>
+<color name="white">#ffffff</color>
+
+    <!-- Redesign Recovery Colors -->
+    <!-- Standard Blue for new UI -->
+
+    <!-- Photos Recovery Redesign -->
+
+    <!-- Scan Completed Redesign -->
+
+    <!-- Filter BottomSheet Colors -->
+
+    <!-- Document Recovery Redesign -->
+
+
+</resources>

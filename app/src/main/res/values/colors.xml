@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Launch-window / Compose scrim background (dark scanner surface). Referenced by themes.xml. -->
+    <color name="app_launch_bg">#FF0E1116</color>
+
+    <!-- Adaptive launcher icon background (QR brand blue). -->
+    <color name="ic_launcher_background">#2563EB</color>
+
+    <!-- These four are NOT decoration: the base-application AAR ships #00FF00 placeholders for
+         colorPrimary / colorPrimaryDark / colorAccent, so without an app-level override its own
+         AppCompat screens render bright green. -->
+    <color name="colorPrimary" tools:ignore="UnusedResources">#2563EB</color>
+    <color name="colorPrimaryDark" tools:ignore="UnusedResources">#1D4ED8</color>
+    <color name="colorAccent" tools:ignore="UnusedResources">@color/theme_color</color>
+    <color name="theme_color" tools:ignore="UnusedResources">#2563EB</color>
+
+    <!-- Color tokens referenced by the mirrored reference vector drawables (provenance:
+         reference res/values/colors.xml, package qr.scanner…qrcodereader 1.2.6). Night values in
+         values-night/colors.xml preserve the reference's day/night icon theming. -->
+    <color name="figma_blue">#ff2879fa</color>
+    <color name="colorBack">#5c626d</color>
+    <color name="color_camera_Icon_bg">#f8f8f8</color>
+    <color name="color_icon_dark_night">#7c828e</color>
+    <color name="prox_close">#ffbdbec2</color>
+    <!-- Reference X (Twitter) social-tile monochrome stroke. -->
+    <color name="social_monochrome">#15171a</color>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- App theme. UI is fully Compose; this only styles the launch window + system bars before
+         Compose draws. Parent MUST be an AppCompat descendant (Material3) — the base-application
+         AAR's AppCompat activities crash on a plain framework theme.
+
+         Edge-to-edge: transparent status + navigation bars, matching the reference's
+         Theme.QrScannerApp1 (statusBarColor/navigationBarColor transparent). The scanner surface is
+         full-bleed and dark, so light (white) system-bar icons by default. -->
+    <style name="Theme.QRScanner" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/app_launch_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+    </style>
+
+    <!-- Splash window: same, but light bg for the branded routing splash. -->
+    <style name="Theme.QRScanner.Splash" parent="Theme.QRScanner">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

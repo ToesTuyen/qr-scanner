@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Security posture:
+    - base-config: cleartext (plain HTTP) is DENIED for every domain; only the system CA store is
+      trusted (user-added CAs are NOT trusted, so a proxy MITM cert can't intercept HTTPS). All
+      production traffic (OpenRouter, Cloudflare R2) must therefore be HTTPS.
+    - domain-config: the ONLY cleartext exception is the local dev backend during development
+      (10.0.2.2 = emulator host, localhost/127.0.0.1 = on-device loopback). No effect in prod.
+
+  NOTE on pinning: certificate pinning could be added (<pin-set>) for the R2 / OpenRouter hosts, but
+  those endpoints rotate leaf/intermediate certs, so pinning risks bricking the app on renewal.
+  Prefer Play Integrity + the runtime TamperGuard checks instead.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>

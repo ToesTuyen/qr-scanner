@@ -1,0 +1,9 @@
+# Copy to local.properties (gitignored) for a local build.
+# macOS / Linux:
+sdk.dir=/Users/YOUR_USER/Library/Android/sdk
+# Windows:
+#sdk.dir=C:\\Users\\YOUR_USER\\AppData\\Local\\Android\\Sdk
+
+# KeyVault content-key — decrypts the API-key blob at app/src/main/res/raw/keyvault_defaults.json.
+# Get it from the KeyVault admin. Leave it out and KeyVault stays off; nothing else breaks.
+#KV_CONTENT_KEY=base64-content-key-here

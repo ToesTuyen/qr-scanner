@@ -1,0 +1,69 @@
+<resources>
+    <!-- Language selection screen -->
+    <string name="language_title">Language</string>
+    <string name="apply">Apply</string>
+    <string name="search_language_placeholder">Search language…</string>
+    <string name="ting_vit" translatable="false">Tiếng Việt</string>
+    <string name="portugus" translatable="false">Português</string>
+    <string name="selected_section_title">SELECTED</string>
+    <string name="all_languages_section_title">ALL LANGUAGES</string>
+    <string name="back_content_description">Back</string>
+    <string name="search_content_description">Search</string>
+
+    <!-- Re-engagement / notification copy -->
+    <string name="you_have_unfinished_file">Your AI creation is waiting ✨</string>
+    <string name="click_to_see_more">Open Pictovio</string>
+    <string name="noti_title">Allow %s to send notifications?</string>
+    <string name="noti_content">Allow notifications to receive updates when your AI creations are ready.</string>
+    <string name="your_recent_documents">Your latest AI creations</string>
+    <string name="new_file_content_notification">Your AI creation is ready!</string>
+    <string name="check_now">Open now</string>
+    <string name="full_screen_noti">Tap to view your AI creation.</string>
+    <string name="full_screen_noti2">Turn your photos into something amazing with AI.</string>
+    <string name="daily_call_open_app_content">Open Pictovio and create something amazing today.</string>
+    <string name="open">Open</string>
+    <string name="notification_description_11">Ready to create something new?</string>
+    <string name="clean_files">Create now</string>
+
+    <!-- Notification copy variants supplied by the host when needed. -->
+    <string-array name="notification_title2" />
+    <string-array name="notification_message2" />
+    <string-array name="notification_button2" />
+
+    <!-- Feature highlights -->
+    <string name="feature1_text">Premium AI creation tools</string>
+    <string name="feature2_text">High-quality photo and video results</string>
+    <string name="feature3_text">More AI creations</string>
+    <string name="feature4_text">Ad-free experience</string>
+    <string name="feature5_text">Secure purchase restoration</string>
+
+    <!-- Premium paywall (LocalIapScreen) -->
+    <string name="choose_plan">Choose your plan</string>
+    <string name="credit_packs">Credit packs</string>
+    <string name="credit_packs_description">One-time purchase. Credits are added after secure verification.</string>
+    <string name="payment_disclaimer">Payment will be charged to your Google Play account. Cancel subscriptions anytime in Google Play.</string>
+    <string name="plan_unavailable_message">This plan is coming soon. Please choose another plan.</string>
+    <string name="close_content_description">Close</string>
+    <string name="iap_hero_title">Create more with Pictovio Pro</string>
+    <string name="iap_feature_ai_tools">Premium AI creation tools</string>
+    <string name="iap_feature_ad_free">Ad-free experience</string>
+    <string name="iap_feature_restore">Restore securely on any device</string>
+    <string name="plan_weekly">Weekly</string>
+    <string name="plan_monthly">Monthly</string>
+    <string name="plan_yearly">Yearly</string>
+    <string name="plan_pro">Pro</string>
+    <string name="iap_current_plan">Your current plan</string>
+    <string name="iap_current_plan_name">Pictovio Pro · %1$s</string>
+    <string name="billing_weekly">Billed every week</string>
+    <string name="billing_monthly">Billed every month</string>
+    <string name="billing_yearly">Billed every year</string>
+    <string name="best_value">BEST VALUE</string>
+    <string name="coming_soon">COMING SOON</string>
+    <string name="unavailable">Unavailable</string>
+    <string name="continue_text">Continue</string>
+    <string name="plan_coming_soon">%1$s plan coming soon</string>
+    <string name="credit_pack">CREDIT PACK</string>
+    <string name="credits_count">%1$s credits</string>
+    <string name="subscription_credits_every_days">%1$s credits every %2$d days</string>
+    <string name="buy_credits">Buy credits</string>
+</resources>

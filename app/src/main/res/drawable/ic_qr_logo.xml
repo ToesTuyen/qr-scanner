@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Clone-owned QR logo used by the branded splash (AppHost.splashIconRes). Authored for this app. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96"
+    android:tint="#2563EB">
+    <path android:fillColor="#000000" android:pathData="M12,12 h28 v28 h-28 z M20,20 h12 v12 h-12 z" android:fillType="evenOdd"/>
+    <path android:fillColor="#000000" android:pathData="M56,12 h28 v28 h-28 z M64,20 h12 v12 h-12 z" android:fillType="evenOdd"/>
+    <path android:fillColor="#000000" android:pathData="M12,56 h28 v28 h-28 z M20,64 h12 v12 h-12 z" android:fillType="evenOdd"/>
+    <path android:fillColor="#000000" android:pathData="M56,56 h10 v10 h-10 z"/>
+    <path android:fillColor="#000000" android:pathData="M74,56 h10 v10 h-10 z"/>
+    <path android:fillColor="#000000" android:pathData="M56,74 h10 v10 h-10 z"/>
+    <path android:fillColor="#000000" android:pathData="M74,74 h10 v10 h-10 z"/>
+</vector>

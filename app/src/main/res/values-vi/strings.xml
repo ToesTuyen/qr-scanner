@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vietnamese labels matched verbatim to the reference app (qr.scanner… 1.2.6) hierarchy dumps
+     captured in reconstruction/step4/screens/*-reference.xml. Device locale is vi-VN. -->
+<resources>
+    <string name="cd_back">Quay lại</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_scanner">Máy quét</string>
+    <string name="nav_history">Lịch sử</string>
+    <string name="nav_create">Tạo nên</string>
+    <string name="nav_settings">Cài đặt</string>
+
+    <!-- Scanner -->
+    <string name="scan_permission_title">Cho phép truy cập vào máy ảnh</string>
+    <string name="scan_permission_body">Cần có quyền của máy ảnh để quét mã QR và Mã vạch. Cho phép quyền truy cập vào Máy ảnh</string>
+    <string name="scan_permission_allow">Cho phép</string>
+    <string name="scan_permission_settings_title">Cần có sự cho phép</string>
+    <string name="scan_permission_settings_body">(Các) quyền cần thiết đã được đặt để không hỏi lại! Vui lòng cung cấp chúng từ cài đặt.</string>
+    <string name="scan_permission_open_settings">Cài đặt</string>
+    <string name="cancel">Hủy bỏ</string>
+    <string name="scan_guide_title">Hướng máy ảnh của bạn vào mã QR để tự động quét.</string>
+    <string name="scan_guide_step1">Giữ điện thoại của bạn ngang và hướng thẳng vào mã QR để quét trơn tru.</string>
+    <string name="scan_guide_step2">Đảm bảo quét rõ ràng, tránh phản chiếu ánh sáng và mờ trên mã QR.</string>
+    <string name="got_it">Đã hiểu</string>
+    <string name="cd_gallery">Quét từ thư viện</string>
+    <string name="cd_batch">Chế độ hàng loạt</string>
+    <string name="cd_flash">Đèn flash</string>
+    <string name="cd_zoom_in">Phóng to</string>
+    <string name="cd_zoom_out">Thu nhỏ</string>
+    <string name="batch_on">Chế độ quét hàng loạt</string>
+    <string name="batch_off">Đã tắt chế độ hàng loạt</string>
+    <string name="error_detecting">Lỗi phát hiện QR hoặc Barcode!</string>
+    <string name="scanner_gallery">Thư viện</string>
+    <string name="scanner_batch">Hàng loạt</string>
+    <string name="scanner_flash_on">Bật đèn flash</string>
+    <string name="scanner_flash_off">Tắt đèn flash</string>
+    <string name="scanner_batch_count">Hàng loạt: %1$d mã</string>
+
+    <!-- Result -->
+    <string name="result_title">Kết quả</string>
+    <string name="action_open">Mở</string>
+    <string name="action_web_search">Tìm kiếm web</string>
+    <string name="action_call">Gọi điện</string>
+    <string name="action_email">Gửi email</string>
+    <string name="action_sms">Gửi SMS</string>
+    <string name="action_wifi">Kết nối Wi-Fi</string>
+    <string name="action_contact">Thêm liên hệ</string>
+    <string name="action_map">Xem trên bản đồ</string>
+    <string name="action_copy">Sao chép</string>
+    <string name="action_share">Chia sẻ</string>
+    <string name="action_delete">Xóa bỏ</string>
+    <string name="action_favorite">Yêu thích</string>
+    <string name="copied">Đã sao chép</string>
+    <string name="cd_print">In</string>
+    <string name="cd_more">Thêm tùy chọn</string>
+    <string name="cd_qr_preview">Xem trước QR</string>
+    <string name="cd_generated_code">Mã đã tạo</string>
+    <string name="share_sheet_csv">Tệp Csv</string>
+    <string name="share_sheet_text">Tệp văn bản</string>
+    <string name="print_job">QR Scanner</string>
+
+    <!-- Create -->
+    <string name="create_header">Tạo mã QR</string>
+    <string name="create_qr_title">Tạo mã QR</string>
+    <string name="create_social_title">Mạng xã hội</string>
+    <string name="create_barcode_title">Mã vạch</string>
+    <string name="create_button">Tạo nên</string>
+    <string name="create_tile_clipboard">bìa kẹp hồ sơ</string>
+    <string name="create_tile_url">địa chỉ</string>
+    <string name="create_tile_text">chữ</string>
+    <string name="create_tile_contact">liên lạc</string>
+    <string name="create_tile_email">e-mail</string>
+    <string name="create_tile_sms">tin nhắn</string>
+    <string name="create_tile_geo">Vị trí</string>
+    <string name="create_tile_phone">điện thoại</string>
+    <string name="create_tile_calendar">lịch</string>
+    <string name="create_tile_wifi">wifi</string>
+    <string name="create_tile_myqr">qr của tôi</string>
+    <string name="create_tile_apps">Ứng dụng</string>
+    <string name="bc_product">sản phẩm</string>
+    <string name="bc_datamatrix">Ma trận dữ liệu</string>
+    <string name="bc_code93">MÃ-93</string>
+    <string name="bc_code39">MÃ-39</string>
+    <string name="bc_code128">MÃ-128</string>
+    <string name="create_hint_generic">Nhập nội dung</string>
+    <string name="cd_clear">Xóa</string>
+    <string name="form_wifi_ssid">Tên mạng (SSID)</string>
+    <string name="form_wifi_password">Mật khẩu</string>
+    <string name="form_contact_name">Tên</string>
+    <string name="form_contact_phone">Điện thoại</string>
+    <string name="create_empty_toast">Vui lòng nhập nội dung</string>
+    <string name="save">Cứu</string>
+    <string name="saved_to_gallery">Đã lưu vào thư viện</string>
+    <string name="created_content">Nội dung</string>
+
+    <!-- History -->
+    <string name="history_scanned">Đã quét</string>
+    <string name="history_created">Tạo</string>
+    <string name="history_favorites">Yêu thích</string>
+    <string name="history_empty_scanned">Không tìm thấy lịch sử!</string>
+    <string name="history_empty_created">Không tìm thấy lịch sử!</string>
+    <string name="history_empty_favorites">Không tìm thấy yêu thích!</string>
+    <string name="history_search_hint">Tìm kiếm</string>
+    <string name="delete_selected">Xóa mục đã chọn</string>
+    <string name="history_group_today">Hôm nay</string>
+    <string name="history_delete_title">Xóa mục này?</string>
+    <string name="history_cta_scan">Quét QR/mã vạch</string>
+    <string name="history_cta_create">tạo mã QR/mã vạch</string>
+    <string name="cd_search">Tìm kiếm</string>
+    <string name="cd_filter">Bộ lọc</string>
+    <string name="history_filter_title">Lọc lịch sử</string>
+    <string name="history_filter_all">Tất cả thời gian</string>
+    <string name="history_filter_today">Hôm nay</string>
+    <string name="history_filter_last_7_days">7 ngày qua</string>
+    <string name="history_filter_last_30_days">30 ngày qua</string>
+    <string name="history_more_title">Tùy chọn lịch sử</string>
+    <string name="history_delete_visible">Xóa các mục đang hiển thị</string>
+    <string name="history_delete_visible_message">Xóa %1$d mục đang hiển thị?</string>
+
+    <!-- Settings -->
+    <string name="settings_unlock_premium">Mở khóa Premium</string>
+    <string name="settings_unlock_premium_sub">Truy cập tất cả tính năng Pro</string>
+    <string name="settings_upgrade">Nâng cấp</string>
+    <string name="settings_overview">Tổng quan</string>
+    <string name="settings_value_default">Mặc định</string>
+    <string name="settings_value_rear_camera">Máy ảnh sau</string>
+    <string name="settings_value_front_camera">Máy ảnh trước</string>
+    <string name="settings_value_png">PNG</string>
+    <string name="settings_app_language">Ngôn ngữ ứng dụng</string>
+    <string name="settings_theme_mode">Chế độ giao diện</string>
+    <string name="settings_application">Ứng dụng</string>
+    <string name="settings_search_engine">Công cụ tìm kiếm</string>
+    <string name="settings_camera">Máy ảnh</string>
+    <string name="settings_image_format">Định dạng hình ảnh</string>
+    <string name="settings_batch">Quét hàng loạt</string>
+    <string name="settings_vibration">Rung</string>
+    <string name="settings_sound">Âm thanh</string>
+    <string name="settings_auto_copy">Tự động sao chép vào clipboard</string>
+    <string name="settings_web_search">Tự động tìm kiếm trên web</string>
+    <string name="settings_save_history">Lưu lịch sử</string>
+    <string name="settings_product_details">Hiển thị chi tiết sản phẩm</string>
+    <string name="settings_about">Giới thiệu</string>
+    <string name="settings_rate">Đánh giá chúng tôi</string>
+    <string name="rate_thanks">Cảm ơn bạn đã ủng hộ!</string>
+    <string name="rate_cta">Đánh giá chúng tôi trên Google Play</string>
+    <string name="settings_share_app">Chia sẻ ứng dụng</string>
+    <string name="settings_privacy">Chính sách bảo mật</string>
+    <string name="settings_terms">Điều khoản và Điều kiện</string>
+    <string name="theme_system">Mặc định hệ thống</string>
+    <string name="theme_light">Ánh sáng</string>
+    <string name="theme_dark">Tối</string>
+    <string name="feature_deferred">Tính năng đang phát triển</string>
+
+    <!-- Prox paywall -->
+    <string name="prox_title">Quét không giới hạn</string>
+    <string name="prox_feature_1">Xóa tất cả quảng cáo</string>
+    <string name="prox_feature_2">Máy quét sản phẩm không giới hạn</string>
+    <string name="prox_feature_3">Quét QR và mã vạch tức thì</string>
+    <string name="prox_feature_4">QR/mã vạch trùng lặp</string>
+    <string name="prox_cta">BẮT ĐẦU DÙNG THỬ MIỄN PHÍ</string>
+    <string name="prox_price_placeholder">3 ngày dùng thử miễn phí, sau đó 263.000 ₫/tuần</string>
+    <string name="prox_auto_renew">Đăng ký sẽ tự động gia hạn. Hủy bất cứ lúc nào</string>
+    <string name="cd_close">Đóng</string>
+
+    <!-- Exit -->
+    <string name="exit_title">Thoát ứng dụng?</string>
+    <string name="exit_confirm">Exit</string>
+
+    <!-- Share App text -->
+    <string name="share_app_text">Hãy xem ứng dụng QR Scanner này!</string>
+</resources>
