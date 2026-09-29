@@ -98,7 +98,7 @@
     <string name="form_contact_name">Tên</string>
     <string name="form_contact_phone">Điện thoại</string>
     <string name="create_empty_toast">Vui lòng nhập nội dung</string>
-    <string name="save">Cứu</string>
+    <string name="save">Lưu</string>
     <string name="saved_to_gallery">Đã lưu vào thư viện</string>
     <string name="created_content">Nội dung</string>
 

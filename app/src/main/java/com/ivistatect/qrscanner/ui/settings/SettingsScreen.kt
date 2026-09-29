@@ -94,6 +94,11 @@ fun SettingsScreen(
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
+        NavRow(R.drawable.ic_barcode, stringResource(R.string.settings_table_id), value = tableIdValue) {
+            Logger.d("Click Table ID @ Settings")
+            tableIdInput = s.tableId
+            showTableIdDialog = true
+        }
         InfoRow(stringResource(R.string.settings_device_id), deviceId)
 
         SectionLabel(stringResource(R.string.settings_overview))
@@ -110,11 +115,6 @@ fun SettingsScreen(
         }
         NavRow(R.drawable.ic_set_camera, stringResource(R.string.settings_camera), value = cameraOptions[cameraFacing]) {
             Logger.d("Click Camera @ Settings"); showCameraFacing = true
-        }
-        NavRow(R.drawable.ic_barcode, stringResource(R.string.settings_table_id), value = tableIdValue) {
-            Logger.d("Click Table ID @ Settings")
-            tableIdInput = s.tableId
-            showTableIdDialog = true
         }
         ToggleRow(R.drawable.ic_set_batch, stringResource(R.string.settings_batch), s.batchScanning) { vm.toggleLogged(SettingsRepository.Key.BATCH, it, "Batch") }
         ToggleRow(R.drawable.ic_connect, stringResource(R.string.settings_auto_submit_server), s.autoSubmitServer) { vm.toggleLogged(SettingsRepository.Key.AUTO_SUBMIT_SERVER, it, "Auto server submit") }

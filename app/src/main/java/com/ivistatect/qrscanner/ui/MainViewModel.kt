@@ -198,6 +198,7 @@ class MainViewModel @Inject constructor(
             currentScanFavorite = false
             currentScanHistoryId = null
             currentScanServerDelivery = ServerDeliveryState.PENDING
+            if (settings.value.autoSubmitServer) sendCurrentScanToServer()
             viewModelScope.launch {
                 if (settingsRepo.settings.first().saveHistory) {
                     currentScanHistoryId = historyRepo.add(code.toEntity(HistoryEntity.ORIGIN_SCANNED))

@@ -150,21 +150,23 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                 }
             }
 
-            Button(
-                onClick = {
-                    Logger.d("Click Send to server @ ScanResult", "raw=${code.rawValue.take(64)}")
-                    mainVm.sendCurrentScanToServer()
-                },
-                enabled = serverDelivery != ServerDeliveryState.SENDING &&
-                    serverDelivery != ServerDeliveryState.SUCCEEDED,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                val label = if (serverDelivery == ServerDeliveryState.FAILED) {
-                    stringResource(R.string.batch_retry_failed)
-                } else {
-                    stringResource(R.string.result_send_to_server)
+            if (!settings.autoSubmitServer) {
+                Button(
+                    onClick = {
+                        Logger.d("Click Send to server @ ScanResult", "raw=${code.rawValue.take(64)}")
+                        mainVm.sendCurrentScanToServer()
+                    },
+                    enabled = serverDelivery != ServerDeliveryState.SENDING &&
+                        serverDelivery != ServerDeliveryState.SUCCEEDED,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    val label = if (serverDelivery == ServerDeliveryState.FAILED) {
+                        stringResource(R.string.batch_retry_failed)
+                    } else {
+                        stringResource(R.string.result_send_to_server)
+                    }
+                    Text(label)
                 }
-                Text(label)
             }
             when (serverDelivery) {
                 ServerDeliveryState.SENDING -> Text(
