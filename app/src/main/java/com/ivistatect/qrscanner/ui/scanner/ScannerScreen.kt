@@ -16,6 +16,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.StopCircle
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -481,19 +483,17 @@ fun ScannerScreen(
                                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                                         )
                                     }
-                                    TextButton(
+                                    androidx.compose.material3.IconButton(
                                         onClick = {
                                             Logger.d("Click Stop server session @ Scanner", "barcode=${barcode.take(64)}")
                                             mainVm.stopServerSession()
                                         },
                                         enabled = !mainVm.serverSessionStopState.isStopping,
                                     ) {
-                                        Text(
-                                            if (mainVm.serverSessionStopState.isStopping) {
-                                                stringResource(R.string.batch_server_stopping)
-                                            } else {
-                                                stringResource(R.string.batch_stop_server_session)
-                                            },
+                                        Icon(
+                                            imageVector = Icons.Filled.StopCircle,
+                                            contentDescription = stringResource(R.string.batch_stop_server_session),
+                                            tint = androidx.compose.material3.MaterialTheme.colorScheme.error,
                                         )
                                     }
                                 }
