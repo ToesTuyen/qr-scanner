@@ -85,6 +85,7 @@ class MainViewModel @Inject constructor(
     var currentScan by mutableStateOf<DecodedCode?>(null); private set
     var currentScanHistoryId by mutableStateOf<Long?>(null); private set
     var currentScanFavorite by mutableStateOf(false); private set
+    var currentScanServerDelivery by mutableStateOf<ServerDeliveryState?>(null); private set
     var currentCreated by mutableStateOf<CreatedResult?>(null); private set
 
     var batchMode by mutableStateOf(false); private set
@@ -196,6 +197,7 @@ class MainViewModel @Inject constructor(
             currentScan = code
             currentScanFavorite = false
             currentScanHistoryId = null
+            currentScanServerDelivery = ServerDeliveryState.PENDING
             viewModelScope.launch {
                 if (settingsRepo.settings.first().saveHistory) {
                     currentScanHistoryId = historyRepo.add(code.toEntity(HistoryEntity.ORIGIN_SCANNED))
@@ -215,11 +217,13 @@ class MainViewModel @Inject constructor(
     }
 
     private fun recordServerSubmission(rawValue: String, succeeded: Boolean) {
-        batchServerDelivery[rawValue] = if (succeeded) {
+        val state = if (succeeded) {
             ServerDeliveryState.SUCCEEDED
         } else {
             ServerDeliveryState.FAILED
         }
+        batchServerDelivery[rawValue] = state
+        if (currentScan?.rawValue == rawValue) currentScanServerDelivery = state
         refreshServerSubmissionState()
     }
 
@@ -243,12 +247,38 @@ class MainViewModel @Inject constructor(
         )
         currentScanHistoryId = item.id
         currentScanFavorite = item.isFavorite
+        currentScanServerDelivery = ServerDeliveryState.PENDING
     }
 
     fun openBatchItem(code: DecodedCode) {
         currentScan = code
         currentScanFavorite = false
         currentScanHistoryId = null
+        currentScanServerDelivery = batchServerDelivery[code.rawValue] ?: ServerDeliveryState.PENDING
+    }
+
+    /** Manually sends the code displayed on the Result screen. */
+    fun sendCurrentScanToServer() {
+        val code = currentScan ?: return
+        if (currentScanServerDelivery == ServerDeliveryState.SENDING) return
+        Logger.d("Send Result to server", "raw=${code.rawValue.take(64)}")
+        currentScanServerDelivery = ServerDeliveryState.SENDING
+        if (batchServerDelivery.containsKey(code.rawValue)) {
+            batchServerDelivery[code.rawValue] = ServerDeliveryState.SENDING
+            refreshServerSubmissionState()
+        }
+        viewModelScope.launch {
+            val state = if (scanUploadRepository.submitScan(code.rawValue)) {
+                ServerDeliveryState.SUCCEEDED
+            } else {
+                ServerDeliveryState.FAILED
+            }
+            currentScanServerDelivery = state
+            if (batchServerDelivery.containsKey(code.rawValue)) {
+                batchServerDelivery[code.rawValue] = state
+                refreshServerSubmissionState()
+            }
+        }
     }
 
     fun toggleCurrentScanFavorite() {

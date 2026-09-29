@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +49,7 @@ import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.ResultAction
 import com.ivistatect.qrscanner.scan.QrGenerator
 import com.ivistatect.qrscanner.ui.MainViewModel
+import com.ivistatect.qrscanner.ui.ServerDeliveryState
 import com.ivistatect.qrscanner.ui.common.copyToClipboard
 import com.ivistatect.qrscanner.ui.common.fireResultAction
 import com.ivistatect.qrscanner.ui.common.printBitmap
@@ -60,6 +62,7 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
     val context = LocalContext.current
     val code = mainVm.currentScan
     val settings by mainVm.settings.collectAsState()
+    val serverDelivery = mainVm.currentScanServerDelivery
     var showMore by remember { mutableStateOf(false) }
 
     if (code == null) {
@@ -145,6 +148,40 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                 resultActions.forEach { action ->
                     ActionItem(action, Modifier.weight(1f)) { executeAction(action) }
                 }
+            }
+
+            Button(
+                onClick = {
+                    Logger.d("Click Send to server @ ScanResult", "raw=${code.rawValue.take(64)}")
+                    mainVm.sendCurrentScanToServer()
+                },
+                enabled = serverDelivery != ServerDeliveryState.SENDING &&
+                    serverDelivery != ServerDeliveryState.SUCCEEDED,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                val label = if (serverDelivery == ServerDeliveryState.FAILED) {
+                    stringResource(R.string.batch_retry_failed)
+                } else {
+                    stringResource(R.string.result_send_to_server)
+                }
+                Text(label)
+            }
+            when (serverDelivery) {
+                ServerDeliveryState.SENDING -> Text(
+                    stringResource(R.string.result_server_sending),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                ServerDeliveryState.SUCCEEDED -> Text(
+                    stringResource(R.string.result_server_sent),
+                    color = Color(0xFF2E7D32),
+                )
+                ServerDeliveryState.FAILED -> Text(
+                    stringResource(R.string.result_server_failed),
+                    color = MaterialTheme.colorScheme.error,
+                )
+                ServerDeliveryState.PENDING,
+                null,
+                -> Unit
             }
 
         }

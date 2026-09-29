@@ -42,6 +42,10 @@
 
     <!-- Result -->
     <string name="result_title">Kết quả</string>
+    <string name="result_send_to_server">Gửi đến server</string>
+    <string name="result_server_sending">Đang gửi đến server…</string>
+    <string name="result_server_sent">Gửi đến server thành công</string>
+    <string name="result_server_failed">Không thể gửi đến server</string>
     <string name="action_open">Mở</string>
     <string name="action_web_search">Tìm kiếm web</string>
     <string name="action_product_details">Thông tin sản phẩm</string>

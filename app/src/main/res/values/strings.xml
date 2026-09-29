@@ -45,6 +45,10 @@
 
     <!-- Result -->
     <string name="result_title">Result</string>
+    <string name="result_send_to_server">Send to server</string>
+    <string name="result_server_sending">Sending to server…</string>
+    <string name="result_server_sent">Sent to server successfully</string>
+    <string name="result_server_failed">Could not send to server</string>
     <string name="action_open">Open</string>
     <string name="action_web_search">Web Search</string>
     <string name="action_product_details">Product details</string>
