@@ -10,18 +10,8 @@
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
--assumenosideeffects class android.util.Log {
-    public static int v(...);
-    public static int d(...);
-    public static int i(...);
-    public static int w(...);
-    public static int e(...);
-    public static int wtf(...);
-}
--assumenosideeffects class com.ivistatect.qrscanner.util.Logger {
-    public *** d(...);
-    public *** e(...);
-}
+# Keep IVISTA_TECH diagnostics in customer Release builds, including the CURL request/response.
+-keep class com.ivistatect.qrscanner.util.Logger { *; }
 
 -keep class kotlin.Metadata { *; }
 -dontwarn kotlin.**
