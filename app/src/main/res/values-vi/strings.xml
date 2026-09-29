@@ -38,7 +38,6 @@
     <string name="scanner_batch_sent">Đã gửi: %1$d</string>
     <string name="scanner_batch_pending">Chưa gửi: %1$d</string>
     <string name="scanner_batch_failed">Lỗi: %1$d</string>
-    <string name="scanner_current_barcode">Mã đơn hiện tại</string>
     <string name="scan_table_id_title">Quét Mã bàn</string>
 
     <!-- Result -->
