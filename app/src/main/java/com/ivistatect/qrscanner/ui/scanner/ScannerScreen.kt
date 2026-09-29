@@ -75,6 +75,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
@@ -457,6 +458,56 @@ fun ScannerScreen(
                             ScannerZoomControl(zoomRatio) {
                                 zoomStepIndex = (zoomStepIndex + 1) % zoomSteps.size
                                 Logger.d("Adjust Zoom @ Scanner", "ratio=${zoomSteps[zoomStepIndex]}x")
+                            }
+                        }
+                    }
+                }
+
+                mainVm.activeServerSessionBarcode?.let { barcode ->
+                    if (!isTableIdCapture) {
+                        Card(modifier = Modifier.fillMaxWidth()) {
+                            Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Column(Modifier.weight(1f)) {
+                                        Text(
+                                            stringResource(R.string.scanner_current_barcode),
+                                            style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                        Text(
+                                            barcode,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                                        )
+                                    }
+                                    TextButton(
+                                        onClick = {
+                                            Logger.d("Click Stop server session @ Scanner", "barcode=${barcode.take(64)}")
+                                            mainVm.stopServerSession()
+                                        },
+                                        enabled = !mainVm.serverSessionStopState.isStopping,
+                                    ) {
+                                        Text(
+                                            if (mainVm.serverSessionStopState.isStopping) {
+                                                stringResource(R.string.batch_server_stopping)
+                                            } else {
+                                                stringResource(R.string.batch_stop_server_session)
+                                            },
+                                        )
+                                    }
+                                }
+                                if (mainVm.serverSessionStopState.succeeded == false) {
+                                    Text(
+                                        stringResource(
+                                            R.string.batch_server_stop_failed,
+                                            mainVm.serverSessionStopState.status ?: 0,
+                                        ),
+                                        color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                }
                             }
                         }
                     }

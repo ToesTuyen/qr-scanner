@@ -76,23 +76,30 @@ class MainViewModel @Inject constructor(
     val scanGuideSeen: StateFlow<Boolean> =
         settingsRepo.settings.map { it.scanGuideSeen }.stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    init {
-        // Mirror the persisted theme mode into the process-wide holder so every themed root
-        // (splash / host / ProX / share-in) reflects the picked theme, including across restarts.
-        viewModelScope.launch { settings.collect { com.ivistatect.qrscanner.ui.theme.ThemeState.mode.value = it.themeMode } }
-    }
-
     var currentScan by mutableStateOf<DecodedCode?>(null); private set
     var currentScanHistoryId by mutableStateOf<Long?>(null); private set
     var currentScanFavorite by mutableStateOf(false); private set
     var currentScanServerDelivery by mutableStateOf<ServerDeliveryState?>(null); private set
     var currentCreated by mutableStateOf<CreatedResult?>(null); private set
+    /** Latest barcode accepted by the server and therefore eligible for a manual Stop. */
+    var activeServerSessionBarcode by mutableStateOf<String?>(null); private set
 
     var batchMode by mutableStateOf(false); private set
     val batchItems = mutableStateListOf<DecodedCode>()
     val batchServerDelivery = mutableStateMapOf<String, ServerDeliveryState>()
     var serverSubmissionState by mutableStateOf(ServerSubmissionState()); private set
     var serverSessionStopState by mutableStateOf(ServerSessionStopState()); private set
+
+    init {
+        // Mirror persisted screen state needed outside Settings, including the server session
+        // shown on Scanner after the app is reopened.
+        viewModelScope.launch {
+            settings.collect {
+                com.ivistatect.qrscanner.ui.theme.ThemeState.mode.value = it.themeMode
+                activeServerSessionBarcode = it.activeServerSessionBarcode
+            }
+        }
+    }
 
     fun updateBatchMode(enabled: Boolean) {
         batchMode = enabled
@@ -174,7 +181,10 @@ class MainViewModel @Inject constructor(
                 status = result.status,
             )
             val detail = "success=${result.succeeded} status=${result.status}"
-            if (result.succeeded) Logger.d("Dừng phiên server hoàn tất", detail)
+            if (result.succeeded) {
+                activeServerSessionBarcode = null
+                Logger.d("Dừng phiên server hoàn tất", detail)
+            }
             else Logger.e("Dừng phiên server thất bại", detail)
         }
     }

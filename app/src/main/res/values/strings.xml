@@ -41,6 +41,7 @@
     <string name="scanner_batch_sent">Sent: %1$d</string>
     <string name="scanner_batch_pending">Pending: %1$d</string>
     <string name="scanner_batch_failed">Failed: %1$d</string>
+    <string name="scanner_current_barcode">Current barcode</string>
     <string name="scan_table_id_title">Scan table ID</string>
 
     <!-- Result -->

@@ -22,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -51,7 +50,6 @@ import com.ivistatect.qrscanner.R
 import com.ivistatect.qrscanner.domain.DecodedCode
 import com.ivistatect.qrscanner.domain.tileGlyph
 import com.ivistatect.qrscanner.ui.ServerSubmissionState
-import com.ivistatect.qrscanner.ui.ServerSessionStopState
 import com.ivistatect.qrscanner.ui.ServerDeliveryState
 import com.ivistatect.qrscanner.ui.MainViewModel
 
@@ -106,8 +104,6 @@ fun BatchResultScreen(
                         state = mainVm.serverSubmissionState,
                         codeCount = mainVm.batchItems.size,
                         onSend = mainVm::sendBatchToServer,
-                        stopState = mainVm.serverSessionStopState,
-                        onStopSession = mainVm::stopServerSession,
                     )
                 }
                 items(mainVm.batchItems, key = { it.rawValue }) { code ->
@@ -175,8 +171,6 @@ private fun BatchServerSubmissionCard(
     state: ServerSubmissionState,
     codeCount: Int,
     onSend: () -> Unit,
-    stopState: ServerSessionStopState,
-    onStopSession: () -> Unit,
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -216,34 +210,6 @@ private fun BatchServerSubmissionCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 10.dp),
                 )
-            }
-            OutlinedButton(
-                onClick = onStopSession,
-                enabled = !stopState.isStopping,
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-            ) {
-                Text(
-                    if (stopState.isStopping) {
-                        stringResource(R.string.batch_server_stopping)
-                    } else {
-                        stringResource(R.string.batch_stop_server_session)
-                    },
-                )
-            }
-            when (stopState.succeeded) {
-                true -> Text(
-                    stringResource(R.string.batch_server_stop_success, stopState.status ?: 200),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 10.dp),
-                )
-                false -> Text(
-                    stringResource(R.string.batch_server_stop_failed, stopState.status ?: 0),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 10.dp),
-                )
-                null -> Unit
             }
         }
     }

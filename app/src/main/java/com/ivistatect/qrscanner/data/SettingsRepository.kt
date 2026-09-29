@@ -41,6 +41,8 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         val tableId: String = DEFAULT_TABLE_ID,
         /** The server-side session opened by the latest accepted barcode scan. */
         val activeServerSessionTableId: String? = null,
+        /** Barcode belonging to the server-side session, shown with the Scanner stop control. */
+        val activeServerSessionBarcode: String? = null,
         /** True once the scanner tutorial sheet has been dismissed (shown once, like the reference). */
         val scanGuideSeen: Boolean = false,
     )
@@ -63,6 +65,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
             imageFormat = p[KEY_IMAGE_FORMAT] ?: 0,
             tableId = p[KEY_TABLE_ID] ?: DEFAULT_TABLE_ID,
             activeServerSessionTableId = p[KEY_ACTIVE_SERVER_SESSION_TABLE_ID]?.takeIf { it.isNotBlank() },
+            activeServerSessionBarcode = p[KEY_ACTIVE_SERVER_SESSION_BARCODE]?.takeIf { it.isNotBlank() },
             scanGuideSeen = p[KEY_SCAN_GUIDE_SEEN] ?: false,
         )
     }
@@ -91,12 +94,18 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         context.settingsDataStore.edit { it[KEY_TABLE_ID] = tableId.trim() }
     }
 
-    suspend fun markServerSessionActive(tableId: String) {
-        context.settingsDataStore.edit { it[KEY_ACTIVE_SERVER_SESSION_TABLE_ID] = tableId.trim() }
+    suspend fun markServerSessionActive(tableId: String, barcode: String) {
+        context.settingsDataStore.edit {
+            it[KEY_ACTIVE_SERVER_SESSION_TABLE_ID] = tableId.trim()
+            it[KEY_ACTIVE_SERVER_SESSION_BARCODE] = barcode.trim()
+        }
     }
 
     suspend fun clearActiveServerSession() {
-        context.settingsDataStore.edit { it.remove(KEY_ACTIVE_SERVER_SESSION_TABLE_ID) }
+        context.settingsDataStore.edit {
+            it.remove(KEY_ACTIVE_SERVER_SESSION_TABLE_ID)
+            it.remove(KEY_ACTIVE_SERVER_SESSION_BARCODE)
+        }
     }
 
     suspend fun setScanGuideSeen(seen: Boolean) {
@@ -125,6 +134,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         private val KEY_IMAGE_FORMAT = intPreferencesKey("image_format")
         private val KEY_TABLE_ID = stringPreferencesKey("table_id")
         private val KEY_ACTIVE_SERVER_SESSION_TABLE_ID = stringPreferencesKey("active_server_session_table_id")
+        private val KEY_ACTIVE_SERVER_SESSION_BARCODE = stringPreferencesKey("active_server_session_barcode")
         private val KEY_SCAN_GUIDE_SEEN = booleanPreferencesKey("scan_guide_seen")
     }
 }

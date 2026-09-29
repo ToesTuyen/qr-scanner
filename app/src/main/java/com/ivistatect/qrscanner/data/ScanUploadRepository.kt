@@ -54,7 +54,7 @@ class ScanUploadRepository @Inject constructor(
                 .toString(),
             operation = "Gửi mã đến server",
         )
-        if (result.succeeded) settingsRepository.markServerSessionActive(tableId)
+        if (result.succeeded) settingsRepository.markServerSessionActive(tableId, barcode)
         result.succeeded
     }
 
