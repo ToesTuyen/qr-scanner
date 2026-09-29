@@ -51,6 +51,8 @@ class SettingsViewModel @Inject constructor(
 
     fun setImageFormat(index: Int) = viewModelScope.launch { repo.setImageFormat(index) }
 
+    fun setTableId(tableId: String) = viewModelScope.launch { repo.setTableId(tableId) }
+
     private val _updateState = MutableStateFlow<AppUpdateUiState>(AppUpdateUiState.Idle)
     val updateState: StateFlow<AppUpdateUiState> = _updateState
 

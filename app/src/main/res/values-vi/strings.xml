@@ -38,6 +38,7 @@
     <string name="scanner_batch_sent">Đã gửi: %1$d</string>
     <string name="scanner_batch_pending">Chưa gửi: %1$d</string>
     <string name="scanner_batch_failed">Lỗi: %1$d</string>
+    <string name="scan_table_id_title">Quét Mã bàn</string>
 
     <!-- Result -->
     <string name="result_title">Kết quả</string>
@@ -136,6 +137,10 @@
     <string name="settings_search_engine">Công cụ tìm kiếm</string>
     <string name="settings_camera">Máy ảnh</string>
     <string name="settings_device_id">Mã thiết bị</string>
+    <string name="settings_table_id">Mã bàn</string>
+    <string name="settings_table_id_not_set">Chưa thiết lập</string>
+    <string name="settings_table_id_hint">Nhập Mã bàn</string>
+    <string name="settings_scan_table_id">Quét Mã bàn</string>
     <string name="settings_image_format">Định dạng hình ảnh</string>
     <string name="settings_batch">Quét hàng loạt</string>
     <string name="settings_auto_submit_server">Tự động gửi đến server</string>

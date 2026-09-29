@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,10 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         val cameraFacing: Int = CAMERA_REAR,
         val searchEngine: Int = 0,
         val imageFormat: Int = 0,
+        /** Table assigned to this phone and sent with every barcode request. */
+        val tableId: String = DEFAULT_TABLE_ID,
+        /** The server-side session opened by the latest accepted barcode scan. */
+        val activeServerSessionTableId: String? = null,
         /** True once the scanner tutorial sheet has been dismissed (shown once, like the reference). */
         val scanGuideSeen: Boolean = false,
     )
@@ -56,6 +61,8 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
             cameraFacing = p[KEY_CAMERA_FACING] ?: CAMERA_REAR,
             searchEngine = p[KEY_SEARCH_ENGINE] ?: 0,
             imageFormat = p[KEY_IMAGE_FORMAT] ?: 0,
+            tableId = p[KEY_TABLE_ID] ?: DEFAULT_TABLE_ID,
+            activeServerSessionTableId = p[KEY_ACTIVE_SERVER_SESSION_TABLE_ID]?.takeIf { it.isNotBlank() },
             scanGuideSeen = p[KEY_SCAN_GUIDE_SEEN] ?: false,
         )
     }
@@ -80,6 +87,18 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         context.settingsDataStore.edit { it[KEY_IMAGE_FORMAT] = index }
     }
 
+    suspend fun setTableId(tableId: String) {
+        context.settingsDataStore.edit { it[KEY_TABLE_ID] = tableId.trim() }
+    }
+
+    suspend fun markServerSessionActive(tableId: String) {
+        context.settingsDataStore.edit { it[KEY_ACTIVE_SERVER_SESSION_TABLE_ID] = tableId.trim() }
+    }
+
+    suspend fun clearActiveServerSession() {
+        context.settingsDataStore.edit { it.remove(KEY_ACTIVE_SERVER_SESSION_TABLE_ID) }
+    }
+
     suspend fun setScanGuideSeen(seen: Boolean) {
         context.settingsDataStore.edit { it[KEY_SCAN_GUIDE_SEEN] = seen }
     }
@@ -94,6 +113,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         const val THEME_DARK = 2
         const val CAMERA_REAR = 0
         const val CAMERA_FRONT = 1
+        const val DEFAULT_TABLE_ID = "1061baeb-8ea7-4e11-9b0d-181ee4218c2a"
 
         private val KEY_BATCH = booleanPreferencesKey("batch_scanning")
         private val KEY_AUTO_SUBMIT_SERVER = booleanPreferencesKey("auto_submit_server")
@@ -103,6 +123,8 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
         private val KEY_CAMERA_FACING = intPreferencesKey("camera_facing")
         private val KEY_SEARCH_ENGINE = intPreferencesKey("search_engine")
         private val KEY_IMAGE_FORMAT = intPreferencesKey("image_format")
+        private val KEY_TABLE_ID = stringPreferencesKey("table_id")
+        private val KEY_ACTIVE_SERVER_SESSION_TABLE_ID = stringPreferencesKey("active_server_session_table_id")
         private val KEY_SCAN_GUIDE_SEEN = booleanPreferencesKey("scan_guide_seen")
     }
 }

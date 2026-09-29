@@ -101,10 +101,12 @@ fun ScannerScreen(
     mainVm: MainViewModel,
     onResult: () -> Unit,
     onOpenBatch: () -> Unit,
+    onTableIdScanned: ((String) -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
+    val isTableIdCapture = onTableIdScanned != null
 
     LaunchedEffect(Unit) { Logger.d("Enter Scanner") }
 
@@ -121,7 +123,7 @@ fun ScannerScreen(
     val currentSettings = rememberUpdatedState(settings)
     LaunchedEffect(settings.batchScanning) { mainVm.syncBatchMode(settings.batchScanning) }
     var guideDismissed by remember { mutableStateOf(false) }
-    val showGuide = !guideSeen && !guideDismissed
+    val showGuide = !isTableIdCapture && !guideSeen && !guideDismissed
     var torchOn by remember { mutableStateOf(false) }
     var zoomStepIndex by remember { mutableIntStateOf(0) }
     var camera by remember { mutableStateOf<Camera?>(null) }
@@ -157,22 +159,27 @@ fun ScannerScreen(
             val soundPlayed = if (scanSettings.sound) context.playScanTone() else false
             Logger.d("Scan feedback", "vibration=$hapticPlayed sound=$soundPlayed")
             Logger.d("Scanner: decoded", "type=${code.valueType} format=${code.formatName}")
-            mainVm.onDecoded(code)
-            if (scanSettings.autoCopy) {
-                context.copyToClipboard(code.rawValue)
-                Logger.d("Scanner: auto copied result")
-            }
-            if (mainVm.batchMode) {
-                scope.launch { kotlinx.coroutines.delay(1200); analyzerHolder[0]?.reset() }
+            if (onTableIdScanned != null) {
+                Logger.d("Table ID scanned", "value=${code.rawValue}")
+                onTableIdScanned(code.rawValue.trim())
             } else {
-                onResult()
-                if (scanSettings.webSearch) {
-                    Logger.d("Scanner: auto web search", "engine=${scanSettings.searchEngine}")
-                    context.fireResultAction(
-                        com.ivistatect.qrscanner.domain.ResultAction.WEB_SEARCH,
-                        code.rawValue,
-                        scanSettings.searchEngine,
-                    )
+                mainVm.onDecoded(code)
+                if (scanSettings.autoCopy) {
+                    context.copyToClipboard(code.rawValue)
+                    Logger.d("Scanner: auto copied result")
+                }
+                if (mainVm.batchMode) {
+                    scope.launch { kotlinx.coroutines.delay(1200); analyzerHolder[0]?.reset() }
+                } else {
+                    onResult()
+                    if (scanSettings.webSearch) {
+                        Logger.d("Scanner: auto web search", "engine=${scanSettings.searchEngine}")
+                        context.fireResultAction(
+                            com.ivistatect.qrscanner.domain.ResultAction.WEB_SEARCH,
+                            code.rawValue,
+                            scanSettings.searchEngine,
+                        )
+                    }
                 }
             }
         }.also { analyzerHolder[0] = it }
@@ -203,16 +210,21 @@ fun ScannerScreen(
                     val hapticPlayed = if (scanSettings.vibration) context.vibrateOnScan() else false
                     val soundPlayed = if (scanSettings.sound) context.playScanTone() else false
                     Logger.d("Scan feedback", "vibration=$hapticPlayed sound=$soundPlayed source=gallery")
-                    mainVm.onDecoded(decoded)
-                    if (!mainVm.batchMode) {
-                        onResult()
-                        if (scanSettings.webSearch) {
-                            Logger.d("Scanner: auto web search", "engine=${scanSettings.searchEngine} source=gallery")
-                            context.fireResultAction(
-                                com.ivistatect.qrscanner.domain.ResultAction.WEB_SEARCH,
-                                decoded.rawValue,
-                                scanSettings.searchEngine,
-                            )
+                    if (onTableIdScanned != null) {
+                        Logger.d("Table ID scanned", "value=${decoded.rawValue} source=gallery")
+                        onTableIdScanned(decoded.rawValue.trim())
+                    } else {
+                        mainVm.onDecoded(decoded)
+                        if (!mainVm.batchMode) {
+                            onResult()
+                            if (scanSettings.webSearch) {
+                                Logger.d("Scanner: auto web search", "engine=${scanSettings.searchEngine} source=gallery")
+                                context.fireResultAction(
+                                    com.ivistatect.qrscanner.domain.ResultAction.WEB_SEARCH,
+                                    decoded.rawValue,
+                                    scanSettings.searchEngine,
+                                )
+                            }
                         }
                     }
                 } else {
@@ -393,56 +405,64 @@ fun ScannerScreen(
                     }
                 }
 
-                // The three scanner actions become a compact floating control strip.
-                Box(Modifier.fillMaxWidth()) {
-                    Row(
-                        Modifier.align(Alignment.Center)
-                            .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(28.dp))
-                            .padding(horizontal = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        ScannerControl(R.drawable.ic_fig_gallery, stringResource(R.string.cd_gallery)) {
-                            Logger.d("Click Gallery @ Scanner")
-                            galleryLauncher.launch("image/*")
-                        }
-                        ScannerControl(
-                            R.drawable.ic_fig_batch,
-                            stringResource(R.string.cd_batch),
-                            tint = if (mainVm.batchMode) {
-                                androidx.compose.material3.MaterialTheme.colorScheme.primary
-                            } else {
-                                Color.White
-                            },
+                if (isTableIdCapture) {
+                    Text(
+                        stringResource(R.string.scan_table_id_title),
+                        color = Color.White,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                } else {
+                    // The three scanner actions become a compact floating control strip.
+                    Box(Modifier.fillMaxWidth()) {
+                        Row(
+                            Modifier.align(Alignment.Center)
+                                .background(Color.Black.copy(alpha = 0.42f), RoundedCornerShape(28.dp))
+                                .padding(horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            val next = !mainVm.batchMode
-                            Logger.d("Click Batch toggle @ Scanner", "enabled=$next")
-                            mainVm.setBatchScanning(next)
-                            Toast.makeText(
-                                context,
-                                if (next) R.string.batch_on else R.string.batch_off,
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        }
-                        ScannerControl(
-                            R.drawable.ic_fig_flash,
-                            stringResource(if (torchOn) R.string.scanner_flash_off else R.string.scanner_flash_on),
-                            tint = if (torchOn) {
-                                androidx.compose.material3.MaterialTheme.colorScheme.primary
-                            } else {
-                                Color.White
-                            },
-                        ) {
-                            torchOn = !torchOn
-                            Logger.d("Click Flash @ Scanner", "on=$torchOn")
-                        }
-                        ScannerZoomControl(zoomRatio) {
-                            zoomStepIndex = (zoomStepIndex + 1) % zoomSteps.size
-                            Logger.d("Adjust Zoom @ Scanner", "ratio=${zoomSteps[zoomStepIndex]}x")
+                            ScannerControl(R.drawable.ic_fig_gallery, stringResource(R.string.cd_gallery)) {
+                                Logger.d("Click Gallery @ Scanner")
+                                galleryLauncher.launch("image/*")
+                            }
+                            ScannerControl(
+                                R.drawable.ic_fig_batch,
+                                stringResource(R.string.cd_batch),
+                                tint = if (mainVm.batchMode) {
+                                    androidx.compose.material3.MaterialTheme.colorScheme.primary
+                                } else {
+                                    Color.White
+                                },
+                            ) {
+                                val next = !mainVm.batchMode
+                                Logger.d("Click Batch toggle @ Scanner", "enabled=$next")
+                                mainVm.setBatchScanning(next)
+                                Toast.makeText(
+                                    context,
+                                    if (next) R.string.batch_on else R.string.batch_off,
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            }
+                            ScannerControl(
+                                R.drawable.ic_fig_flash,
+                                stringResource(if (torchOn) R.string.scanner_flash_off else R.string.scanner_flash_on),
+                                tint = if (torchOn) {
+                                    androidx.compose.material3.MaterialTheme.colorScheme.primary
+                                } else {
+                                    Color.White
+                                },
+                            ) {
+                                torchOn = !torchOn
+                                Logger.d("Click Flash @ Scanner", "on=$torchOn")
+                            }
+                            ScannerZoomControl(zoomRatio) {
+                                zoomStepIndex = (zoomStepIndex + 1) % zoomSteps.size
+                                Logger.d("Adjust Zoom @ Scanner", "ratio=${zoomSteps[zoomStepIndex]}x")
+                            }
                         }
                     }
                 }
 
-                if (mainVm.batchMode && mainVm.batchItems.isNotEmpty()) {
+                if (!isTableIdCapture && mainVm.batchMode && mainVm.batchItems.isNotEmpty()) {
                     val sentCount = mainVm.batchItems.count {
                         mainVm.batchServerDelivery[it.rawValue] == ServerDeliveryState.SUCCEEDED
                     }

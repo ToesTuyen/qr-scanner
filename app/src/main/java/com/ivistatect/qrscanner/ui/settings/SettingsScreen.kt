@@ -47,6 +47,7 @@ import com.ivistatect.qrscanner.ui.theme.applyThemeMode
 @Composable
 fun SettingsScreen(
     onOpenLanguage: () -> Unit,
+    onScanTableId: () -> Unit,
     vm: SettingsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -57,6 +58,8 @@ fun SettingsScreen(
     var showThemeSheet by remember { mutableStateOf(false) }
     var showSearchEngine by remember { mutableStateOf(false) }
     var showCameraFacing by remember { mutableStateOf(false) }
+    var showTableIdDialog by remember { mutableStateOf(false) }
+    var tableIdInput by remember { mutableStateOf("") }
     val searchEngines = listOf(stringResource(R.string.settings_value_default), "Google", "Bing", "Yahoo", "Yandex", "DuckDuckGo", "Qwant")
     val searchEngine = s.searchEngine.coerceIn(searchEngines.indices)
     val cameraOptions = listOf(
@@ -64,6 +67,11 @@ fun SettingsScreen(
         stringResource(R.string.settings_value_front_camera),
     )
     val cameraFacing = s.cameraFacing.coerceIn(SettingsRepository.CAMERA_REAR, SettingsRepository.CAMERA_FRONT)
+    val tableIdValue = when {
+        s.tableId.isBlank() -> stringResource(R.string.settings_table_id_not_set)
+        s.tableId.length <= 18 -> s.tableId
+        else -> "${s.tableId.take(8)}…${s.tableId.takeLast(4)}"
+    }
 
     val themeValue = when (s.themeMode) {
         SettingsRepository.THEME_LIGHT -> stringResource(R.string.theme_light)
@@ -102,6 +110,11 @@ fun SettingsScreen(
         }
         NavRow(R.drawable.ic_set_camera, stringResource(R.string.settings_camera), value = cameraOptions[cameraFacing]) {
             Logger.d("Click Camera @ Settings"); showCameraFacing = true
+        }
+        NavRow(R.drawable.ic_barcode, stringResource(R.string.settings_table_id), value = tableIdValue) {
+            Logger.d("Click Table ID @ Settings")
+            tableIdInput = s.tableId
+            showTableIdDialog = true
         }
         ToggleRow(R.drawable.ic_set_batch, stringResource(R.string.settings_batch), s.batchScanning) { vm.toggleLogged(SettingsRepository.Key.BATCH, it, "Batch") }
         ToggleRow(R.drawable.ic_connect, stringResource(R.string.settings_auto_submit_server), s.autoSubmitServer) { vm.toggleLogged(SettingsRepository.Key.AUTO_SUBMIT_SERVER, it, "Auto server submit") }
@@ -177,6 +190,50 @@ fun SettingsScreen(
             onDismiss = {
                 Logger.d("Dismiss Camera dialog @ Settings")
                 showCameraFacing = false
+            },
+        )
+    }
+
+    if (showTableIdDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = {
+                Logger.d("Dismiss Table ID dialog @ Settings")
+                showTableIdDialog = false
+            },
+            title = { Text(stringResource(R.string.settings_table_id)) },
+            text = {
+                androidx.compose.material3.OutlinedTextField(
+                    value = tableIdInput,
+                    onValueChange = { tableIdInput = it },
+                    label = { Text(stringResource(R.string.settings_table_id_hint)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        val tableId = tableIdInput.trim()
+                        if (tableId.isNotBlank()) {
+                            Logger.d("Save Table ID @ Settings", "value=$tableId")
+                            vm.setTableId(tableId)
+                            showTableIdDialog = false
+                        }
+                    },
+                    enabled = tableIdInput.isNotBlank(),
+                ) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                Row {
+                    androidx.compose.material3.TextButton(onClick = {
+                        Logger.d("Click Scan Table ID @ Settings")
+                        showTableIdDialog = false
+                        onScanTableId()
+                    }) { Text(stringResource(R.string.settings_scan_table_id)) }
+                    androidx.compose.material3.TextButton(onClick = { showTableIdDialog = false }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                }
             },
         )
     }

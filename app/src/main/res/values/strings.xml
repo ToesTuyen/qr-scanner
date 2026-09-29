@@ -41,6 +41,7 @@
     <string name="scanner_batch_sent">Sent: %1$d</string>
     <string name="scanner_batch_pending">Pending: %1$d</string>
     <string name="scanner_batch_failed">Failed: %1$d</string>
+    <string name="scan_table_id_title">Scan table ID</string>
 
     <!-- Result -->
     <string name="result_title">Result</string>
@@ -140,6 +141,10 @@
     <string name="settings_search_engine">Search Engine</string>
     <string name="settings_camera">Camera</string>
     <string name="settings_device_id">Device ID</string>
+    <string name="settings_table_id">Table ID</string>
+    <string name="settings_table_id_not_set">Not set</string>
+    <string name="settings_table_id_hint">Enter table ID</string>
+    <string name="settings_scan_table_id">Scan table ID</string>
     <string name="settings_image_format">Image Format</string>
     <string name="settings_batch">Batch Scanning</string>
     <string name="settings_auto_submit_server">Automatically send to server</string>

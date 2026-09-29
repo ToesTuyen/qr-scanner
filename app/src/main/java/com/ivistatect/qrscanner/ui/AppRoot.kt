@@ -63,6 +63,7 @@ object Routes {
     const val RESULT = "result"
     const val BATCH = "batch"
     const val LANGUAGE = "language"
+    const val TABLE_ID_SCANNER = "table_id_scanner"
 }
 
 private data class TabItem(val route: String, val labelRes: Int, @DrawableRes val icon: Int)
@@ -116,6 +117,10 @@ fun AppRoot() {
         Logger.d("Back to Home @ Settings (ad-free)")
         goHome()
     }
+    BackHandler(enabled = currentRoute == Routes.TABLE_ID_SCANNER) {
+        Logger.d("Back to Settings @ Table ID scanner")
+        navController.popBackStack()
+    }
 
     Box(Modifier.fillMaxSize()) {
         NavHost(
@@ -144,6 +149,19 @@ fun AppRoot() {
             composable(Routes.SETTINGS) {
                 SettingsScreen(
                     onOpenLanguage = { navController.navigate(Routes.LANGUAGE) },
+                    onScanTableId = { navController.navigate(Routes.TABLE_ID_SCANNER) },
+                )
+            }
+            composable(Routes.TABLE_ID_SCANNER) {
+                ScannerScreen(
+                    mainVm = mainVm,
+                    onResult = {},
+                    onOpenBatch = {},
+                    onTableIdScanned = { tableId ->
+                        Logger.d("Table ID captured", "value=$tableId")
+                        mainVm.setTableId(tableId)
+                        navController.popBackStack()
+                    },
                 )
             }
             composable(Routes.RESULT) {

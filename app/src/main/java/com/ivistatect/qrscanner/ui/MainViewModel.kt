@@ -115,6 +115,14 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch { settingsRepo.setBoolean(SettingsRepository.Key.BATCH, enabled) }
     }
 
+    /** Saves the table assigned to this phone. The next barcode is sent with this table ID. */
+    fun setTableId(tableId: String) {
+        val normalized = tableId.trim()
+        if (normalized.isBlank()) return
+        Logger.d("Set Table ID", "value=$normalized")
+        viewModelScope.launch { settingsRepo.setTableId(normalized) }
+    }
+
     fun removeBatchItem(code: DecodedCode) {
         if (batchItems.remove(code)) {
             batchServerDelivery.remove(code.rawValue)

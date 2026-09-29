@@ -4,6 +4,9 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -20,23 +23,54 @@ data class ServerRequestResult(
 @Singleton
 class ScanUploadRepository @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val settingsRepository: SettingsRepository,
 ) {
-    suspend fun submitScan(barcode: String): Boolean = request(
-        url = SCAN_URL,
-        body = JSONObject()
-            .put("table_id", TABLE_ID)
-            .put("barcode", barcode)
-            .put("device_id", ScanDeviceId.from(context))
-            .put("operator_id", OPERATOR_ID)
-            .toString(),
-        operation = "Gửi mã đến server",
-    ).succeeded
+    /**
+     * Sends codes in strict order. Before starting the next code's server session, the previous
+     * one is ended, so a phone never leaves two capture sessions open at the same time.
+     */
+    suspend fun submitScan(barcode: String): Boolean = sequentialRequestMutex.withLock {
+        val settings = settingsRepository.settings.first()
+        val tableId = settings.tableId.trim()
+        if (tableId.isBlank()) {
+            Logger.e("CURL server thiếu Mã bàn", "operation=Gửi mã đến server")
+            return@withLock false
+        }
+
+        settings.activeServerSessionTableId?.let { activeTableId ->
+            Logger.d("Dừng phiên trước khi quét mã mới", "table_id=$activeTableId")
+            val stopResult = endSessionRequest(activeTableId)
+            if (!stopResult.succeeded) return@withLock false
+            settingsRepository.clearActiveServerSession()
+        }
+
+        val result = request(
+            url = SCAN_URL,
+            body = JSONObject()
+                .put("table_id", tableId)
+                .put("barcode", barcode)
+                .put("device_id", ScanDeviceId.from(context))
+                .put("operator_id", OPERATOR_ID)
+                .toString(),
+            operation = "Gửi mã đến server",
+        )
+        if (result.succeeded) settingsRepository.markServerSessionActive(tableId)
+        result.succeeded
+    }
 
     /** Ends the active server-side scanner session. Used by the temporary manual stop control. */
-    suspend fun endSession(): ServerRequestResult = request(
-        url = TEST_STOP_URL,
+    suspend fun endSession(): ServerRequestResult = sequentialRequestMutex.withLock {
+        val settings = settingsRepository.settings.first()
+        val tableId = settings.activeServerSessionTableId ?: settings.tableId
+        val result = endSessionRequest(tableId)
+        if (result.succeeded) settingsRepository.clearActiveServerSession()
+        result
+    }
+
+    private suspend fun endSessionRequest(tableId: String): ServerRequestResult = request(
+        url = SESSION_END_URL,
         body = JSONObject()
-            .put("table_id", TABLE_ID)
+            .put("table_id", tableId)
             .put("reason", "MANUAL_STOP")
             .toString(),
         operation = "Dừng phiên server",
@@ -90,9 +124,9 @@ class ScanUploadRepository @Inject constructor(
 
     private companion object {
         const val SCAN_URL = "https://vtpautopackage.ivistatech.vn/api/v1/scanner/scan"
-        const val TEST_STOP_URL = "http://127.0.0.1:18000/api/v1/scanner/session/end"
+        const val SESSION_END_URL = "https://vtpautopackage.ivistatech.vn/api/v1/scanner/session/end"
         const val SERVER_ACCESS_KEY = "919f9e2da39a153bb150343e551d73b3d4867f407e8e315bb26b89170a1928fc"
-        const val TABLE_ID = "1061baeb-8ea7-4e11-9b0d-181ee4218c2a"
         const val OPERATOR_ID = "DEV_TEST"
+        val sequentialRequestMutex = Mutex()
     }
 }
