@@ -150,7 +150,7 @@ fun ScanResultScreen(mainVm: MainViewModel, onBack: () -> Unit) {
                 }
             }
 
-            if (!settings.autoSubmitServer) {
+            if (!settings.autoSubmitServer || serverDelivery == ServerDeliveryState.FAILED) {
                 Button(
                     onClick = {
                         Logger.d("Click Send to server @ ScanResult", "raw=${code.rawValue.take(64)}")
